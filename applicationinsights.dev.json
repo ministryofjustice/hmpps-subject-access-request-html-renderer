@@ -1,6 +1,6 @@
 {
   "role": {
-    "name": "hmpps-template-kotlin"
+    "name": "hmpps-subject-access-request-html-renderer"
   },
   "customDimensions": {
     "service.version": "${BUILD_NUMBER}"
