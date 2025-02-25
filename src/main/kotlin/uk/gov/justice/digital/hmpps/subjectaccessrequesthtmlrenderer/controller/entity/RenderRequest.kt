@@ -1,9 +1,8 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity
 
 import com.fasterxml.jackson.annotation.JsonFormat
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import java.time.LocalDate
 import java.util.UUID
 
@@ -27,7 +26,10 @@ data class RenderRequest(
 
   val serviceUrl: String? = null,
 ) {
-  override fun toString(): String = ObjectMapper().registerModules(JavaTimeModule()).writeValueAsString(this)
-
+  @JsonIgnore
   fun getCacheKey(): String = "${this.id}_${this.serviceName}" // TODO does the key need to be more specific?
+
+  override fun toString(): String = "RenderRequest(id=$id, nomisId=$nomisId, ndeliusId=$ndeliusId, " +
+    "dateFrom=$dateFrom, dateTo=$dateTo, sarCaseReferenceNumber=$sarCaseReferenceNumber, serviceName=$serviceName, " +
+    "serviceUrl=$serviceUrl)"
 }
