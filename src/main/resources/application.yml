@@ -26,12 +26,10 @@ spring:
             token-uri: ${hmpps-auth.url}/oauth/token
 
         registration:
-          # example client registration for calling out to other services
-          # TODO: Remove / replace this registration
-          example-api:
+          sar-html-renderer-client:
             provider: hmpps-auth
-            client-id: ${example-api.client.id}
-            client-secret: ${example-api.client.secret}
+            client-id: ${system.client.id}
+            client-secret: ${system.client.secret}
             authorization-grant-type: client_credentials
             scope: read
 
@@ -66,3 +64,8 @@ management:
     info:
       cache:
         time-to-live: 2000ms
+
+web-client:
+  configuration:
+    max-retries: 2
+    back-off: PT10S
