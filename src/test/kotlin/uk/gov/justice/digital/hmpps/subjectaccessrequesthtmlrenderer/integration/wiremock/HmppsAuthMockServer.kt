@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.http.HttpHeader
 import com.github.tomakehurst.wiremock.http.HttpHeaders
@@ -70,4 +71,6 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
+  fun verifyGrantTokenIsCalled(times: Int) = verify(times, postRequestedFor(urlEqualTo("/auth/oauth/token")))
 }
