@@ -29,7 +29,7 @@ class TemplateResources(
         message = "mandatory service template does not exist",
         params = mapOf(
           "service" to renderRequest.serviceName,
-          "requiredTemplate" to "$templatesDirectory/template_$renderRequest.serviceName.mustache",
+          "requiredTemplate" to "$templatesDirectory/template_${renderRequest.serviceName}.mustache",
         ),
       )
     }

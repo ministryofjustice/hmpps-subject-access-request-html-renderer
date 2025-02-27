@@ -13,7 +13,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Pris
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.TemplateService
 
 class TemplateServiceTest {
   private val prisonDetailsRepository: PrisonDetailsRepository = mock()

@@ -1,11 +1,9 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.mustachejava.DefaultMustacheFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateHelpers
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateResources
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
