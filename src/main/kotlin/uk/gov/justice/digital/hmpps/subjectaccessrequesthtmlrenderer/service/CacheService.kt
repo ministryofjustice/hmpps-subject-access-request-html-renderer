@@ -8,7 +8,7 @@ class CacheService {
 
   fun contains(key: String): Boolean = false // TODO implement later
 
-  fun add(key: String, data: ByteArrayOutputStream) {
+  fun add(key: String, data: ByteArrayOutputStream?) {
     // TODO implement
   }
 }

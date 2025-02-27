@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
+import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -21,6 +22,11 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.CacheService
 import java.io.ByteArrayOutputStream
+import java.time.LocalDate
+import java.util.UUID
+
+const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
+const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
 
 @ExtendWith(SarDataSourceApiExtension::class)
 class RenderTemplateControllerIntTest : IntegrationTestBase() {
@@ -32,11 +38,8 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
   @Captor
   private lateinit var renderedDataCaptor: ArgumentCaptor<ByteArrayOutputStream>
 
-  private val renderRequest = createRenderRequest(sarDataSourceApi.port())
-  private val expectedCacheKey = "${renderRequest.id}_${renderRequest.serviceName}"
-
   @Nested
-  inner class RenderTemplateAuthTest {
+  inner class RenderTemplateSuccessTest {
 
     @BeforeEach
     fun setup() {
@@ -47,27 +50,29 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "ROLE_SAR_USER_ACCESS | 201",
-        "ROLE_SAR_DATA_ACCESS | 201",
-        "ROLE_SAR_SUPPORT     | 201",
+        "hmpps-incentives-api",
       ],
       delimiterString = "|",
     )
-    fun `should return resource created when token with required role is provided`(
-      authRole: String,
-      expectedStatus: Int,
+    fun `should generate expected html and return status 201 when service data is not cached`(
+      serviceName: String,
     ) {
       // Given
+      val renderRequest = createRenderRequest(serviceName)
       `no cached data exists for render request`(renderRequest)
+
       `hmpps-auth returns a valid auth token`()
-      `hmpps service x returns data for request`(renderRequest, SAR_RESPONSE)
+
+      val serviceResponseJson = getServiceResponseBody(serviceName)
+      `hmpps service returns data for request`(renderRequest, serviceResponseJson)
 
       // When
-      val response = `a render template request is sent`(authRole, renderRequest)
+      val response = `a render template request is sent`(renderRequest = renderRequest)
 
       // Then
-      `the expected success render response is returned`(response, expectedStatus, expectedCacheKey)
-      `the expected external service call are made when no data is cached`()
+      `the expected success render response is returned`(response, renderRequest, HttpStatus.SC_CREATED)
+      `the expected external service call are made when no data is cached`(renderRequest)
+      `the expected HTML is generated`(renderRequest.serviceName!!)
     }
   }
 
@@ -80,7 +85,7 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     hmppsAuth.stubGrantToken()
   }
 
-  private fun `hmpps service x returns data for request`(request: RenderRequest, serviceResponse: String) {
+  private fun `hmpps service returns data for request`(request: RenderRequest, serviceResponse: String) {
     sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(
       params = request.toGetSubjectAccessRequestDataParams(),
       responseBody = serviceResponse,
@@ -89,9 +94,11 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
 
   private fun `the expected success render response is returned`(
     response: WebTestClient.ResponseSpec,
+    renderRequest: RenderRequest,
     expectedStatus: Int,
-    expectedCacheKey: String,
   ) {
+    val expectedCacheKey = "${renderRequest.id}_${renderRequest.serviceName}"
+
     response.expectStatus()
       .isEqualTo(expectedStatus)
       .expectBody()
@@ -109,7 +116,7 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     .bodyValue(objectMapper.writeValueAsString(renderRequest))
     .exchange()
 
-  private fun `the expected external service call are made when no data is cached`() {
+  private fun `the expected external service call are made when no data is cached`(renderRequest: RenderRequest) {
     hmppsAuth.verifyGrantTokenIsCalled(times = 1)
     sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(times = 1)
 
@@ -118,10 +125,30 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
       .contains(renderRequest.getCacheKey())
 
     verify(cacheService, times(1))
-      .add(eq(expectedCacheKey), capture(renderedDataCaptor))
+      .add(eq(renderRequest.getCacheKey()), capture(renderedDataCaptor))
+  }
+
+  fun `the expected HTML is generated`(serviceName: String) {
+    val expected = getExpectedHtmlForService(serviceName)
 
     assertThat(renderedDataCaptor.value).isNotNull
-    assertThat(String(renderedDataCaptor.value.toByteArray())).isEqualTo("Hello World!!")
+    val actual = String(renderedDataCaptor.value.toByteArray())
+
+    assertThat(actual).isEqualTo(expected)
+  }
+
+  fun getServiceResponseBody(serviceName: String): String = getResourceAsString(
+    filepath = "$SERVICE_RESPONSE_STUBS_DIR/$serviceName-response.json",
+  )
+
+  fun getExpectedHtmlForService(serviceName: String): String = getResourceAsString(
+    filepath = "$REFERENCE_HTML_DIR/$serviceName-expected.html",
+  )
+
+  fun getResourceAsString(filepath: String): String {
+    val jsonBytes = this::class.java.getResourceAsStream(filepath).use { inputStream -> inputStream?.readAllBytes() }
+    assertThat(jsonBytes).isNotNull()
+    return String(jsonBytes!!)
   }
 
   fun RenderRequest.toGetSubjectAccessRequestDataParams() = GetSubjectAccessRequestDataParams(
@@ -129,5 +156,15 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     crn = this.ndeliusId,
     dateFrom = this.dateFrom,
     dateTo = this.dateTo,
+  )
+
+  fun createRenderRequest(serviceName: String): RenderRequest = RenderRequest(
+    id = UUID.randomUUID(),
+    serviceName = serviceName,
+    serviceUrl = "http://localhost:${sarDataSourceApi.port()}",
+    nomisId = "nomis1234",
+    ndeliusId = "ndelius1234",
+    dateFrom = LocalDate.of(2020, 1, 1),
+    dateTo = LocalDate.of(2021, 1, 1),
   )
 }

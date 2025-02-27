@@ -2,6 +2,17 @@ hmpps-auth:
   url: "http://localhost:8090/auth"
 
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/sar-html-renderer-db?sslmode=prefer
+    username: admin
+    password: admin_password
+  flyway:
+    locations: classpath:db/sar,db/sar_{vendor},db/dev/data/sar
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/sar-html-renderer-db?sslmode=prefer
+    user: admin
+    password: admin_password
+
   security:
     oauth2:
       client:
