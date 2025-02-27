@@ -42,7 +42,7 @@ class TemplateTestController(
       ),
     ],
   )
-  fun test(@RequestBody renderReq: DeveloperRenderRequest): ResponseEntity<String> {
+  fun renderTemplate(@RequestBody renderReq: DeveloperRenderRequest): ResponseEntity<String> {
     val html = renderService.renderServiceDataHtmlForDev(renderReq.serviceName!!, renderReq.data!!)
     return ResponseEntity<String>(html, null, HttpStatus.OK)
   }
