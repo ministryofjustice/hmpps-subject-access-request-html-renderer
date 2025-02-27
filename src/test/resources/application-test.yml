@@ -14,6 +14,14 @@ web-client:
     back-off: PT1S
 
 spring:
+  datasource:
+    url: 'jdbc:h2:mem:subject-access-request-db;MODE=PostgreSQL'
+    username: sa
+    password:
+  flyway:
+    locations: classpath:db/sar,db/sar_{vendor},db/dev/data/sar
+    enabled: true
+
   security:
     oauth2:
       client:

@@ -1,0 +1,24 @@
+{
+  "content": [
+    {
+      "testKey": "testValue",
+      "moreData": {
+        "nestedKey": "nestedValue"
+      },
+      "arrayData": [
+        "arrayValue1-1",
+        "arrayValue1-2"
+      ]
+    },
+    {
+      "testKey": "testValue2",
+      "moreData": {
+        "nestedKey": "nestedValue2"
+      },
+      "arrayData": [
+        "arrayValue2-1",
+        "arrayValue2-2"
+      ]
+    }
+  ]
+}

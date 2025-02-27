@@ -28,11 +28,24 @@ class RenderService(
     val getDataResponse: ResponseEntity<Map<*, *>> = getData(renderRequest)
     log.info("get data response status:  ${getDataResponse.statusCode}")
 
-    val renderedData = templateService.renderServiceDataHtml(renderRequest, getDataResponse.body)
+    val content = getDataResponse.body["content"]
+
+    // TODO handle scenario where template not found.
+    // Need to write data as YAML.
+    val renderedData = templateService.renderServiceDataHtml(renderRequest, content)
     cache.add(renderRequest.getCacheKey(), renderedData)
 
     return renderRequest.getCacheKey()
   }
+
+  fun renderServiceDataHtmlForDev(serviceName: String, data: Map<*, *>): String = String(
+    templateService.renderServiceDataHtml(
+      RenderRequest(
+        serviceName = serviceName,
+      ),
+      data["content"],
+    )!!.toByteArray(),
+  )
 
   private fun getData(renderRequest: RenderRequest): ResponseEntity<Map<*, *>> = dynamicServicesClient.getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
     message = "API response data was null",
