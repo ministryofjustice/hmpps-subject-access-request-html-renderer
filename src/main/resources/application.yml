@@ -86,3 +86,9 @@ web-client:
 template-resources:
   directory: /templates
   mandatory: G1,G2,G3
+
+s3:
+  provider: aws
+  region: eu-west-1
+  localstackUrl:
+  bucket-name: subject-access-request-html-partials
