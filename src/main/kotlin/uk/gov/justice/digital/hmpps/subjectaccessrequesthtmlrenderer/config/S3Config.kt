@@ -44,8 +44,8 @@ class S3Config(private val s3Properties: S3Properties) {
       endpointUrl = Url.parse(s3Properties.localStackUrl!!)
       forcePathStyle = true
       credentialsProvider = StaticCredentialsProvider {
-        accessKeyId = "123456"
-        secretAccessKey = "654321"
+        accessKeyId = "test"
+        secretAccessKey = "test"
       }
     }.also {
       log.info(
