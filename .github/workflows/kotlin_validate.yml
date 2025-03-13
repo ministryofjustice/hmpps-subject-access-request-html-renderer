@@ -24,7 +24,7 @@ jobs:
         image: localstack/localstack:latest
         env:
           SERVICES: s3
-          DEFAULT_REGION: us-east-1
+          DEFAULT_REGION: eu-west-1
           AWS_ACCESS_KEY_ID: test
           AWS_SECRET_ACCESS_KEY: test
         ports:

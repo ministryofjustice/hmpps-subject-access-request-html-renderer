@@ -55,7 +55,7 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
       assertThat(uploadedFile).isNotEmpty()
 
       val expectedHtml = getExpectedHtmlForService(serviceName)
-      assertThat(uploadedFile).isEqualTo(expectedHtml)
+      assertThat("$uploadedFile >>> WIBBLE >>>>").isEqualTo(expectedHtml)
     }
   }
 
