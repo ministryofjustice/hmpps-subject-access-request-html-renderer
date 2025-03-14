@@ -1,11 +1,13 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
+import org.springframework.stereotype.Service
 import java.text.ParsePosition
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.collections.ArrayList
 
 // Copied directly from worker.
+@Service
 class DateConversionHelper {
   companion object {
     var dateConversions: ArrayList<DateConversion> = arrayListOf(

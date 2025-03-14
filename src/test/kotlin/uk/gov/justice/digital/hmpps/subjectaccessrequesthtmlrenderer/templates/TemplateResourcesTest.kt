@@ -56,30 +56,39 @@ class TemplateResourcesTest {
     assertThat(styleTemplate).contains("{{{ serviceTemplate }}}")
   }
 
-  @Nested
-  inner class TemplatesNotFoundTest {
-    private val templateResources =
-      TemplateResources(templatesDirectory = "/does-not-exist", listOf("mandatory-service-1"))
-
-    @Test
-    fun `should return null if the requested service template does not exist and is not a mandatory template`() {
-      assertThat(templateResources.getServiceTemplate(RenderRequest(serviceName = "no-exist-service"))).isNull()
+  @ParameterizedTest
+  @CsvSource(
+    value = [
+      "     | service name is null",
+      " ''  | service name is empty",
+    ],
+    delimiterString = "|",
+  )
+  fun `should throw service name missing exception when render request serviceName is missing`(
+    serviceName: String?,
+    description: String,
+  ) {
+    val actual = assertThrows<SubjectAccessRequestTemplatingException> {
+      templateResources.getServiceTemplate(RenderRequest(serviceName = serviceName))
     }
 
+    assertThat(actual.message).startsWith("unable to load service template: service name was null or empty")
+  }
+
+  @Nested
+  inner class TemplatesNotFoundTest {
+    private val incorrectTemplateDir = "/not_templates_dir"
+    private val templateResources = TemplateResources(templatesDirectory = incorrectTemplateDir)
+
     @Test
-    fun `should throw exception if a mandatory template does not exist`() {
-      val renderRequest = RenderRequest(serviceName = "mandatory-service-1")
+    fun `should throw expected exception if requested template does not exist`() {
       val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-        templateResources.getServiceTemplate(renderRequest)
+        templateResources.getServiceTemplate(RenderRequest(serviceName = "no-exist-service"))
       }
 
-      assertThat(actual.message).startsWith("mandatory service template does not exist")
-      assertThat(actual.subjectAccessRequestId).isEqualTo(renderRequest.id)
+      assertThat(actual.message).startsWith("template resource not found")
       assertThat(actual.params).containsExactlyEntriesOf(
-        mutableMapOf(
-          "service" to "mandatory-service-1",
-          "requiredTemplate" to "/does-not-exist/template_mandatory-service-1.mustache",
-        ),
+        mapOf("resource" to "$incorrectTemplateDir/template_no-exist-service.mustache"),
       )
     }
 

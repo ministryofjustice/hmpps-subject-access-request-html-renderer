@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
-import org.slf4j.LoggerFactory
+import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -9,38 +9,41 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.S
 @Service
 class TemplateResources(
   @Value("\${template-resources.directory}") private val templatesDirectory: String = "/templates",
-  @Value("\${template-resources.mandatory}") private val mandatoryServiceTemplates: List<String> = listOf(
-    "G1",
-    "G2",
-    "G3",
-  ),
 ) {
 
-  companion object {
-    private val LOG = LoggerFactory.getLogger(TemplateResources::class.java)
+  fun getStyleTemplate(): String = getTemplateResourceOrNull("$templatesDirectory/main_stylesheet.mustache") ?: ""
+
+  fun getServiceTemplate(renderRequest: RenderRequest): String {
+    val serviceName = validateServiceName(renderRequest)
+
+    return getTemplateResource(
+      renderRequest = renderRequest,
+      resourcePath = "$templatesDirectory/template_$serviceName.mustache",
+    ).readText()
   }
 
-  fun getServiceTemplate(renderRequest: RenderRequest): String? {
-    val template = getResource("$templatesDirectory/template_${renderRequest.serviceName!!}.mustache")
-
-    if (serviceTemplateIsMandatory(renderRequest.serviceName) && template == null) {
-      throw SubjectAccessRequestTemplatingException(
-        subjectAccessRequestId = renderRequest.id,
-        message = "mandatory service template does not exist",
-        params = mapOf(
-          "service" to renderRequest.serviceName,
-          "requiredTemplate" to "$templatesDirectory/template_${renderRequest.serviceName}.mustache",
-        ),
-      )
+  private fun validateServiceName(renderRequest: RenderRequest): String {
+    if (StringUtils.isEmpty(renderRequest.serviceName)) {
+      throw missingServiceNameException(renderRequest)
     }
-    return template
+    return renderRequest.serviceName!!
   }
 
-  fun getStyleTemplate(): String = getResource("$templatesDirectory/main_stylesheet.mustache") ?: ""
+  private fun getTemplateResourceOrNull(path: String) = this::class.java.getResource(path)?.readText()
 
-  private fun serviceTemplateIsMandatory(serviceName: String) = mandatoryServiceTemplates.contains(serviceName).also {
-    LOG.info("is mandatory service template? $it, config: ${mandatoryServiceTemplates.joinToString(",")}")
-  }
+  private fun getTemplateResource(renderRequest: RenderRequest, resourcePath: String) = this::class.java
+    .getResource(resourcePath) ?: throw templateResourceNotFoundException(renderRequest, resourcePath)
 
-  private fun getResource(path: String) = this::class.java.getResource(path)?.readText()
+  private fun templateResourceNotFoundException(renderRequest: RenderRequest, resourcePath: String) = SubjectAccessRequestTemplatingException(
+    subjectAccessRequestId = renderRequest.id,
+    message = "template resource not found",
+    params = mapOf(
+      "resource" to resourcePath,
+    ),
+  )
+
+  private fun missingServiceNameException(renderRequest: RenderRequest) = SubjectAccessRequestTemplatingException(
+    subjectAccessRequestId = renderRequest.id,
+    message = "unable to load service template: service name was null or empty",
+  )
 }

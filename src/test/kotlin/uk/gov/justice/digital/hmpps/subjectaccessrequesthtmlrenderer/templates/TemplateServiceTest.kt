@@ -21,10 +21,7 @@ class TemplateServiceTest {
   private val templateHelpers = TemplateHelpers(prisonDetailsRepository, userDetailsRepository)
   private val templateService = TemplateService(
     templateHelpers,
-    TemplateResources(
-      templatesDirectory = "/templates",
-      mandatoryServiceTemplates = listOf("GOne", "GTwo", "GThree"),
-    ),
+    TemplateResources(templatesDirectory = "/templates"),
   )
 
   private fun renderServiceDataHtml(serviceName: String, data: Any?): String {
@@ -236,8 +233,12 @@ class TemplateServiceTest {
   }
 
   @Test
-  fun `renderTemplate returns null if the specified service template does not exist`() {
-    assertThat(templateService.renderServiceDataHtml(RenderRequest(serviceName = "THIS_IS_MADE_UP"), testServiceTemplateData)).isNull()
+  fun `renderTemplate throws exception when the specified service template does not exist`() {
+    val actual = assertThrows<SubjectAccessRequestTemplatingException> {
+      templateService.renderServiceDataHtml(RenderRequest(serviceName = "THIS_IS_MADE_UP"), testServiceTemplateData)
+    }
+
+    assertThat(actual.message).startsWith("template resource not found")
   }
 
   @ParameterizedTest

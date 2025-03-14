@@ -49,7 +49,7 @@ class RenderTemplateController(
       ),
     ],
   )
-  fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
+  suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
     log.info("Rendering HTML for subject access request: $renderRequest")
 
     renderService.renderServiceDataHtml(renderRequest)
