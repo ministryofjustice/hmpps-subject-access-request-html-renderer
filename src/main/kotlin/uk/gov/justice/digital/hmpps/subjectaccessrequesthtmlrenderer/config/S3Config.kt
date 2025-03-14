@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration
 data class S3Properties(
   val region: String,
   val bucketName: String,
-  val localStackUrl: String? = "http://localhost:4566",
+  val serviceEndpointOverride: String?,
 )
 
 @Configuration
@@ -41,7 +41,7 @@ class S3Config(private val s3Properties: S3Properties) {
   fun s3ClientLocalstack(): S3Client? = runBlocking {
     S3Client.fromEnvironment {
       region = s3Properties.region
-      endpointUrl = Url.parse(s3Properties.localStackUrl!!)
+      endpointUrl = Url.parse(s3Properties.serviceEndpointOverride!!)
       forcePathStyle = true
       credentialsProvider = StaticCredentialsProvider {
         accessKeyId = "test"
@@ -51,7 +51,7 @@ class S3Config(private val s3Properties: S3Properties) {
       log.info(
         "created Localstack S3 client for region: {}, endpointUrl: {}, bucketName: {}",
         s3Properties.region,
-        s3Properties.localStackUrl,
+        s3Properties.serviceEndpointOverride,
         s3Properties.bucketName,
       )
     }.apply { createBucketIfNotExists(this) }

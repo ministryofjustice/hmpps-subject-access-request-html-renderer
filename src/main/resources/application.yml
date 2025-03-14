@@ -89,5 +89,5 @@ template-resources:
 s3:
   provider: aws
   region: eu-west-1
-  localstackUrl:
+  serviceEndpointOverride: http://localhost:4566
   bucket-name: subject-access-request-html-partials
