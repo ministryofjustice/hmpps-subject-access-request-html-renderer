@@ -85,7 +85,6 @@ web-client:
 
 template-resources:
   directory: /templates
-  mandatory: G1,G2,G3
 
 s3:
   provider: aws

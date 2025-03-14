@@ -17,18 +17,17 @@ class TemplateService(
 ) {
 
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
-    val renderedServiceTemplate = renderServiceTemplate(renderRequest, data) ?: return null
+    val serviceTemplate = templateResources.getServiceTemplate(renderRequest)
+    val renderedServiceTemplate = renderServiceTemplate(serviceTemplate, data)
     return renderStyleTemplate(renderedServiceTemplate)
   }
 
   private fun renderServiceTemplate(
-    renderRequest: RenderRequest,
+    serviceTemplate: String,
     serviceData: Any?,
-  ): String? {
+  ): String {
     val handlebars = Handlebars()
     handlebars.registerHelpers(templateHelpers)
-    val serviceTemplate = templateResources.getServiceTemplate(renderRequest) ?: return null
-
     val compiledServiceTemplate = handlebars.compileInline(serviceTemplate)
     val renderedServiceTemplate = compiledServiceTemplate.apply(serviceData)
     return renderedServiceTemplate.toString()
