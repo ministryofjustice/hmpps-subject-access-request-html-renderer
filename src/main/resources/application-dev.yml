@@ -27,6 +27,6 @@ spring:
 
 s3:
   provider: localstack
-  region: eu-west-1
+  region: eu-west-2
   serviceEndpointOverride: http://localhost:4566
   bucket-name: subject-access-request-html-partials
