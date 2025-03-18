@@ -90,4 +90,4 @@ s3:
   provider: aws
   region: eu-west-1
   serviceEndpointOverride: http://localhost:4566
-  bucket-name: subject-access-request-html-partials
+  bucket-name: hmpps-subject-access-request_s3_bucket

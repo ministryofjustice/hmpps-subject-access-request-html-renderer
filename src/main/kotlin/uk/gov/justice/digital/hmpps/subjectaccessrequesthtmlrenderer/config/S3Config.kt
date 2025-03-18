@@ -59,7 +59,9 @@ class S3Config(private val s3Properties: S3Properties) {
 
   private suspend fun createBucketIfNotExists(s3: S3Client) {
     try {
-      s3.headBucket { bucket = s3Properties.bucketName }
+      s3.headBucket { bucket = s3Properties.bucketName }.also {
+        log.info("bucket {} exists no action required", s3Properties.bucketName)
+      }
     } catch (ex: NotFound) {
       log.info("bucket {} not found, attempting to create", s3Properties.bucketName)
 

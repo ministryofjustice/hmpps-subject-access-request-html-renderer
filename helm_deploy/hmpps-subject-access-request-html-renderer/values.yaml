@@ -39,6 +39,9 @@ generic-service:
       DATABASE_USERNAME: "database_username"
       DATABASE_PASSWORD: "database_password"
 
+    hmpps-subject-access-request-s3:
+      HMPPS_S3_SUBJECT_ACCESS_REQUEST_BUCKET: "bucket_name"
+
   allowlist:
     groups:
       - internal
