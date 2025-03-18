@@ -89,5 +89,4 @@ template-resources:
 s3:
   provider: aws
   region: eu-west-1
-  serviceEndpointOverride: http://localhost:4566
   bucket-name: ${HMPPS_S3_SUBJECT_ACCESS_REQUEST_BUCKET}
