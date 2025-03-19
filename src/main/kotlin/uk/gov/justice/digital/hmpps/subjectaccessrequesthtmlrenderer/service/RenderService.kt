@@ -12,7 +12,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.T
 @Service
 class RenderService(
   val dynamicServicesClient: DynamicServicesClient,
-  val cache: CacheService,
+  val documentStore: DocumentStore,
   val templateService: TemplateService,
 ) {
 
@@ -20,10 +20,12 @@ class RenderService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  fun renderServiceDataHtml(renderRequest: RenderRequest): String {
-    if (cache.contains(renderRequest.getCacheKey())) {
-      log.info("cached data exists for request: ${renderRequest.id} no action required")
-      return renderRequest.getCacheKey()
+  suspend fun renderServiceDataHtml(renderRequest: RenderRequest): String {
+    val documentKey = renderRequest.documentKey()
+
+    if (documentStore.contains(documentKey = documentKey)) {
+      log.info("document for request: ${renderRequest.id} exists no action required")
+      return documentKey
     }
 
     val getDataResponse: ResponseEntity<Map<*, *>> = getData(renderRequest)
@@ -34,9 +36,9 @@ class RenderService(
     // TODO handle scenario where template not found.
     // Need to write data as YAML.
     val renderedData = templateService.renderServiceDataHtml(renderRequest, content)
-    cache.add(renderRequest.getCacheKey(), renderedData)
+    documentStore.add(renderRequest, renderedData?.toByteArray())
 
-    return renderRequest.getCacheKey()
+    return documentKey
   }
 
   fun renderServiceDataHtmlForDev(serviceName: String, data: Map<*, *>): String = String(
