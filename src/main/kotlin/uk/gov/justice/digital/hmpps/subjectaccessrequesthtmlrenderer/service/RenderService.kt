@@ -41,6 +41,8 @@ class RenderService(
     return documentKey
   }
 
+  suspend fun getRenderedHtml(documentKey: String): ByteArray? = documentStore.getByDocumentKey(documentKey)
+
   fun renderServiceDataHtmlForDev(serviceName: String, data: Map<*, *>): String = String(
     templateService.renderServiceDataHtml(
       RenderRequest(

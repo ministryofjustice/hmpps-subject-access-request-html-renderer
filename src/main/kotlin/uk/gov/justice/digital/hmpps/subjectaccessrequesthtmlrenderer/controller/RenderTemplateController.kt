@@ -21,9 +21,7 @@ import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 @RestController
 @PreAuthorize("hasAnyRole('ROLE_SAR_USER_ACCESS', 'ROLE_SAR_DATA_ACCESS', 'ROLE_SAR_SUPPORT')")
 @RequestMapping(path = ["/subject-access-request"], produces = ["application/json"])
-class RenderTemplateController(
-  private val renderService: RenderService,
-) {
+class RenderTemplateController(private val renderService: RenderService) {
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
