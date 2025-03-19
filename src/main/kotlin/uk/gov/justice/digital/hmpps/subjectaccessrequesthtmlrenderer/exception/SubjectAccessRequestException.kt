@@ -61,11 +61,19 @@ class SubjectAccessRequestDocumentStorageException(
   subjectAccessRequestId: UUID? = null,
   message: String,
   params: Map<String, *>? = null,
+  cause: Throwable? = null,
 ) : SubjectAccessRequestException(
   subjectAccessRequestId = subjectAccessRequestId,
   message = message,
   params = params,
-)
+  cause = cause,
+) {
+  constructor(
+    subjectAccessRequestId: UUID? = null,
+    message: String,
+    params: Map<String, *>? = null,
+  ) : this(subjectAccessRequestId, message, params, null)
+}
 
 /**
  * Exception type for templating errors.

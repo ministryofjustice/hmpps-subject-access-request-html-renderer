@@ -1,6 +1,6 @@
 hmpps-auth:
-  url: "http://localhost:8080/auth"
-#  url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+#  url: "http://localhost:8080/auth"
+  url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
 
 spring:
   datasource:
@@ -20,8 +20,8 @@ spring:
         registration:
           sar-html-renderer-client:
             provider: hmpps-auth
-            client-id: "hmpps-subject-access-request-html-renderer"
-            client-secret: ""
+            client-id: "hmpps-subject-access-request-html-renderer-1"
+            client-secret: "Fz2Mm=7Ds2H+2<<wO2ik!!)+X,>x047C)QuZz9OgKqsKTY&ep>,7pm2YEegR"
             authorization-grant-type: client_credentials
             scope: read
 
@@ -30,3 +30,6 @@ s3:
   region: eu-west-2
   serviceEndpointOverride: http://localhost:4566
   bucket-name: subject-access-request-html-partials
+
+developer-endpoint:
+  enabled: true
