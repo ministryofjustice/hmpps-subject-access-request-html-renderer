@@ -90,3 +90,7 @@ s3:
   provider: aws
   region: eu-west-2
   bucket-name: ${HMPPS_S3_SUBJECT_ACCESS_REQUEST_BUCKET}
+
+## The developer endpoint should not be enabled in preprod or production.
+developer-endpoint:
+  enabled: false
