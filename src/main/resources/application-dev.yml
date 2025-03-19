@@ -20,8 +20,8 @@ spring:
         registration:
           sar-html-renderer-client:
             provider: hmpps-auth
-            client-id: "hmpps-subject-access-request-html-renderer-1"
-            client-secret: "Fz2Mm=7Ds2H+2<<wO2ik!!)+X,>x047C)QuZz9OgKqsKTY&ep>,7pm2YEegR"
+            client-id: "hmpps-subject-access-request-html-renderer"
+            client-secret: "clientsecret"
             authorization-grant-type: client_credentials
             scope: read
 
