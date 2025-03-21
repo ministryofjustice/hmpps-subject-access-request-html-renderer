@@ -9,3 +9,9 @@ import uk.gov.justice.hmpps.kotlin.health.HealthPingCheck
 // TODO: Remove the health ping if no call outs to other services are made
 @Component("hmppsAuth")
 class HmppsAuthHealthPing(@Qualifier("hmppsAuthHealthWebClient") webClient: WebClient) : HealthPingCheck(webClient)
+
+@Component("locationsApi")
+class LocationsApiHealthPing(@Qualifier("locationsApiHealthWebClient") webClient: WebClient) : HealthPingCheck(webClient)
+
+@Component("nomisMappingsApi")
+class NomisMappingsApiHealthPing(@Qualifier("nomisMappingsApiHealthWebClient") webClient: WebClient) : HealthPingCheck(webClient)

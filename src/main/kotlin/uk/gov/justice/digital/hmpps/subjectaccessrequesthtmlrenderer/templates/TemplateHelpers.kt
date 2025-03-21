@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils.isNotBlank
 import org.apache.commons.lang3.StringUtils.leftPad
 import org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 import java.lang.String.format
@@ -15,6 +18,9 @@ import java.time.LocalDateTime
 class TemplateHelpers(
   private val prisonDetailsRepository: PrisonDetailsRepository,
   private val userDetailsRepository: UserDetailsRepository,
+  private val locationDetailsRepository: LocationDetailsRepository,
+  private val locationsApiClient: LocationsApiClient,
+  private val nomisMappingApiClient: NomisMappingApiClient,
 ) {
   companion object {
     const val NO_DATA_HELD = "No Data Held"
@@ -88,6 +94,22 @@ class TemplateHelpers(
 
     return userDetails?.lastName ?: userId
   }
+
+  fun getLocationNameByDpsId(dpsId: String?): String = if (isBlank(dpsId)) {
+    NO_DATA_HELD
+  } else {
+    getLocationByDpsId(dpsId!!) ?: dpsId
+  }
+
+  fun getLocationNameByNomisId(nomisId: Int?): String = if (nomisId == null) {
+    NO_DATA_HELD
+  } else {
+    locationDetailsRepository.findByNomisId(nomisId)?.name ?: nomisMappingApiClient.getNomisLocationMapping(nomisId)
+      ?.let { getLocationByDpsId(it.dpsLocationId) } ?: nomisId.toString()
+  }
+
+  private fun getLocationByDpsId(dpsId: String): String? = locationDetailsRepository.findByDpsId(dpsId)?.name ?: locationsApiClient.getLocationDetails(dpsId)
+    ?.let { it.localName ?: it.pathHierarchy }
 
   fun convertBoolean(input: Any?): Any = when {
     input is Boolean && input -> "Yes"
