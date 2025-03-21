@@ -7,18 +7,24 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
 class TemplateServiceTest {
   private val prisonDetailsRepository: PrisonDetailsRepository = mock()
   private val userDetailsRepository: UserDetailsRepository = mock()
+  private val locationDetailsRepository: LocationDetailsRepository = mock()
+  private val locationsApiClient: LocationsApiClient = mock()
+  private val nomisMappingApiClient: NomisMappingApiClient = mock()
 
-  private val templateHelpers = TemplateHelpers(prisonDetailsRepository, userDetailsRepository)
+  private val templateHelpers = TemplateHelpers(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
   private val templateService = TemplateService(
     templateHelpers,
     TemplateResources(templatesDirectory = "/templates"),
