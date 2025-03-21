@@ -1,6 +1,10 @@
 hmpps-auth:
   url: "http://localhost:8080/auth"
   ## url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+locations-api:
+  url: http://localhost:8085
+nomis-mappings-api:
+  url: http://localhost:8086
 
 spring:
   datasource:
