@@ -2,9 +2,12 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service
 
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.headObject
+import aws.sdk.kotlin.services.s3.model.GetObjectRequest
+import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.toByteArray
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
@@ -51,6 +54,25 @@ class DocumentStore(
         subjectAccessRequestId = renderRequest.id,
         message = "failed to upload document",
         params = mapOf("documentKey" to renderRequest.documentKey()),
+      )
+    }
+  }
+
+  suspend fun getByDocumentKey(documentKey: String): ByteArray? {
+    val request = GetObjectRequest {
+      bucket = s3Properties.bucketName
+      key = documentKey
+    }
+
+    return try {
+      s3.getObject(request) { it.body?.toByteArray() ?: ByteArray(0) }
+    } catch (notFound: NoSuchKey) {
+      null
+    } catch (ex: Exception) {
+      throw SubjectAccessRequestDocumentStorageException(
+        message = "failed to get document from bucket",
+        params = mapOf("documentKey" to documentKey),
+        cause = ex,
       )
     }
   }
