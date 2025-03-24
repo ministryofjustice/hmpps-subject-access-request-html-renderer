@@ -20,6 +20,7 @@ generic-service:
     JAVA_OPTS: "-Xmx512m"
     SERVER_PORT: "8080"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
+    DEVELOPER_ENDPOINT_ENABLED: false # Explicitly disable developer endpoint by default in all envs
 
   # Pre-existing kubernetes secrets to load as environment variables in the deployment.
   # namespace_secrets:
