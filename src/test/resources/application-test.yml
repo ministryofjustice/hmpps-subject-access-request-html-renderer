@@ -7,6 +7,10 @@ management.endpoint:
 
 hmpps-auth:
   url: "http://localhost:8090/auth"
+locations-api:
+  url: "http://localhost:8085"
+nomis-mappings-api:
+  url: "http://localhost:8086"
 
 web-client:
   configuration:

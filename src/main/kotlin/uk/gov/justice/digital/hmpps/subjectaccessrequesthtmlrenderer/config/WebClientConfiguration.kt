@@ -12,6 +12,8 @@ import java.time.Duration
 @Configuration
 class WebClientConfiguration(
   @Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
+  @Value("\${locations-api.url}") val locationsApiBaseUri: String,
+  @Value("\${nomis-mappings-api.url}") val nomisMappingsApiBaseUri: String,
   @Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
   @Value("\${api.timeout:20s}") val timeout: Duration,
   @Value("\${web-client.configuration.max-retries:0}") val maxRetries: Long,
@@ -36,6 +38,18 @@ class WebClientConfiguration(
     url = "http",
     timeout = timeout,
   )
+
+  @Bean
+  fun locationsApiHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(locationsApiBaseUri, healthTimeout)
+
+  @Bean
+  fun locationsApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "sar-html-renderer-client", url = locationsApiBaseUri, timeout)
+
+  @Bean
+  fun nomisMappingsApiHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(nomisMappingsApiBaseUri, healthTimeout)
+
+  @Bean
+  fun nomisMappingsApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "sar-html-renderer-client", url = nomisMappingsApiBaseUri, timeout)
 
   private var backOffDuration: Duration = Duration.parse(backOff)
 

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
@@ -58,6 +59,13 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
               """.trimIndent(),
             ),
         ),
+    )
+  }
+
+  fun stubGrantToken(responseDefinitionBuilder: ResponseDefinitionBuilder) {
+    stubFor(
+      post(urlEqualTo("/auth/oauth/token"))
+        .willReturn(responseDefinitionBuilder),
     )
   }
 
