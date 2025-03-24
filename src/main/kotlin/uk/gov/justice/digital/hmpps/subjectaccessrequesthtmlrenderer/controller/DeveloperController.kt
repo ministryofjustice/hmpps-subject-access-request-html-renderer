@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
 import org.springframework.http.HttpStatus
@@ -9,7 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.ReportFiles
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
+import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
+import java.util.UUID
 
 /**
  * Endpoint to retrieve generated html files from the backing S3 bucket. Intended as a developer helper tool to assist
@@ -28,11 +36,70 @@ class DeveloperController(private val renderService: RenderService) {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 
-  @GetMapping("/partials/{documentKey}", produces = ["text/plain"])
-  suspend fun getRenderedHtml(@PathVariable documentKey: String) = renderService.getRenderedHtml(documentKey)?.let {
-    return ResponseEntity(String(it), null, HttpStatus.OK)
-  } ?: run {
-    log.info("requested document '$documentKey' not found")
-    ResponseEntity<String>(HttpStatus.NOT_FOUND)
+  @Operation(
+    summary = "Get the html from document store",
+    description = "Get the content of the generated html file from document store",
+    security = [SecurityRequirement(name = "subject-access-request-html-renderer-ui-role")],
+    responses = [
+      ApiResponse(responseCode = "200", description = "Success, returns list of files"),
+      ApiResponse(
+        responseCode = "404",
+        description = "file not found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/{subjectAccessRequestId}/{serviceName}", produces = ["text/plain"])
+  suspend fun getRenderedHtml2(
+    @PathVariable subjectAccessRequestId: String,
+    @PathVariable serviceName: String,
+  ): ResponseEntity<String> {
+    val documentKey = "$subjectAccessRequestId/$serviceName.html"
+
+    return renderService.getRenderedHtml(documentKey)
+      ?.let { return ResponseEntity(String(it), null, HttpStatus.OK) }
+      ?: run {
+        log.info("requested document '$documentKey' not found")
+        ResponseEntity<String>(HttpStatus.NOT_FOUND)
+      }
   }
+
+  @Operation(
+    summary = "List the files generated for report ID",
+    description = "Return a list of the files that has been generated for the specified subject access request ID",
+    security = [SecurityRequirement(name = "subject-access-request-html-renderer-ui-role")],
+    responses = [
+      ApiResponse(responseCode = "200", description = "Success, returns list of files"),
+      ApiResponse(
+        responseCode = "404",
+        description = "No files for the provided subject access request ID found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/{subjectAccessRequestId}", produces = ["application/json"])
+  suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<ReportFiles> = renderService
+    .listCacheFilesWithPrefix(UUID.fromString(subjectAccessRequestId))
+    ?.let { ResponseEntity(ReportFiles(it), null, HttpStatus.OK) }
+    ?: ResponseEntity(HttpStatus.NOT_FOUND)
 }

@@ -2,17 +2,20 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service
 
 import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.headObject
+import aws.sdk.kotlin.services.s3.listObjectsV2
 import aws.sdk.kotlin.services.s3.model.GetObjectRequest
 import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.toByteArray
+import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestDocumentStorageException
+import java.util.UUID
 
 @Service
 class DocumentStore(
@@ -76,4 +79,11 @@ class DocumentStore(
       )
     }
   }
+
+  suspend fun list(subjectAccessRequestId: UUID): List<String>? = s3.listObjectsV2 {
+    bucket = s3Properties.bucketName
+    prefix = subjectAccessRequestId.toString()
+  }.contents
+    ?.filter { StringUtils.isNotEmpty(it.key) && it.key!!.endsWith(suffix = ".html") }
+    ?.map { it.key ?: "" }
 }

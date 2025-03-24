@@ -4,6 +4,6 @@ import java.util.UUID
 
 data class RenderResponse(val documentKey: String) {
   constructor(subjectAccessRequestId: UUID, serviceName: String) : this(
-    documentKey = "${subjectAccessRequestId}_$serviceName",
+    documentKey = "$subjectAccessRequestId/$serviceName.html",
   )
 }

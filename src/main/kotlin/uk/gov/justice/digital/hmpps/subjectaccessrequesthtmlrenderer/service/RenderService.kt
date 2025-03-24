@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Dyna
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateService
+import java.util.UUID
 
 @Service
 class RenderService(
@@ -51,6 +52,8 @@ class RenderService(
       data["content"],
     )!!.toByteArray(),
   )
+
+  suspend fun listCacheFilesWithPrefix(subjectAccessRequestId: UUID) = documentStore.list(subjectAccessRequestId)
 
   private fun getData(renderRequest: RenderRequest): ResponseEntity<Map<*, *>> = dynamicServicesClient.getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
     message = "API response data was null",

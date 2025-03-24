@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integratio
 
 import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.extension.ExtendWith
@@ -25,7 +26,12 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     @BeforeEach
     fun setup() {
       // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
-      clearAuthorizedClientsCache("sar-html-renderer-client", "AUTH_ADM")
+      clearAuthorizedClientsCache("sar-html-renderer-client", "anonymousUser")
+      clearS3Bucket()
+    }
+
+    @AfterEach
+    fun tearDown() {
       clearS3Bucket()
     }
 
@@ -33,6 +39,7 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     @CsvSource(
       value = [
         "hmpps-incentives-api",
+        "hmpps-book-secure-move-api",
       ],
       delimiterString = "|",
     )
@@ -47,7 +54,7 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
       val response = sendRenderTemplateRequest(renderRequest = renderRequest)
 
       // Then
-      assertRenderTemplateSuccessResponse(response, renderRequest, HttpStatus.SC_CREATED)
+      assertRenderTemplateSuccessResponse(response, renderRequest)
       assertExpectedServiceCallsAreMade(renderRequest)
 
       val uploadedFile = getHtmlFileFromS3(renderRequest.documentKey())
@@ -69,12 +76,11 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
   private fun assertRenderTemplateSuccessResponse(
     response: WebTestClient.ResponseSpec,
     renderRequest: RenderRequest,
-    expectedStatus: Int,
   ) {
-    val expectedCacheKey = "${renderRequest.id}_${renderRequest.serviceName}"
+    val expectedCacheKey = "${renderRequest.id}/${renderRequest.serviceName}.html"
 
     response.expectStatus()
-      .isEqualTo(expectedStatus)
+      .isEqualTo(HttpStatus.SC_CREATED)
       .expectBody()
       .jsonPath("documentKey").isEqualTo(expectedCacheKey)
   }
