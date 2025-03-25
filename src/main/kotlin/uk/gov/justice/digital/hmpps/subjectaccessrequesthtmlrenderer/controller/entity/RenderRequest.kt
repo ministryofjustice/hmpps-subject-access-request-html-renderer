@@ -28,7 +28,7 @@ data class RenderRequest(
 ) {
 
   @JsonIgnore
-  fun documentKey(): String = "${id}_$serviceName"
+  fun documentKey(): String = "$id/$serviceName.html"
 
   override fun toString(): String = "RenderRequest(id=$id, nomisId=$nomisId, ndeliusId=$ndeliusId, " +
     "dateFrom=$dateFrom, dateTo=$dateTo, sarCaseReferenceNumber=$sarCaseReferenceNumber, serviceName=$serviceName, " +
