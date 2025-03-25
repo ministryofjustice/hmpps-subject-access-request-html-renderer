@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.ReportFiles
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileSummary
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestResourceNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 import java.util.UUID
@@ -68,10 +69,7 @@ class DeveloperController(private val renderService: RenderService) {
 
     return renderService.getRenderedHtml(documentKey)
       ?.let { return ResponseEntity(String(it), null, HttpStatus.OK) }
-      ?: run {
-        log.info("requested document '$documentKey' not found")
-        ResponseEntity<String>(HttpStatus.NOT_FOUND)
-      }
+      ?: throw SubjectAccessRequestResourceNotFoundException(documentKey)
   }
 
   @Operation(
@@ -79,7 +77,11 @@ class DeveloperController(private val renderService: RenderService) {
     description = "Return a list of the files that has been generated for the specified subject access request ID",
     security = [SecurityRequirement(name = "subject-access-request-html-renderer-ui-role")],
     responses = [
-      ApiResponse(responseCode = "200", description = "Success, returns list of files"),
+      ApiResponse(
+        responseCode = "200",
+        description = "Success, returns list of files",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = FileSummary::class))],
+      ),
       ApiResponse(
         responseCode = "404",
         description = "No files for the provided subject access request ID found",
@@ -98,8 +100,8 @@ class DeveloperController(private val renderService: RenderService) {
     ],
   )
   @GetMapping("/{subjectAccessRequestId}", produces = ["application/json"])
-  suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<ReportFiles> = renderService
+  suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<FileSummary> = renderService
     .listCacheFilesWithPrefix(UUID.fromString(subjectAccessRequestId))
-    ?.let { ResponseEntity(ReportFiles(it), null, HttpStatus.OK) }
-    ?: ResponseEntity(HttpStatus.NOT_FOUND)
+    ?.let { ResponseEntity(FileSummary(it), null, HttpStatus.OK) }
+    ?: throw SubjectAccessRequestResourceNotFoundException(subjectAccessRequestId)
 }

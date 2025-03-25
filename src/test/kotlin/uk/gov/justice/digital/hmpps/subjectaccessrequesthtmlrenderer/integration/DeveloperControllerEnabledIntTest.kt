@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
-import aws.sdk.kotlin.services.s3.putObject
-import aws.smithy.kotlin.runtime.content.ByteStream
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.springframework.http.HttpStatus
 import org.springframework.test.context.TestPropertySource
 import java.util.UUID
 
@@ -15,10 +14,6 @@ import java.util.UUID
   properties = ["developer-endpoint.enabled=true"],
 )
 class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
-
-  private companion object {
-    const val FILE_CONTENT = "Woe to you, Oh earth and sea, For the Devil sends the beast with wrath..."
-  }
 
   @BeforeEach
   fun setup() {
@@ -35,19 +30,25 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
 
     @Test
     fun `should return status 404 if requested document does not exist`() {
+      val subjectAccessRequestId = UUID.randomUUID()
+
       webTestClient.get()
-        .uri("/subject-access-request/${UUID.randomUUID()}/service-xyz")
+        .uri("/subject-access-request/$subjectAccessRequestId/service-xyz")
         .headers(setAuthorisation(roles = listOf("ROLE_SAR_SUPPORT")))
         .exchange()
         .expectStatus()
         .isNotFound
+        .expectBody()
+        .jsonPath("$.status").isEqualTo(HttpStatus.NOT_FOUND.value())
+        .jsonPath("$.errorCode").isEmpty()
+        .jsonPath("$.userMessage").isEqualTo("resource not found: Subject access request resource $subjectAccessRequestId/service-xyz.html not found")
     }
 
     @Test
     fun `should return status 200 and expected content when requested file exists in bucket`(): Unit = runBlocking {
       val subjectAccessRequestId = UUID.randomUUID()
       val serviceName = "service-xyz"
-      populateBucket(BucketFile(id = subjectAccessRequestId, serviceName = serviceName))
+      addFilesToBucket(S3File("$subjectAccessRequestId/$serviceName.html"))
 
       val resp = webTestClient.get()
         .uri("/subject-access-request/$subjectAccessRequestId/$serviceName")
@@ -59,39 +60,45 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .returnResult()
 
       assertThat(resp.responseBody).isNotNull()
-      assertThat(String(resp.responseBody!!)).isEqualTo(FILE_CONTENT)
+      assertThat(String(resp.responseBody!!)).isEqualTo(fileContent)
     }
   }
 
   @Nested
-  inner class ListReportFiles {
+  inner class ListFileSummary {
 
     @Test
     fun `should return status not found when subject access request ID does not exist in the bucket`(): Unit = runBlocking {
+      val sarId = UUID.randomUUID()
+
       webTestClient.get()
-        .uri("/subject-access-request/${UUID.randomUUID()}")
+        .uri("/subject-access-request/$sarId")
         .headers(setAuthorisation(roles = listOf("ROLE_SAR_SUPPORT")))
         .exchange()
         .expectStatus()
         .isNotFound
+        .expectBody()
+        .jsonPath("$.status").isEqualTo(HttpStatus.NOT_FOUND.value())
+        .jsonPath("$.errorCode").isEmpty()
+        .jsonPath("$.userMessage").isEqualTo("resource not found: Subject access request resource $sarId not found")
     }
 
     @Test
     fun `should return expected list of files`(): Unit = runBlocking {
-      val sarId1 = UUID.randomUUID()
-      val sarId2 = UUID.randomUUID()
+      val id1 = UUID.randomUUID()
+      val id2 = UUID.randomUUID()
 
-      populateBucket(
-        BucketFile(id = sarId1, serviceName = "service-A"),
-        BucketFile(id = sarId1, serviceName = "service-B"),
-        BucketFile(id = sarId1, serviceName = "service-C"),
-        BucketFile(id = sarId2, serviceName = "service-X"),
-        BucketFile(id = sarId2, serviceName = "service-Y"),
-        BucketFile(id = sarId2, serviceName = "service-Z"),
+      addFilesToBucket(
+        S3File("$id1/service-A.html"),
+        S3File("$id1/service-B.html"),
+        S3File("$id1/service-C.html"),
+        S3File("$id2/service-X.html"),
+        S3File("$id2/service-Y.html"),
+        S3File("$id2/service-Z.html"),
       )
 
       webTestClient.get()
-        .uri("/subject-access-request/$sarId1")
+        .uri("/subject-access-request/$id1")
         .headers(setAuthorisation(roles = listOf("ROLE_SAR_SUPPORT")))
         .exchange()
         .expectStatus()
@@ -99,21 +106,27 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .expectBody()
         .jsonPath("$.files").isArray
         .jsonPath("$.files.length()").isEqualTo(3)
-        .jsonPath("$.files[0]").isEqualTo("$sarId1/service-A.html")
-        .jsonPath("$.files[1]").isEqualTo("$sarId1/service-B.html")
-        .jsonPath("$.files[2]").isEqualTo("$sarId1/service-C.html")
+        .jsonPath("$.files[0].key").isEqualTo("$id1/service-A.html")
+        .jsonPath("$.files[0].lastModified").isNotEmpty
+        .jsonPath("$.files[0].size").isEqualTo(fileContent.toByteArray().size)
+        .jsonPath("$.files[1].key").isEqualTo("$id1/service-B.html")
+        .jsonPath("$.files[1].lastModified").isNotEmpty
+        .jsonPath("$.files[1].size").isEqualTo(fileContent.toByteArray().size)
+        .jsonPath("$.files[2].key").isEqualTo("$id1/service-C.html")
+        .jsonPath("$.files[2].lastModified").isNotEmpty
+        .jsonPath("$.files[2].size").isEqualTo(fileContent.toByteArray().size)
     }
 
     @Test
     fun `should only return files with key ending with dot html `(): Unit = runBlocking {
-      val sarId1 = UUID.randomUUID()
-      populateBucket(
-        BucketFile(id = sarId1, serviceName = "service-A", extension = "html"),
-        BucketFile(id = sarId1, serviceName = "service-A", extension = "txt"),
+      val id = UUID.randomUUID()
+      addFilesToBucket(
+        S3File("$id/service-A.html"),
+        S3File("$id/service-A.txt"),
       )
 
       webTestClient.get()
-        .uri("/subject-access-request/$sarId1")
+        .uri("/subject-access-request/$id")
         .headers(setAuthorisation(roles = listOf("ROLE_SAR_SUPPORT")))
         .exchange()
         .expectStatus()
@@ -121,19 +134,9 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .expectBody()
         .jsonPath("$.files").isArray
         .jsonPath("$.files.length()").isEqualTo(1)
-        .jsonPath("$.files[0]").isEqualTo("$sarId1/service-A.html")
+        .jsonPath("$.files[0].key").isEqualTo("$id/service-A.html")
+        .jsonPath("$.files[0].lastModified").isNotEmpty
+        .jsonPath("$.files[0].size").isEqualTo(fileContent.toByteArray().size)
     }
   }
-
-  suspend fun populateBucket(vararg bucketFiles: BucketFile) {
-    bucketFiles.forEach { file ->
-      s3.putObject {
-        bucket = s3Properties.bucketName
-        key = "${file.id}/${file.serviceName}.${file.extension}"
-        body = ByteStream.fromString(FILE_CONTENT)
-      }
-    }
-  }
-
-  data class BucketFile(val id: UUID, val serviceName: String, val extension: String = "html")
 }

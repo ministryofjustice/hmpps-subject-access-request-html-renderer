@@ -8,6 +8,8 @@ import aws.sdk.kotlin.services.s3.model.Delete
 import aws.sdk.kotlin.services.s3.model.GetObjectRequest
 import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
+import aws.sdk.kotlin.services.s3.putObject
+import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.toByteArray
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
@@ -65,6 +67,9 @@ abstract class IntegrationTestBase {
 
   companion object {
     private val log = LoggerFactory.getLogger(IntegrationTestBase::class.java)
+
+    @JvmStatic
+    protected val fileContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
   }
 
   internal fun setAuthorisation(
@@ -150,4 +155,16 @@ abstract class IntegrationTestBase {
         }
       } ?: log.info("clearS3Bucket: no action required")
   }
+
+  protected fun addFilesToBucket(vararg files: S3File) = runBlocking {
+    files.forEach {
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = it.key
+        body = ByteStream.fromString(it.content)
+      }
+    }
+  }
+
+  data class S3File(val key: String, val content: String = fileContent)
 }
