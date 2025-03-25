@@ -9,6 +9,7 @@ import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
 import aws.smithy.kotlin.runtime.content.toByteArray
+import aws.smithy.kotlin.runtime.time.toJvmInstant
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
@@ -86,5 +87,5 @@ class DocumentStore(
     prefix = subjectAccessRequestId.toString()
   }.contents
     ?.filter { StringUtils.isNotEmpty(it.key) && it.key!!.endsWith(suffix = ".html") }
-    ?.map { FileInfo(key = it.key, lastModified = it.lastModified, size = it.size) }
+    ?.map { FileInfo(key = it.key, lastModified = it.lastModified?.toJvmInstant(), size = it.size) }
 }
