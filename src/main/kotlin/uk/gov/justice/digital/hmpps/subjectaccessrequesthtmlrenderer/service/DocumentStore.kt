@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestDocumentStorageException
 import java.util.UUID
@@ -80,10 +81,10 @@ class DocumentStore(
     }
   }
 
-  suspend fun list(subjectAccessRequestId: UUID): List<String>? = s3.listObjectsV2 {
+  suspend fun list(subjectAccessRequestId: UUID): List<FileInfo>? = s3.listObjectsV2 {
     bucket = s3Properties.bucketName
     prefix = subjectAccessRequestId.toString()
   }.contents
     ?.filter { StringUtils.isNotEmpty(it.key) && it.key!!.endsWith(suffix = ".html") }
-    ?.map { it.key ?: "" }
+    ?.map { FileInfo(key = it.key, lastModified = it.lastModified, size = it.size) }
 }

@@ -55,7 +55,7 @@ class DeveloperControllerDisabledIntTest : IntegrationTestBase() {
   }
 
   @Nested
-  inner class ListReportFiles {
+  inner class ListFileSummary {
 
     @Test
     fun `should return status not found when subject access request ID does not exist in the bucket`(): Unit = runBlocking {
@@ -70,10 +70,10 @@ class DeveloperControllerDisabledIntTest : IntegrationTestBase() {
     @Test
     fun `should return status not found when bucket contains files for requested ID`(): Unit = runBlocking {
       val sarId = UUID.randomUUID()
-      populateBucket(
-        Pair(sarId, "service-A"),
-        Pair(sarId, "service-B"),
-        Pair(sarId, "service-C"),
+      addFilesToBucket(
+        S3File("$sarId/service-A"),
+        S3File("$sarId/service-B"),
+        S3File("$sarId/service-C"),
       )
 
       webTestClient.get()
@@ -82,16 +82,6 @@ class DeveloperControllerDisabledIntTest : IntegrationTestBase() {
         .exchange()
         .expectStatus()
         .isNotFound
-    }
-  }
-
-  suspend fun populateBucket(vararg bucketFiles: Pair<UUID, String>) {
-    bucketFiles.forEach { file ->
-      s3.putObject {
-        bucket = s3Properties.bucketName
-        key = "${file.first}/${file.second}.html"
-        body = ByteStream.fromString(FILE_CONTENT)
-      }
     }
   }
 }
