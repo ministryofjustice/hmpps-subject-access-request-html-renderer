@@ -50,14 +50,19 @@ class RenderTemplateController(private val renderService: RenderService) {
   suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
     log.info("Rendering HTML for subject access request: $renderRequest")
 
-    renderService.renderServiceDataHtml(renderRequest)
+    val renderResult = renderService.renderServiceDataHtml(renderRequest)
+
+    val status = when (renderResult) {
+      RenderService.RenderResult.CREATED -> HttpStatus.CREATED
+      RenderService.RenderResult.DATA_ALREADY_EXISTS -> HttpStatus.NO_CONTENT
+    }
 
     return ResponseEntity(
       RenderResponse(
         renderRequest.id!!,
         renderRequest.serviceName!!,
       ),
-      HttpStatus.CREATED,
+      status,
     )
   }
 }

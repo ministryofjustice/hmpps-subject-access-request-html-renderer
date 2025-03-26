@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
-import org.apache.http.HttpStatus
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
@@ -20,20 +21,20 @@ const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
 @ExtendWith(SarDataSourceApiExtension::class)
 class RenderTemplateControllerIntTest : IntegrationTestBase() {
 
+  @BeforeEach
+  fun setup() {
+    // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
+    clearAuthorizedClientsCache("sar-html-renderer-client", "anonymousUser")
+    s3TestUtil.clearBucket()
+  }
+
+  @AfterEach
+  fun tearDown() {
+    s3TestUtil.clearBucket()
+  }
+
   @Nested
   inner class RenderTemplateSuccessTest {
-
-    @BeforeEach
-    fun setup() {
-      // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
-      clearAuthorizedClientsCache("sar-html-renderer-client", "anonymousUser")
-      clearS3Bucket()
-    }
-
-    @AfterEach
-    fun tearDown() {
-      clearS3Bucket()
-    }
 
     @ParameterizedTest
     @CsvSource(
@@ -55,35 +56,102 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
-      assertExpectedServiceCallsAreMade(renderRequest)
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
-      val uploadedFile = getHtmlFileFromS3(renderRequest.documentKey())
-      assertThat(uploadedFile).isNotNull()
-      assertThat(uploadedFile).isNotEmpty()
+      assertUploadedHtmlMatchesExpected(
+        renderRequest = renderRequest,
+        expectedHtmlFilename = serviceName,
+      )
+    }
 
-      val expectedHtml = getExpectedHtmlForService(serviceName)
-      assertThat(uploadedFile).isEqualTo(expectedHtml)
+    @Test
+    fun `should not store html and return status 204 when service data exists in cache`() {
+      // Given
+      val serviceName = "hmpps-book-secure-move-api"
+      val renderRequest = newRenderRequestFor(serviceName)
+      addServiceDocumentToBucket(renderRequest)
+
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
+
+      // When
+      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+
+      // Then
+      assertRenderTemplateSuccessResponseNoContent(response)
+      hmppsAuth.verifyGrantTokenIsNeverCalled()
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+
+      assertUploadedHtmlMatchesExpected(
+        renderRequest = renderRequest,
+        expectedHtmlFilename = serviceName,
+      )
     }
   }
 
-  private fun hmppsServiceReturnsDataForRequest(request: RenderRequest, serviceName: String) {
-    sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(
+  @Nested
+  inner class RenderTemplateNoDataSuccessTest {
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "hmpps-incentives-api",
+        "hmpps-book-secure-move-api",
+      ],
+      delimiterString = "|",
+    )
+    fun `should store empty html document service data is empty`(serviceName: String) {
+      // Given
+      val renderRequest = newRenderRequestFor(serviceName)
+      assertServiceDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsNoDataForRequest(renderRequest)
+
+      // When
+      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+
+      // Then
+      assertRenderTemplateSuccessResponse(response, renderRequest)
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
+
+      assertUploadedHtmlMatchesExpected(
+        renderRequest = renderRequest,
+        expectedHtmlFilename = "$serviceName-no-data",
+      )
+    }
+  }
+
+  private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtmlFilename: String) {
+    val uploadedFile = s3TestUtil.getFile(renderRequest.documentKey())
+    assertThat(uploadedFile).isNotNull()
+    assertThat(uploadedFile).isNotEmpty()
+
+    val expectedHtml = getExpectedHtmlString(expectedHtmlFilename)
+    assertThat(uploadedFile).isEqualTo(expectedHtml)
+  }
+
+  private fun hmppsServiceReturnsDataForRequest(request: RenderRequest, serviceName: String) = sarDataSourceApi
+    .stubGetSubjectAccessRequestDataSuccess(
       params = request.toGetSubjectAccessRequestDataParams(),
       responseBody = getServiceResponseBody(serviceName),
     )
-  }
+
+  private fun hmppsServiceReturnsNoDataForRequest(request: RenderRequest) = sarDataSourceApi
+    .stubGetSubjectAccessRequestDataEmpty(request.toGetSubjectAccessRequestDataParams())
 
   private fun assertRenderTemplateSuccessResponse(
     response: WebTestClient.ResponseSpec,
     renderRequest: RenderRequest,
-  ) {
-    val expectedCacheKey = "${renderRequest.id}/${renderRequest.serviceName}.html"
+  ) = response.expectStatus()
+    .isEqualTo(HttpStatus.CREATED)
+    .expectBody()
+    .jsonPath("documentKey").isEqualTo("${renderRequest.id}/${renderRequest.serviceName}.html")
 
-    response.expectStatus()
-      .isEqualTo(HttpStatus.SC_CREATED)
-      .expectBody()
-      .jsonPath("documentKey").isEqualTo(expectedCacheKey)
-  }
+  private fun assertRenderTemplateSuccessResponseNoContent(response: WebTestClient.ResponseSpec) = response
+    .expectStatus()
+    .isEqualTo(HttpStatus.NO_CONTENT)
 
   private fun sendRenderTemplateRequest(
     role: String = "ROLE_SAR_DATA_ACCESS",
@@ -95,23 +163,4 @@ class RenderTemplateControllerIntTest : IntegrationTestBase() {
     .headers(setAuthorisation(roles = listOf(role)))
     .bodyValue(objectMapper.writeValueAsString(renderRequest))
     .exchange()
-
-  private fun assertExpectedServiceCallsAreMade(renderRequest: RenderRequest) {
-    hmppsAuth.verifyGrantTokenIsCalled(times = 1)
-    sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(times = 1)
-  }
-
-  fun getServiceResponseBody(serviceName: String): String = getResourceAsString(
-    filepath = "$SERVICE_RESPONSE_STUBS_DIR/$serviceName-response.json",
-  )
-
-  fun getExpectedHtmlForService(serviceName: String): String = getResourceAsString(
-    filepath = "$REFERENCE_HTML_DIR/$serviceName-expected.html",
-  )
-
-  fun getResourceAsString(filepath: String): String {
-    val jsonBytes = this::class.java.getResourceAsStream(filepath).use { inputStream -> inputStream?.readAllBytes() }
-    assertThat(jsonBytes).isNotNull()
-    return String(jsonBytes!!)
-  }
 }

@@ -17,12 +17,12 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    clearS3Bucket()
+    s3TestUtil.clearBucket()
   }
 
   @AfterEach
   fun tearDown() {
-    clearS3Bucket()
+    s3TestUtil.clearBucket()
   }
 
   @Nested
@@ -48,7 +48,7 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
     fun `should return status 200 and expected content when requested file exists in bucket`(): Unit = runBlocking {
       val subjectAccessRequestId = UUID.randomUUID()
       val serviceName = "service-xyz"
-      addFilesToBucket(S3File("$subjectAccessRequestId/$serviceName.html"))
+      s3TestUtil.addFilesToBucket(S3File("$subjectAccessRequestId/$serviceName.html"))
 
       val resp = webTestClient.get()
         .uri("/subject-access-request/$subjectAccessRequestId/$serviceName")
@@ -88,7 +88,7 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
       val id1 = UUID.randomUUID()
       val id2 = UUID.randomUUID()
 
-      addFilesToBucket(
+      s3TestUtil.addFilesToBucket(
         S3File("$id1/service-A.html"),
         S3File("$id1/service-B.html"),
         S3File("$id1/service-C.html"),
@@ -120,7 +120,7 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
     @Test
     fun `should only return files with key ending with dot html `(): Unit = runBlocking {
       val id = UUID.randomUUID()
-      addFilesToBucket(
+      s3TestUtil.addFilesToBucket(
         S3File("$id/service-A.html"),
         S3File("$id/service-A.txt"),
       )

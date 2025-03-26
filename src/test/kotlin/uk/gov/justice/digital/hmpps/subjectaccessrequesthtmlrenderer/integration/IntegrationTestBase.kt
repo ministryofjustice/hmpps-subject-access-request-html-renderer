@@ -1,16 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
 import aws.sdk.kotlin.services.s3.S3Client
-import aws.sdk.kotlin.services.s3.deleteObjects
-import aws.sdk.kotlin.services.s3.headObject
-import aws.sdk.kotlin.services.s3.listObjectsV2
-import aws.sdk.kotlin.services.s3.model.Delete
-import aws.sdk.kotlin.services.s3.model.GetObjectRequest
-import aws.sdk.kotlin.services.s3.model.NotFound
-import aws.sdk.kotlin.services.s3.model.ObjectIdentifier
-import aws.sdk.kotlin.services.s3.putObject
-import aws.smithy.kotlin.runtime.content.ByteStream
-import aws.smithy.kotlin.runtime.content.toByteArray
 import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -19,10 +9,12 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.S3TestUtil
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension
@@ -45,6 +37,7 @@ import java.util.UUID
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
+@Import(S3TestUtil::class)
 abstract class IntegrationTestBase {
 
   @Autowired
@@ -64,6 +57,9 @@ abstract class IntegrationTestBase {
 
   @Autowired
   protected lateinit var s3Properties: S3Properties
+
+  @Autowired
+  protected lateinit var s3TestUtil: S3TestUtil
 
   companion object {
     private val log = LoggerFactory.getLogger(IntegrationTestBase::class.java)
@@ -110,60 +106,41 @@ abstract class IntegrationTestBase {
   )
 
   protected fun assertServiceDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
-    val documentExists = try {
-      s3.headObject {
-        bucket = s3Properties.bucketName
-        key = request.documentKey()
-      }
-      true
-    } catch (e: NotFound) {
-      false
-    }
-
-    assertThat(documentExists)
+    assertThat(s3TestUtil.documentExists(request.documentKey()))
       .withFailMessage { "expected file ${request.documentKey()} to not exist" }
       .isFalse()
   }
 
-  protected fun getHtmlFileFromS3(documentKey: String): String? = runBlocking {
-    s3.getObject(
-      GetObjectRequest {
-        bucket = s3Properties.bucketName
-        key = documentKey
-      },
-      { it.body?.toByteArray() },
-    )?.let { String(it) } ?: ""
+  protected fun assertServiceDocumentExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentKey()))
+      .withFailMessage { "expected file ${request.documentKey()} to exist" }
+      .isTrue()
   }
 
-  protected fun clearS3Bucket() = runBlocking {
-    s3.listObjectsV2 { bucket = s3Properties.bucketName }
-      .contents
-      ?.map { ObjectIdentifier { key = it.key } }
-      ?.takeIf { it.isNotEmpty() }
-      ?.let { identifiers ->
-        log.info(
-          "deleting objects {} from bucket {}",
-          identifiers.joinToString(",") { it.key },
-          s3Properties.bucketName,
-        )
+  protected fun getServiceResponseBody(serviceName: String): String = getResourceAsString(
+    filepath = "$SERVICE_RESPONSE_STUBS_DIR/$serviceName-response.json",
+  )
 
-        s3.deleteObjects {
-          bucket = s3Properties.bucketName
-          delete = Delete {
-            objects = identifiers
-          }
-        }
-      } ?: log.info("clearS3Bucket: no action required")
+  protected fun getExpectedHtmlString(filePrefix: String): String = getResourceAsString(
+    filepath = "$REFERENCE_HTML_DIR/$filePrefix-expected.html",
+  )
+
+  protected fun getResourceAsString(filepath: String): String {
+    val jsonBytes = this::class.java.getResourceAsStream(filepath).use { inputStream -> inputStream?.readAllBytes() }
+    assertThat(jsonBytes).isNotNull()
+    return String(jsonBytes!!)
   }
 
-  protected fun addFilesToBucket(vararg files: S3File) = runBlocking {
-    files.forEach {
-      s3.putObject {
-        bucket = s3Properties.bucketName
-        key = it.key
-        body = ByteStream.fromString(it.content)
-      }
-    }
+  protected fun addServiceDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata {
+    s3TestUtil.addFilesToBucket(
+      S3File(
+        key = renderRequest.documentKey(),
+        content = getExpectedHtmlString(renderRequest.serviceName ?: ""),
+      ),
+    )
+
+    assertServiceDocumentExists(renderRequest)
+    return s3TestUtil.getFileMetadata(renderRequest.documentKey())
   }
 
   data class S3File(val key: String, val content: String = fileContent)
