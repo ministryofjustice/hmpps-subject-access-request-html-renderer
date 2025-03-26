@@ -41,8 +41,28 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     )
   }
 
+  fun stubGetSubjectAccessRequestDataEmpty(params: GetSubjectAccessRequestDataParams) {
+    stubFor(
+      get(urlPathEqualTo("/subject-access-request"))
+        .withQueryParam("prn", equalTo(params.prn))
+        .withQueryParam("crn", equalTo(params.crn))
+        .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
+        .withQueryParam("toDate", equalTo(params.dateTo.toString()))
+        .willReturn(
+          aResponse()
+            .withStatus(204)
+            .withHeader("Content-Type", "application/json"),
+        ),
+    )
+  }
+
   fun verifyGetSubjectAccessRequestDataCalled(times: Int) = verify(
     times,
+    getRequestedFor(urlPathEqualTo("/subject-access-request")),
+  )
+
+  fun verifyGetSubjectAccessRequestDataNeverCalled() = verify(
+    0,
     getRequestedFor(urlPathEqualTo("/subject-access-request")),
   )
 }

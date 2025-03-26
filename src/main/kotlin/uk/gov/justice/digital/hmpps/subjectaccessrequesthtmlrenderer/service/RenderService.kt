@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
@@ -21,44 +22,54 @@ class RenderService(
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  suspend fun renderServiceDataHtml(renderRequest: RenderRequest): String {
+  suspend fun renderServiceDataHtml(renderRequest: RenderRequest): RenderResult {
     val documentKey = renderRequest.documentKey()
 
     if (documentStore.contains(documentKey = documentKey)) {
-      log.info("document for request: ${renderRequest.id} exists no action required")
-      return documentKey
+      log.info("document for request: $documentKey exists no action required")
+      return RenderResult.DATA_ALREADY_EXISTS
     }
 
-    val getDataResponse: ResponseEntity<Map<*, *>> = getData(renderRequest)
-    log.info("get data response status:  ${getDataResponse.statusCode}")
+    val content = getDataForSubject(renderRequest)
 
-    val content = getDataResponse.body["content"]
-
-    // TODO handle scenario where template not found.
-    // Need to write data as YAML.
     val renderedData = templateService.renderServiceDataHtml(renderRequest, content)
     documentStore.add(renderRequest, renderedData?.toByteArray())
 
-    return documentKey
+    log.info("document $documentKey created and added to document store")
+    return RenderResult.CREATED
   }
 
   suspend fun getRenderedHtml(documentKey: String): ByteArray? = documentStore.getByDocumentKey(documentKey)
 
-  fun renderServiceDataHtmlForDev(serviceName: String, data: Map<*, *>): String = String(
-    templateService.renderServiceDataHtml(
-      RenderRequest(
-        serviceName = serviceName,
-      ),
-      data["content"],
-    )!!.toByteArray(),
-  )
-
   suspend fun listCacheFilesWithPrefix(subjectAccessRequestId: UUID) = documentStore.list(subjectAccessRequestId)
 
-  private fun getData(renderRequest: RenderRequest): ResponseEntity<Map<*, *>> = dynamicServicesClient.getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
-    message = "API response data was null",
-    cause = null,
-    subjectAccessRequestId = renderRequest.id,
-    params = mapOf("serviceUrl" to renderRequest.serviceUrl),
-  )
+  private fun getDataForSubject(renderRequest: RenderRequest): List<Any> {
+    val response: ResponseEntity<Map<*, *>> = dynamicServicesClient
+      .getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
+      message = "API response data was null",
+      cause = null,
+      subjectAccessRequestId = renderRequest.id,
+      params = mapOf("serviceUrl" to renderRequest.serviceUrl),
+    )
+
+    log.info("get data response status:  ${response.statusCode}")
+
+    return when (response.statusCode) {
+      HttpStatus.OK -> response.body["content"] as ArrayList<*>
+      HttpStatus.NO_CONTENT -> emptyList()
+      else -> throw RuntimeException("todo")
+    }
+  }
+
+  enum class RenderResult {
+    /**
+     * Service data was rendered to HTML and added to the document store.
+     */
+    CREATED,
+
+    /**
+     * Document store contains existing entry for subject access request ID/service name combination. No action required
+     */
+    DATA_ALREADY_EXISTS,
+  }
 }

@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.CREATED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.DATA_ALREADY_EXISTS
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestController
@@ -33,7 +35,11 @@ class RenderTemplateController(private val renderService: RenderService) {
     description = "Endpoint renders a subject access request HTML report fragment",
     security = [SecurityRequirement(name = "subject-access-request-html-renderer-ui-role")],
     responses = [
-      ApiResponse(responseCode = "201", description = "Template fragment created successfully"),
+      ApiResponse(
+        responseCode = "201",
+        description = "Template fragment created successfully",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = RenderResponse::class))],
+      ),
       ApiResponse(responseCode = "204", description = "Cached template fragment exists no action required"),
       ApiResponse(
         responseCode = "401",
@@ -50,14 +56,21 @@ class RenderTemplateController(private val renderService: RenderService) {
   suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
     log.info("Rendering HTML for subject access request: $renderRequest")
 
-    renderService.renderServiceDataHtml(renderRequest)
+    val response = when (renderService.renderServiceDataHtml(renderRequest)) {
+      CREATED -> documentCreatedResponse(renderRequest)
+      DATA_ALREADY_EXISTS -> documentAlreadyExistsResponse()
+    }
 
-    return ResponseEntity(
-      RenderResponse(
-        renderRequest.id!!,
-        renderRequest.serviceName!!,
-      ),
-      HttpStatus.CREATED,
-    )
+    return response
   }
+
+  private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
+    RenderResponse(
+      renderRequest.id!!,
+      renderRequest.serviceName!!,
+    ),
+    HttpStatus.CREATED,
+  )
+
+  private fun documentAlreadyExistsResponse(): ResponseEntity<RenderResponse> = ResponseEntity.noContent().build()
 }

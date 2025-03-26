@@ -81,4 +81,6 @@ class HmppsAuthMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun verifyGrantTokenIsCalled(times: Int) = verify(times, postRequestedFor(urlEqualTo("/auth/oauth/token")))
+
+  fun verifyGrantTokenIsNeverCalled() = verify(0, postRequestedFor(urlEqualTo("/auth/oauth/token")))
 }

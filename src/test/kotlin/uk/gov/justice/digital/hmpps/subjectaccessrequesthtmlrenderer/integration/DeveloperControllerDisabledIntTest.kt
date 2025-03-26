@@ -20,7 +20,7 @@ class DeveloperControllerDisabledIntTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
-    clearS3Bucket()
+    s3TestUtil.clearBucket()
   }
 
   @Nested
@@ -70,7 +70,7 @@ class DeveloperControllerDisabledIntTest : IntegrationTestBase() {
     @Test
     fun `should return status not found when bucket contains files for requested ID`(): Unit = runBlocking {
       val sarId = UUID.randomUUID()
-      addFilesToBucket(
+      s3TestUtil.addFilesToBucket(
         S3File("$sarId/service-A"),
         S3File("$sarId/service-B"),
         S3File("$sarId/service-C"),
