@@ -23,7 +23,23 @@ subject access request endpoint. The response stubs live under:
 src/test/resources/integration-tests.service-response-stubs
 ```
 If a stub does not already exist for your service add a new file under this directory. Stub files **must** follow the 
-naming convention `${SERVICE_NAME}-response.json` e.g. `hmpps-book-secure-move-api-response.json` 
+naming convention `${SERVICE_NAME}-response.json` e.g. `hmpps-book-secure-move-api-response.json`
+
+### Data transformations
+Deployed instances of the HTML renderer transform certain values in the API response JSON to a user-friendly or 
+sanitised version. Examples of fields include: 
+- Location IDs
+- User IDs
+- Prison IDs
+
+The template development tool does not have the configuration to perform these transformations so instead uses a set 
+fixed values for each transformation type. For example:
+- All userIds are transformed to `"Homer Simpson"`
+- All prison IDs are transformed to `"HMPPS Mordor`
+- And all DPS location IDs are transformed to `"Hogwarts"`
+
+The presences of these values in the generated HTML is expected, it simply means certain fields have been transformed 
+via the template helpers.
 
 ## Generating a HTML report for your service
 **Prerequisites:**
