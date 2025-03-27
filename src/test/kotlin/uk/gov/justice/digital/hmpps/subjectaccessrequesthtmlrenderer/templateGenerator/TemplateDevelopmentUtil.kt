@@ -1,10 +1,16 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templateGenerator
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.LocationDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
@@ -48,6 +54,22 @@ class TemplateGeneratorUtil {
   )
 
   private val templateService: TemplateService = TemplateService(templateHelpers, templateResources)
+
+  init {
+    whenever(userDetailsRepository.findByUsername(any())).doAnswer {
+      val input = it.arguments[0] as String
+      UserDetail(input, "Homer Simpson")
+    }
+
+    whenever(prisonDetailsRepository.findByPrisonId(any())).doAnswer {
+      PrisonDetail(it.arguments[0] as String, "HMPPS Mordor")
+    }
+
+    whenever(locationDetailsRepository.findByDpsId(any())).doAnswer {
+      val dpsId = it.arguments[0] as String
+      LocationDetail(dpsId, 666, "Hogwarts")
+    }
+  }
 
   fun generateServiceHtml(serviceName: String) {
     println()
