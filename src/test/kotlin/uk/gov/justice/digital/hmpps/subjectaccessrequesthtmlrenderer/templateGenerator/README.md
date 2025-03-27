@@ -1,11 +1,12 @@
 # Template Development Util
-A development tool that generates SAR report HTML from stubbed service data. If you're developing a new or updating 
-an existing service template you can use this tool to view the HTML the service will create for your service data.
+A development tool that allows users to generate SAR report HTML from stubbed service data. If you're developing a new 
+template or updating an existing template you can use this tool to rapidly preview the HTML the service will create for 
+your service data as you create/modify the template code.
 
 ## Getting started
 
 ### Templates
-The **hmpps-subject-access-request-html-renderer** uses mustache templates to generate report HTML. To change the 
+The **hmpps-subject-access-request-html-renderer** uses mustache templates to generate the report HTML. To change the 
 content/format of the HTML generated for a service you must update the corresponding service template. The templates 
 live under 
 ```
@@ -15,9 +16,9 @@ To onboard a new service add your service template to this directory. Templates 
 `template_${SERVICE_NAME}.mustache` e.g. `template_hmpps-book-secure-move-api.mustache`
 
 ### Service Response Stubs 
-The template development util requires a json response stub file in order to generate a mock report HTML the specified 
-service. The json stub is used to mock the data returned by a given service. The stub should match the structure of the 
-data returned by the real service's subject access request endpoint. The response stubs live under: 
+The template development util requires a json response stub file in order to generate a mock report HTML document for 
+the specified service. The service response stub should match the structure of the data returned by the real service's 
+subject access request endpoint. The response stubs live under: 
 ```
 src/test/resources/integration-tests.service-response-stubs
 ```
