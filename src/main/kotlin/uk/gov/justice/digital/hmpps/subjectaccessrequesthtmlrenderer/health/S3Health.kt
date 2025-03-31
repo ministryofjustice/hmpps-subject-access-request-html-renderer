@@ -28,12 +28,13 @@ class S3Health(
             ),
           ).build()
       } catch (ex: Exception) {
-        Health.down(ex).withDetails(
-          mapOf(
-            "bucket" to bucketName,
-            "region" to region,
-          ),
-        ).build()
+        Health.down(ex)
+          .withDetails(
+            mapOf(
+              "bucket" to bucketName,
+              "region" to region,
+            ),
+          ).build()
       }
     }
   }
