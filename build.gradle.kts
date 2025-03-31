@@ -17,6 +17,9 @@ dependencies {
   implementation("com.github.jknack:handlebars:4.4.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("aws.sdk.kotlin:s3:1.4.38")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.1")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.47.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.3.232")
