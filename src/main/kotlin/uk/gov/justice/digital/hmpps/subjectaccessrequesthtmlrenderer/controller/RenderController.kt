@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller
 
+import com.microsoft.applicationinsights.TelemetryClient
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -13,6 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_CACHED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_RENDERED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
@@ -23,7 +28,10 @@ import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 @RestController
 @PreAuthorize("hasAnyRole('ROLE_SAR_USER_ACCESS', 'ROLE_SAR_DATA_ACCESS', 'ROLE_SAR_SUPPORT')")
 @RequestMapping(path = ["/subject-access-request"], produces = ["application/json"])
-class RenderTemplateController(private val renderService: RenderService) {
+class RenderController(
+  private val renderService: RenderService,
+  private val telemetryClient: TelemetryClient,
+) {
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
@@ -54,11 +62,17 @@ class RenderTemplateController(private val renderService: RenderService) {
     ],
   )
   suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
-    log.info("Rendering HTML for subject access request: $renderRequest")
+    log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, renderRequest.serviceName)
+    telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
     val response = when (renderService.renderServiceDataHtml(renderRequest)) {
-      CREATED -> documentCreatedResponse(renderRequest)
-      DATA_ALREADY_EXISTS -> documentAlreadyExistsResponse()
+      CREATED -> documentCreatedResponse(renderRequest).also {
+        telemetryClient.renderEvent(REQUEST_COMPLETE_HTML_RENDERED, renderRequest)
+      }
+
+      DATA_ALREADY_EXISTS -> documentAlreadyExistsResponse().also {
+        telemetryClient.renderEvent(REQUEST_COMPLETE_HTML_CACHED, renderRequest)
+      }
     }
 
     return response
