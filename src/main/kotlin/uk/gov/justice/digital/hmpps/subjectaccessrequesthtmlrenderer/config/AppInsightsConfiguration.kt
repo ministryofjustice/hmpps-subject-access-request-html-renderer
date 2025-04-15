@@ -14,14 +14,14 @@ class AppInsightsConfiguration {
 
 fun TelemetryClient.renderEvent(
   event: RenderEvent,
-  request: RenderRequest,
+  request: RenderRequest? = null,
   vararg kvPairs: Pair<String, String> = emptyArray(),
 ) {
   this.trackEvent(
     event.name,
     mapOf(
-      "id" to request.id.toString(),
-      "serviceName" to request.serviceName,
+      "id" to request?.id.toString(),
+      "serviceName" to request?.serviceName,
       *kvPairs,
     ),
     null,
@@ -30,6 +30,15 @@ fun TelemetryClient.renderEvent(
 
 enum class RenderEvent {
   REQUEST_RECEIVED,
-  REQUEST_COMPLETE_HTML_RENDERED,
+  REQUEST_COMPLETE,
+  REQUEST_ERRORED,
   REQUEST_COMPLETE_HTML_CACHED,
+  GET_SERVICE_DATA,
+  SERVICE_DATA_RETURNED,
+  SERVICE_DATA_NO_CONTENT,
+  GET_SERVICE_DATA_RETRY,
+  RENDER_TEMPLATE_STARTED,
+  RENDER_TEMPLATE_COMPLETED,
+  STORE_RENDERED_HTML_STARTED,
+  STORE_RENDERED_HTML_COMPLETED,
 }

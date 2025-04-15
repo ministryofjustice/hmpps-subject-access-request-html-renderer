@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_CACHED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_RENDERED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -67,7 +67,7 @@ class RenderController(
 
     val response = when (renderService.renderServiceDataHtml(renderRequest)) {
       CREATED -> documentCreatedResponse(renderRequest).also {
-        telemetryClient.renderEvent(REQUEST_COMPLETE_HTML_RENDERED, renderRequest)
+        telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
       }
 
       DATA_ALREADY_EXISTS -> documentAlreadyExistsResponse().also {

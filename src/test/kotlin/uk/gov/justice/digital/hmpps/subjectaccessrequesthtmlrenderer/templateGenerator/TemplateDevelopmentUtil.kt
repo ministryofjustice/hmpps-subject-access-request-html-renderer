@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templateGenerator
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.applicationinsights.TelemetryClient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
@@ -42,6 +43,7 @@ class TemplateGeneratorUtil {
   private val locationDetailsRepository: LocationDetailsRepository = mock()
   private val locationsApiClient: LocationsApiClient = mock()
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
+  private val telemetryClient: TelemetryClient = mock()
 
   private val templateResources: TemplateResources = TemplateResources()
 
@@ -53,7 +55,7 @@ class TemplateGeneratorUtil {
     nomisMappingApiClient,
   )
 
-  private val templateService: TemplateService = TemplateService(templateHelpers, templateResources)
+  private val templateService: TemplateService = TemplateService(templateHelpers, templateResources, telemetryClient)
 
   init {
     whenever(userDetailsRepository.findByUsername(any())).doAnswer {

@@ -36,11 +36,9 @@ class DynamicServicesClient(
     .toEntity(Map::class.java)
     .retryWhen(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
-        subjectAccessRequestId = renderRequest.id,
-        params = mapOf(
-          "serviceName" to renderRequest.serviceName!!,
-          "uri" to renderRequest.serviceUrl,
-        ),
+        renderRequest = renderRequest,
+        "serviceName" to renderRequest.serviceName!!,
+        "uri" to renderRequest.serviceUrl,
       ),
     ).block()
 }
