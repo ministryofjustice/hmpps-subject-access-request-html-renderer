@@ -2,7 +2,11 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
 import com.github.jknack.handlebars.Handlebars
 import com.github.mustachejava.DefaultMustacheFactory
+import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
@@ -14,12 +18,17 @@ import java.nio.charset.StandardCharsets
 class TemplateService(
   private val templateHelpers: TemplateHelpers,
   private val templateResources: TemplateResources,
+  private val telemetryClient: TelemetryClient,
 ) {
 
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
+    telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
+
     val serviceTemplate = templateResources.getServiceTemplate(renderRequest)
     val renderedServiceTemplate = renderServiceTemplate(serviceTemplate, data)
-    return renderStyleTemplate(renderedServiceTemplate)
+    return renderStyleTemplate(renderedServiceTemplate).also {
+      telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
+    }
   }
 
   private fun renderServiceTemplate(

@@ -33,7 +33,8 @@ class LocationsApiClient(
       .bodyToMono(LocationDetailsResponse::class.java)
       .retryWhen(
         webClientRetriesSpec.retry5xxAndClientRequestErrors(
-          params = mapOf("dpsLocationId" to dpsLocationId),
+          renderRequest = null,
+          "dpsLocationId" to dpsLocationId,
         ),
       )
       // Return null response when not found

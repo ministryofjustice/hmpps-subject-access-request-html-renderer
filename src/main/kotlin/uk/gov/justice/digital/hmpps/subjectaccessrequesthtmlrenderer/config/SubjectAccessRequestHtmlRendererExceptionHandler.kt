@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config
 
+import com.microsoft.applicationinsights.TelemetryClient
 import jakarta.validation.ValidationException
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
@@ -11,11 +13,14 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestResourceNotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice
-class SubjectAccessRequestHtmlRendererExceptionHandler {
+class SubjectAccessRequestHtmlRendererExceptionHandler(
+  private val telemetryClient: TelemetryClient,
+) {
   @ExceptionHandler(ValidationException::class)
   fun handleValidationException(e: ValidationException): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(BAD_REQUEST)
@@ -25,7 +30,10 @@ class SubjectAccessRequestHtmlRendererExceptionHandler {
         userMessage = "Validation failure: ${e.message}",
         developerMessage = e.message,
       ),
-    ).also { log.info("Validation exception: {}", e.message) }
+    ).also {
+      telemetryClient.trackRenderException(e, BAD_REQUEST)
+      log.info("Validation exception: {}", e.message)
+    }
 
   @ExceptionHandler(NoResourceFoundException::class)
   fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
@@ -36,7 +44,10 @@ class SubjectAccessRequestHtmlRendererExceptionHandler {
         userMessage = "No resource found failure: ${e.message}",
         developerMessage = e.message,
       ),
-    ).also { log.info("No resource found exception: {}", e.message) }
+    ).also {
+      telemetryClient.trackRenderException(e, NOT_FOUND)
+      log.info("No resource found exception: {}", e.message)
+    }
 
   @ExceptionHandler(AccessDeniedException::class)
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> = ResponseEntity
@@ -47,7 +58,10 @@ class SubjectAccessRequestHtmlRendererExceptionHandler {
         userMessage = "Forbidden: ${e.message}",
         developerMessage = e.message,
       ),
-    ).also { log.debug("Forbidden (403) returned: {}", e.message) }
+    ).also {
+      telemetryClient.trackRenderException(e, FORBIDDEN)
+      log.debug("Forbidden (403) returned: {}", e.message)
+    }
 
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> = ResponseEntity
@@ -58,10 +72,15 @@ class SubjectAccessRequestHtmlRendererExceptionHandler {
         userMessage = e.message,
         developerMessage = e.message,
       ),
-    ).also { log.error("Unexpected exception", e) }
+    ).also {
+      telemetryClient.trackRenderException(e, INTERNAL_SERVER_ERROR)
+      log.error("Unexpected exception", e)
+    }
 
   @ExceptionHandler
-  fun handleSubjectAccessRequestResourceNotFoundException(e: SubjectAccessRequestResourceNotFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
+  fun handleSubjectAccessRequestResourceNotFoundException(
+    e: SubjectAccessRequestResourceNotFoundException,
+  ): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(NOT_FOUND)
     .body(
       ErrorResponse(
@@ -69,9 +88,29 @@ class SubjectAccessRequestHtmlRendererExceptionHandler {
         userMessage = "resource not found: ${e.message}",
         developerMessage = e.message,
       ),
-    ).also { log.error("Subject access request resource not found exception", e) }
+    ).also {
+      telemetryClient.trackRenderException(e, NOT_FOUND)
+      log.error("Subject access request resource not found exception", e)
+    }
 
   private companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
+  }
+
+  private fun TelemetryClient.trackRenderException(e: Exception, status: HttpStatus) {
+    if (e is SubjectAccessRequestException) {
+      val properties = e.params?.map { Pair(it.key, it.value.toString()) }?.toTypedArray() ?: emptyArray()
+      telemetryClient.renderEvent(
+        event = RenderEvent.REQUEST_ERRORED,
+        request = null,
+        *properties,
+      )
+    } else {
+      telemetryClient.renderEvent(
+        event = RenderEvent.REQUEST_ERRORED,
+        request = null,
+        "error" to (e.message ?: ""),
+      )
+    }
   }
 }

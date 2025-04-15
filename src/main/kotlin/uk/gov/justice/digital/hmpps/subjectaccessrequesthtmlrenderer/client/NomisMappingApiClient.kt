@@ -33,7 +33,8 @@ class NomisMappingApiClient(
       .bodyToMono(NomisLocationMapping::class.java)
       .retryWhen(
         webClientRetriesSpec.retry5xxAndClientRequestErrors(
-          params = mapOf("nomisLocationId" to nomisLocationId),
+          renderRequest = null,
+          "nomisLocationId" to nomisLocationId,
         ),
       )
       // Return null when not found

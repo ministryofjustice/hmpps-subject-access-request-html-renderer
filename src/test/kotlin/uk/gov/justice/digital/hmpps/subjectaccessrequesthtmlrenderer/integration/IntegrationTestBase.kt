@@ -2,10 +2,16 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integratio
 
 import aws.sdk.kotlin.services.s3.S3Client
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.microsoft.applicationinsights.TelemetryClient
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
-import org.slf4j.LoggerFactory
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
+import org.mockito.kotlin.capture
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
@@ -13,8 +19,10 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
 import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.S3TestUtil
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension
@@ -61,11 +69,19 @@ abstract class IntegrationTestBase {
   @Autowired
   protected lateinit var s3TestUtil: S3TestUtil
 
-  companion object {
-    private val log = LoggerFactory.getLogger(IntegrationTestBase::class.java)
+  @MockitoBean
+  protected lateinit var telemetryClient: TelemetryClient
 
+  @Captor
+  protected lateinit var eventNameCaptor: ArgumentCaptor<String>
+
+  @Captor
+  protected lateinit var eventPropertiesCaptor: ArgumentCaptor<Map<String, String>>
+
+  companion object {
     @JvmStatic
-    protected val fileContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+    protected val fileContent =
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
   }
 
   internal fun setAuthorisation(
@@ -117,6 +133,37 @@ abstract class IntegrationTestBase {
       .isTrue()
   }
 
+  protected fun assertTelemetryEvent(
+    eventIndex: Int,
+    expectedEvent: RenderEvent,
+    expectedProperties: Map<String, String> = emptyMap(),
+  ) {
+    assertThat(eventNameCaptor.allValues).hasSizeGreaterThanOrEqualTo(eventIndex)
+    assertThat(eventNameCaptor.allValues[eventIndex]).isEqualTo(expectedEvent.name)
+
+    assertThat(eventPropertiesCaptor.allValues).hasSizeGreaterThanOrEqualTo(eventIndex)
+    assertThat(eventPropertiesCaptor.allValues[eventIndex]).containsAllEntriesOf(expectedProperties)
+  }
+
+  protected fun assertTelemetryEvents(vararg expectedEvents: ExpectedTelemetryEvent) {
+    verify(telemetryClient, times(expectedEvents.size))
+      .trackEvent(capture(eventNameCaptor), capture(eventPropertiesCaptor), eq(null))
+
+    assertThat(eventNameCaptor.allValues).hasSizeGreaterThanOrEqualTo(expectedEvents.size)
+    assertThat(eventPropertiesCaptor.allValues).hasSizeGreaterThanOrEqualTo(expectedEvents.size)
+
+    expectedEvents.forEachIndexed { i, expected ->
+      assertThat(eventNameCaptor.allValues[i]).isEqualTo(expected.event.name)
+      assertThat(eventPropertiesCaptor.allValues[i]).containsAllEntriesOf(expected.properties)
+    }
+  }
+
+  protected fun eventProperties(request: RenderRequest, vararg kvPairs: Pair<String, String>) = mapOf(
+    "id" to request.id.toString(),
+    "serviceName" to (request.serviceName ?: ""),
+    *kvPairs,
+  )
+
   protected fun getServiceResponseBody(serviceName: String): String = getResourceAsString(
     filepath = "$SERVICE_RESPONSE_STUBS_DIR/$serviceName-response.json",
   )
@@ -144,4 +191,6 @@ abstract class IntegrationTestBase {
   }
 
   data class S3File(val key: String, val content: String = fileContent)
+
+  data class ExpectedTelemetryEvent(val event: RenderEvent, val properties: Map<String, String> = emptyMap())
 }

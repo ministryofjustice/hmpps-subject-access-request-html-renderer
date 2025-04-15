@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -23,11 +24,13 @@ class TemplateServiceTest {
   private val locationDetailsRepository: LocationDetailsRepository = mock()
   private val locationsApiClient: LocationsApiClient = mock()
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
+  private val telemetryClient: TelemetryClient = mock()
 
   private val templateHelpers = TemplateHelpers(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
   private val templateService = TemplateService(
     templateHelpers,
     TemplateResources(templatesDirectory = "/templates"),
+    telemetryClient,
   )
 
   private fun renderServiceDataHtml(serviceName: String, data: Any?): String {
