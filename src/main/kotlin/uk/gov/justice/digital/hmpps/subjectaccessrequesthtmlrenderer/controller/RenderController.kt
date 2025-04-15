@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.CREATED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.DATA_ALREADY_EXISTS
@@ -62,6 +63,22 @@ class RenderController(
     ],
   )
   suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
+    try {
+      return handleRenderRequest(renderRequest)
+    } catch (sarEx: SubjectAccessRequestException) {
+      throw sarEx
+    } catch (ex: Exception) {
+      // wrap exception with addtional context to aid debugging
+      throw SubjectAccessRequestException(
+        message = "render request threw unexpected exception",
+        cause = ex,
+        subjectAccessRequestId = renderRequest.id,
+        params = mapOf("serviceName" to renderRequest.serviceName),
+      )
+    }
+  }
+
+  private suspend fun handleRenderRequest(renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, renderRequest.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
