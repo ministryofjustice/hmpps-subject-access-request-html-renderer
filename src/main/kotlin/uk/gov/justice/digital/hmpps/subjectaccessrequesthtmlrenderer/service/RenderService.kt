@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Dyna
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_DATA_NO_CONTENT
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_DATA_NO_CONTENT_ID_NOT_SUPPORTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_DATA_RETURNED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -28,6 +29,7 @@ class RenderService(
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
+    const val STATUS_IDENTIFIER_TYPE_NOT_SUPPORTED = 209
   }
 
   suspend fun renderServiceDataHtml(renderRequest: RenderRequest): RenderResult {
@@ -65,26 +67,38 @@ class RenderService(
 
     log.info("get data response status:  ${response.statusCode}")
 
-    return when (response.statusCode) {
-      HttpStatus.OK -> {
-        telemetryClient.renderEvent(SERVICE_DATA_RETURNED, renderRequest)
-        response.body["content"]
-      }
-      HttpStatus.NO_CONTENT -> {
-        telemetryClient.renderEvent(SERVICE_DATA_NO_CONTENT, renderRequest)
-        null
-      }
-      else -> throw SubjectAccessRequestException(
-        message = "get service data returned unexpected response status",
-        cause = null,
-        subjectAccessRequestId = renderRequest.id,
-        params = mapOf(
-          "status" to response.statusCode,
-          "serviceName" to renderRequest.serviceName,
-          "serviceUrl" to renderRequest.serviceUrl,
-        ),
-      )
+    return extractResponseBody(response, renderRequest)
+  }
+
+  private fun extractResponseBody(
+    response: ResponseEntity<Map<*, *>>,
+    renderRequest: RenderRequest,
+  ): Any? = when (response.statusCode.value()) {
+    HttpStatus.OK.value() -> {
+      telemetryClient.renderEvent(SERVICE_DATA_RETURNED, renderRequest)
+      response.body["content"]
     }
+
+    HttpStatus.NO_CONTENT.value() -> {
+      telemetryClient.renderEvent(SERVICE_DATA_NO_CONTENT, renderRequest)
+      null
+    }
+
+    STATUS_IDENTIFIER_TYPE_NOT_SUPPORTED -> {
+      telemetryClient.renderEvent(SERVICE_DATA_NO_CONTENT_ID_NOT_SUPPORTED, renderRequest)
+      null
+    }
+
+    else -> throw SubjectAccessRequestException(
+      message = "get service data returned unexpected response status",
+      cause = null,
+      subjectAccessRequestId = renderRequest.id,
+      params = mapOf(
+        "status" to response.statusCode,
+        "serviceName" to renderRequest.serviceName,
+        "serviceUrl" to renderRequest.serviceUrl,
+      ),
+    )
   }
 
   private suspend fun storeRenderedHtml(renderRequest: RenderRequest, renderedData: ByteArrayOutputStream?) {
