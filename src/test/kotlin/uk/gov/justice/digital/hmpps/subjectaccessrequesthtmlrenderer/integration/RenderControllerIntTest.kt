@@ -123,7 +123,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       value = [
         "hmpps-incentives-api",
         "hmpps-book-secure-move-api",
-        "g1",
+        "G1",
       ],
       delimiterString = "|",
     )
