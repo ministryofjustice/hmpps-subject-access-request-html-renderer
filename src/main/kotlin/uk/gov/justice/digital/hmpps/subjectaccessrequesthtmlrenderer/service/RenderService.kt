@@ -52,7 +52,7 @@ class RenderService(
 
   suspend fun listCacheFilesWithPrefix(subjectAccessRequestId: UUID) = documentStore.list(subjectAccessRequestId)
 
-  private fun getDataForSubject(renderRequest: RenderRequest): List<Any> {
+  private fun getDataForSubject(renderRequest: RenderRequest): Any? {
     telemetryClient.renderEvent(GET_SERVICE_DATA, renderRequest)
 
     val response: ResponseEntity<Map<*, *>> = dynamicServicesClient
@@ -68,11 +68,11 @@ class RenderService(
     return when (response.statusCode) {
       HttpStatus.OK -> {
         telemetryClient.renderEvent(SERVICE_DATA_RETURNED, renderRequest)
-        response.body["content"] as ArrayList<*>
+        response.body["content"]
       }
       HttpStatus.NO_CONTENT -> {
         telemetryClient.renderEvent(SERVICE_DATA_NO_CONTENT, renderRequest)
-        emptyList()
+        null
       }
       else -> throw SubjectAccessRequestException(
         message = "get service data returned unexpected response status",
