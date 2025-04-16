@@ -26,6 +26,10 @@ open class SubjectAccessRequestException(
   private fun Map<String, *>.toFormattedString() = this.entries.joinToString(", ") { entry ->
     "${entry.key}=${entry.value}"
   }
+
+  fun paramsToPairs(): Array<Pair<String, String>> = this.params
+    ?.map { Pair(it.key, it.value.toString()) }
+    ?.toTypedArray() ?: emptyArray()
 }
 
 /**

@@ -56,6 +56,21 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     )
   }
 
+  fun stubGetSubjectAccessRequestIdentifierNotSupported(params: GetSubjectAccessRequestDataParams) {
+    stubFor(
+      get(urlPathEqualTo("/subject-access-request"))
+        .withQueryParam("prn", equalTo(params.prn))
+        .withQueryParam("crn", equalTo(params.crn))
+        .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
+        .withQueryParam("toDate", equalTo(params.dateTo.toString()))
+        .willReturn(
+          aResponse()
+            .withStatus(209)
+            .withHeader("Content-Type", "application/json"),
+        ),
+    )
+  }
+
   fun verifyGetSubjectAccessRequestDataCalled(times: Int) = verify(
     times,
     getRequestedFor(urlPathEqualTo("/subject-access-request")),

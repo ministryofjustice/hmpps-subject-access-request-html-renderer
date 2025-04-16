@@ -127,12 +127,42 @@ class RenderControllerIntTest : IntegrationTestBase() {
       ],
       delimiterString = "|",
     )
-    fun `should store empty html document service data is empty`(serviceName: String) {
+    fun `should store empty html document when service data is empty`(serviceName: String) {
       // Given
       val renderRequest = newRenderRequestFor(serviceName)
       assertServiceDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsNoDataForRequest(renderRequest)
+
+      // When
+      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+
+      // Then
+      assertRenderTemplateSuccessResponse(response, renderRequest)
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
+
+      assertUploadedHtmlMatchesExpected(
+        renderRequest = renderRequest,
+        expectedHtmlFilename = "$serviceName-no-data",
+      )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "hmpps-incentives-api",
+        "hmpps-book-secure-move-api",
+        "G1",
+      ],
+      delimiterString = "|",
+    )
+    fun `should store empty html document when service returns status 209`(serviceName: String) {
+      // Given
+      val renderRequest = newRenderRequestFor(serviceName)
+      assertServiceDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsIdentifierNotSupportedForRequest(renderRequest)
 
       // When
       val response = sendRenderTemplateRequest(renderRequest = renderRequest)
@@ -166,6 +196,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   private fun hmppsServiceReturnsNoDataForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestDataEmpty(request.toGetSubjectAccessRequestDataParams())
+
+  private fun hmppsServiceReturnsIdentifierNotSupportedForRequest(request: RenderRequest) = sarDataSourceApi
+    .stubGetSubjectAccessRequestIdentifierNotSupported(request.toGetSubjectAccessRequestDataParams())
 
   private fun assertRenderTemplateSuccessResponse(
     response: WebTestClient.ResponseSpec,
