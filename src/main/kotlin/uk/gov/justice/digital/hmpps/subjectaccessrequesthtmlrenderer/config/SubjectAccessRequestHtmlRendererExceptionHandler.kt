@@ -99,17 +99,24 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
 
   private fun TelemetryClient.trackRenderException(e: Exception, status: HttpStatus) {
     if (e is SubjectAccessRequestException) {
-      val properties = e.params?.map { Pair(it.key, it.value.toString()) }?.toTypedArray() ?: emptyArray()
+      val eventProperties = mutableListOf(
+        "status" to status.value().toString(),
+        *e.params?.map {
+          Pair(it.key, it.value.toString())
+        }?.toTypedArray() ?: emptyArray(),
+      ).toTypedArray()
+
       telemetryClient.renderEvent(
         event = RenderEvent.REQUEST_ERRORED,
-        request = null,
-        *properties,
+        id = e.subjectAccessRequestId,
+        *eventProperties,
       )
     } else {
       telemetryClient.renderEvent(
         event = RenderEvent.REQUEST_ERRORED,
         request = null,
         "error" to (e.message ?: ""),
+        "status" to status.value().toString(),
       )
     }
   }

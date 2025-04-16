@@ -4,12 +4,28 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import java.util.UUID
 
 @Configuration
 class AppInsightsConfiguration {
 
   @Bean
   fun telemetryClient(): TelemetryClient = TelemetryClient()
+}
+
+fun TelemetryClient.renderEvent(
+  event: RenderEvent,
+  id: UUID? = null,
+  vararg kvPairs: Pair<String, String> = emptyArray(),
+) {
+  this.trackEvent(
+    event.name,
+    mapOf(
+      "id" to id.toString(),
+      *kvPairs,
+    ),
+    null,
+  )
 }
 
 fun TelemetryClient.renderEvent(
