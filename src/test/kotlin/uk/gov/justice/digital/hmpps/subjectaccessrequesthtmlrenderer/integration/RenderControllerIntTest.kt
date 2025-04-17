@@ -8,7 +8,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
+import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
@@ -23,6 +27,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
 const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
@@ -30,11 +36,18 @@ const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
 @ExtendWith(SarDataSourceApiExtension::class)
 class RenderControllerIntTest : IntegrationTestBase() {
 
+  @MockitoBean
+  private lateinit var userDetailsRepository: UserDetailsRepository
+
   @BeforeEach
   fun setup() {
     // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
     clearAuthorizedClientsCache("sar-html-renderer-client", "anonymousUser")
     s3TestUtil.clearBucket()
+
+    whenever(userDetailsRepository.findByUsername(any())).doAnswer {
+      (UserDetail(it.arguments[0] as String, "Homer Simpson"))
+    }
   }
 
   @AfterEach
@@ -50,6 +63,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       value = [
         "hmpps-incentives-api",
         "hmpps-book-secure-move-api",
+        "hmpps-health-and-medication-api",
       ],
       delimiterString = "|",
     )
@@ -124,6 +138,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-incentives-api",
         "hmpps-book-secure-move-api",
         "G1",
+        "hmpps-health-and-medication-api",
       ],
       delimiterString = "|",
     )
