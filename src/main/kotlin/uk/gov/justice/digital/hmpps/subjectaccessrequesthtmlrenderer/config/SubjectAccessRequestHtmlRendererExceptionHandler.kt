@@ -103,7 +103,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
         event = RenderEvent.REQUEST_ERRORED,
         id = e.subjectAccessRequestId,
         "status" to status.value().toString(),
-        *e.paramsToPairs(),
+        "errorMessage" to e.messageOrDefault(),
+        *e.paramsToPairsArray(),
       )
     } else {
       telemetryClient.renderEvent(

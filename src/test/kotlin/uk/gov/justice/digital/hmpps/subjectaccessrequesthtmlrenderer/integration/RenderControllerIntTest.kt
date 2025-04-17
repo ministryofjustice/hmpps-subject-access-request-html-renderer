@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -15,10 +16,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_CACHED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_ERRORED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_DATA_RETURNED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_RENDERED_HTML_COMPLETED
@@ -194,6 +197,43 @@ class RenderControllerIntTest : IntegrationTestBase() {
     }
   }
 
+  @Nested
+  inner class RenderTemplateErrorsTest {
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "hmpps-incentives-api",
+        "hmpps-book-secure-move-api",
+        "G1",
+        "hmpps-health-and-medication-api",
+      ],
+      delimiterString = "|",
+    )
+    fun `should return internal server error when hmpps service unavailable after retries maxed`(serviceName: String) {
+      // Given
+      val renderRequest = newRenderRequestFor(serviceName)
+      assertServiceDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsErrorForRequest(renderRequest, HttpStatus.INTERNAL_SERVER_ERROR)
+
+      // When
+      sendRenderTemplateRequest(renderRequest = renderRequest)
+        .expectStatus().isEqualTo(500)
+
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 0)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 1)),
+        ExpectedTelemetryEvent(REQUEST_ERRORED, requestErroredEventProperties(renderRequest)),
+      )
+
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(3)
+    }
+  }
+
   private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtmlFilename: String) {
     val uploadedFile = s3TestUtil.getFile(renderRequest.documentKey())
     assertThat(uploadedFile).isNotNull()
@@ -204,13 +244,30 @@ class RenderControllerIntTest : IntegrationTestBase() {
   }
 
   private fun hmppsServiceReturnsDataForRequest(request: RenderRequest, serviceName: String) = sarDataSourceApi
-    .stubGetSubjectAccessRequestDataSuccess(
+    .stubGetSubjectAccessRequestData(
       params = request.toGetSubjectAccessRequestDataParams(),
-      responseBody = getServiceResponseBody(serviceName),
+      responseDefinition = ResponseDefinitionBuilder()
+        .withStatus(200)
+        .withHeader("Content-Type", "application/json")
+        .withBody(getServiceResponseBody(serviceName)),
     )
 
   private fun hmppsServiceReturnsNoDataForRequest(request: RenderRequest) = sarDataSourceApi
-    .stubGetSubjectAccessRequestDataEmpty(request.toGetSubjectAccessRequestDataParams())
+    .stubGetSubjectAccessRequestData(
+      params = request.toGetSubjectAccessRequestDataParams(),
+      responseDefinition = ResponseDefinitionBuilder()
+        .withStatus(204)
+        .withHeader("Content-Type", "application/json"),
+    )
+
+  private fun hmppsServiceReturnsErrorForRequest(request: RenderRequest, status: HttpStatus) = sarDataSourceApi
+    .stubGetSubjectAccessRequestData(
+      params = request.toGetSubjectAccessRequestDataParams(),
+      responseDefinition = ResponseDefinitionBuilder()
+        .withStatus(status.value())
+        .withHeader("Content-Type", "application/json")
+        .withBody("""{ "error": "some error" "}"""),
+    )
 
   private fun hmppsServiceReturnsIdentifierNotSupportedForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestIdentifierNotSupported(request.toGetSubjectAccessRequestDataParams())
@@ -237,4 +294,24 @@ class RenderControllerIntTest : IntegrationTestBase() {
     .headers(setAuthorisation(roles = listOf(role)))
     .bodyValue(objectMapper.writeValueAsString(renderRequest))
     .exchange()
+
+  private fun getDataRetryEventProperties(renderRequest: RenderRequest, attempt: Int) = eventProperties(
+    renderRequest,
+    "uri" to "http://localhost:${sarDataSourceApi.port()}",
+    "error" to "500 Internal Server Error from GET http://localhost:${sarDataSourceApi.port()}/subject-access-request",
+    "retryAttempts" to attempt.toString(),
+    "backOff" to webClientConfiguration.backOff,
+    "maxRetries" to webClientConfiguration.maxRetries.toString(),
+  )
+
+  private fun requestErroredEventProperties(renderRequest: RenderRequest) = eventProperties(
+    renderRequest,
+    "uri" to "http://localhost:${sarDataSourceApi.port()}",
+    "errorMessage" to retryExhaustedErrorMessage(renderRequest),
+  )
+
+  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest) = "request failed and max retry attempts " +
+    "(${webClientConfiguration.maxRetries}) exhausted, cause=500 Internal Server Error from GET " +
+    "http://localhost:${sarDataSourceApi.port()}/subject-access-request, id=${renderRequest.id}, " +
+    "serviceName=${renderRequest.serviceName}, uri=${renderRequest.serviceUrl}"
 }

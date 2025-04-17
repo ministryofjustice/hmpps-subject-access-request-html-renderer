@@ -24,6 +24,7 @@ import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.S3TestUtil
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.WebClientConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
@@ -68,6 +69,9 @@ abstract class IntegrationTestBase {
 
   @Autowired
   protected lateinit var s3TestUtil: S3TestUtil
+
+  @Autowired
+  protected lateinit var webClientConfiguration: WebClientConfiguration
 
   @MockitoBean
   protected lateinit var telemetryClient: TelemetryClient
