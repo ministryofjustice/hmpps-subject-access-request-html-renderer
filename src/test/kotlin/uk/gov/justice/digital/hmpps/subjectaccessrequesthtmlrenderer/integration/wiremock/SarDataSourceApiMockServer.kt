@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
@@ -25,34 +26,17 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     )
   }
 
-  fun stubGetSubjectAccessRequestDataSuccess(params: GetSubjectAccessRequestDataParams, responseBody: String) {
+  fun stubGetSubjectAccessRequestData(
+    params: GetSubjectAccessRequestDataParams,
+    responseDefinition: ResponseDefinitionBuilder,
+  ) {
     stubFor(
       get(urlPathEqualTo("/subject-access-request"))
         .withQueryParam("prn", equalTo(params.prn))
         .withQueryParam("crn", equalTo(params.crn))
         .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
         .withQueryParam("toDate", equalTo(params.dateTo.toString()))
-        .willReturn(
-          aResponse()
-            .withStatus(200)
-            .withHeader("Content-Type", "application/json")
-            .withBody(responseBody),
-        ),
-    )
-  }
-
-  fun stubGetSubjectAccessRequestDataEmpty(params: GetSubjectAccessRequestDataParams) {
-    stubFor(
-      get(urlPathEqualTo("/subject-access-request"))
-        .withQueryParam("prn", equalTo(params.prn))
-        .withQueryParam("crn", equalTo(params.crn))
-        .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
-        .withQueryParam("toDate", equalTo(params.dateTo.toString()))
-        .willReturn(
-          aResponse()
-            .withStatus(204)
-            .withHeader("Content-Type", "application/json"),
-        ),
+        .willReturn(responseDefinition),
     )
   }
 

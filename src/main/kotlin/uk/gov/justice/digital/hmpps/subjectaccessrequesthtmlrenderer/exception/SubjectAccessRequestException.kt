@@ -23,13 +23,16 @@ open class SubjectAccessRequestException(
       params?.toFormattedString()?.let { append(", $it") }
     }
 
+  fun messageOrDefault(): String = message ?: this::class.java.simpleName
+
+  fun paramsToPairsArray(): Array<Pair<String, String>> = this.params
+    ?.map { Pair(it.key, it.value.toString()) }
+    ?.toTypedArray()
+    ?: emptyArray()
+
   private fun Map<String, *>.toFormattedString() = this.entries.joinToString(", ") { entry ->
     "${entry.key}=${entry.value}"
   }
-
-  fun paramsToPairs(): Array<Pair<String, String>> = this.params
-    ?.map { Pair(it.key, it.value.toString()) }
-    ?.toTypedArray() ?: emptyArray()
 }
 
 /**
