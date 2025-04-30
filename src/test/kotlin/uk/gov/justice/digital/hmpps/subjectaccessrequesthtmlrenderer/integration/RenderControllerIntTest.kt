@@ -64,15 +64,18 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api",
-        "hmpps-book-secure-move-api",
-        "hmpps-health-and-medication-api",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-health-and-medication-api | Health and Medication",
       ],
       delimiterString = "|",
     )
-    fun `should generate expected html and return status 201 when service data is not cached`(serviceName: String) {
+    fun `should generate expected html and return status 201 when service data is not cached`(
+      serviceName: String,
+      serviceLabel: String,
+    ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName)
+      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
       assertServiceDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
@@ -87,7 +90,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       assertUploadedHtmlMatchesExpected(
         renderRequest = renderRequest,
-        expectedHtmlFilename = serviceName,
+        expectedHtml = getExpectedHtmlString(serviceName),
       )
 
       assertTelemetryEvents(
@@ -106,7 +109,8 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should not store html and return status 204 when service data exists in cache`() {
       // Given
       val serviceName = "hmpps-book-secure-move-api"
-      val renderRequest = newRenderRequestFor(serviceName)
+      val serviceLabel = "Book a Secure Move"
+      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
       addServiceDocumentToBucket(renderRequest)
 
       hmppsAuthReturnsValidAuthToken()
@@ -122,7 +126,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       assertUploadedHtmlMatchesExpected(
         renderRequest = renderRequest,
-        expectedHtmlFilename = serviceName,
+        expectedHtml = getExpectedHtmlString(serviceName),
       )
 
       assertTelemetryEvents(
@@ -138,16 +142,16 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api",
-        "hmpps-book-secure-move-api",
-        "G1",
-        "hmpps-health-and-medication-api",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-health-and-medication-api | Health and Medication",
+        "G1 | G1",
       ],
       delimiterString = "|",
     )
-    fun `should store empty html document when service data is empty`(serviceName: String) {
+    fun `should store empty html document when service data is empty`(serviceName: String, serviceLabel: String) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName)
+      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
       assertServiceDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsNoDataForRequest(renderRequest)
@@ -160,24 +164,27 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
+      val expectedHtml = getExpectedHtmlString("no-data").replace("{{serviceLabel}}", serviceLabel)
+
       assertUploadedHtmlMatchesExpected(
         renderRequest = renderRequest,
-        expectedHtmlFilename = "$serviceName-no-data",
+        expectedHtml = expectedHtml,
       )
     }
 
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api",
-        "hmpps-book-secure-move-api",
-        "G1",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-health-and-medication-api | Health and Medication",
+        "G1 | G1",
       ],
       delimiterString = "|",
     )
-    fun `should store empty html document when service returns status 209`(serviceName: String) {
+    fun `should store empty html document when service returns status 209`(serviceName: String, serviceLabel: String) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName)
+      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
       assertServiceDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsIdentifierNotSupportedForRequest(renderRequest)
@@ -190,9 +197,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
+      val expectedHtml = getExpectedHtmlString("no-data").replace("{{serviceLabel}}", serviceLabel)
       assertUploadedHtmlMatchesExpected(
         renderRequest = renderRequest,
-        expectedHtmlFilename = "$serviceName-no-data",
+        expectedHtml = expectedHtml,
       )
     }
   }
@@ -203,16 +211,19 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api",
-        "hmpps-book-secure-move-api",
-        "G1",
-        "hmpps-health-and-medication-api",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-health-and-medication-api | Health and Medication",
+        "G1 | G1",
       ],
       delimiterString = "|",
     )
-    fun `should return internal server error when hmpps service unavailable after retries maxed`(serviceName: String) {
+    fun `should return internal server error when hmpps service unavailable after retries maxed`(
+      serviceName: String,
+      serviceLabel: String,
+    ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName)
+      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
       assertServiceDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsErrorForRequest(renderRequest, HttpStatus.INTERNAL_SERVER_ERROR)
@@ -234,12 +245,11 @@ class RenderControllerIntTest : IntegrationTestBase() {
     }
   }
 
-  private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtmlFilename: String) {
+  private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
     val uploadedFile = s3TestUtil.getFile(renderRequest.documentKey())
     assertThat(uploadedFile).isNotNull()
     assertThat(uploadedFile).isNotEmpty()
 
-    val expectedHtml = getExpectedHtmlString(expectedHtmlFilename)
     assertThat(uploadedFile).isEqualTo(expectedHtml)
   }
 

@@ -53,6 +53,7 @@ tasks.register<TemplateGenerator>("generateReport") {
 
 abstract class TemplateGenerator : JavaExec() {
   private lateinit var serviceName: String
+  private var noData: Boolean = false
 
   @Option(
     option = "service",
@@ -60,9 +61,25 @@ abstract class TemplateGenerator : JavaExec() {
   )
   fun setServiceName(serviceName: String) {
     this.serviceName = serviceName
-    args(serviceName)
+  }
+
+  @Option(
+    option = "noData",
+    description = "If set will generate report with no data for the selected service",
+  )
+  fun setServiceName() {
+    this.noData = true
   }
 
   @Input
   fun getServiceName(): String = serviceName
+
+  @Input
+  fun isNoData(): Boolean = noData
+
+  @TaskAction
+  fun generate() {
+    args(this.serviceName, this.noData)
+    super.exec()
+  }
 }

@@ -23,22 +23,27 @@ class TemplateService(
 
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
     telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
-
-    val serviceTemplate = templateResources.getServiceTemplate(renderRequest)
-    val renderedServiceTemplate = renderServiceTemplate(serviceTemplate, data)
+    val renderParameters = getRenderParameters(renderRequest, data)
+    val renderedServiceTemplate = renderServiceTemplate(renderParameters)
     return renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
     }
   }
 
-  private fun renderServiceTemplate(
-    serviceTemplate: String,
-    serviceData: Any?,
-  ): String {
+  private fun getRenderParameters(
+    renderRequest: RenderRequest,
+    data: Any?,
+  ): RenderParameters = if (data != null) {
+    RenderParameters(templateResources.getServiceTemplate(renderRequest), data)
+  } else {
+    RenderParameters(templateResources.getNoDataTemplate(renderRequest), renderRequest.serviceNameMap())
+  }
+
+  private fun renderServiceTemplate(params: RenderParameters): String {
     val handlebars = Handlebars()
     handlebars.registerHelpers(templateHelpers)
-    val compiledServiceTemplate = handlebars.compileInline(serviceTemplate)
-    val renderedServiceTemplate = compiledServiceTemplate.apply(serviceData)
+    val compiledServiceTemplate = handlebars.compileInline(params.template)
+    val renderedServiceTemplate = compiledServiceTemplate.apply(params.data)
     return renderedServiceTemplate.toString()
   }
 
@@ -56,4 +61,8 @@ class TemplateService(
     }
     return out
   }
+
+  data class RenderParameters(val template: String, val data: Any?)
+
+  fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to (this.serviceLabel ?: "UNKNOWN"))
 }

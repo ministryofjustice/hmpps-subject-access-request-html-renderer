@@ -34,7 +34,7 @@ fun main(args: Array<String>?) {
     throw IllegalArgumentException("serviceName argument required")
   }
 
-  TemplateGeneratorUtil().generateServiceHtml(args[0])
+  TemplateGeneratorUtil().generateServiceHtml(args[0], args[1].toBoolean())
 }
 
 class TemplateGeneratorUtil {
@@ -73,13 +73,13 @@ class TemplateGeneratorUtil {
     }
   }
 
-  fun generateServiceHtml(serviceName: String) {
+  fun generateServiceHtml(serviceName: String, isNullData: Boolean) {
     println()
     log("Rendering templates for $serviceName")
 
     try {
-      val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceName = serviceName)
-      val output = renderHtml(renderRequest).use { os -> writeToFile(serviceName, os) }
+      val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceName = serviceName, serviceLabel = getServiceLabel(serviceName))
+      val output = renderHtml(renderRequest, isNullData).use { os -> writeToFile(serviceName, os) }
 
       println()
       log("Successfully generated HTML for service $serviceName:")
@@ -96,13 +96,14 @@ class TemplateGeneratorUtil {
     return output
   }
 
-  private fun renderHtml(renderRequest: RenderRequest): ByteArrayOutputStream = templateService
-    .renderServiceDataHtml(
-      renderRequest = renderRequest,
-      data = getServiceResponseStubData(renderRequest.serviceName!!),
-    ) ?: throw renderedTemplateNullException(renderRequest.serviceName!!)
+  private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
+    val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceName!!)
 
-  private fun getServiceResponseStubData(serviceName: String): ArrayList<*>? {
+    return templateService.renderServiceDataHtml(renderRequest = renderRequest, data = data)
+      ?: throw renderedTemplateNullException(renderRequest.serviceName!!)
+  }
+
+  private fun getServiceResponseStubData(serviceName: String): Any? {
     val path = assertResponseStubJsonExists(serviceName)
     log("Using response stub data: file:///$path ")
 
@@ -110,7 +111,7 @@ class TemplateGeneratorUtil {
       inputStream.use {
         ObjectMapper().readValue(inputStream, Map::class.java)
       }
-    }.let { it["content"] as ArrayList<*>? }
+    }.let { it["content"] }
   }
 
   private fun assertResponseStubJsonExists(serviceName: String): Path {
@@ -137,5 +138,14 @@ class TemplateGeneratorUtil {
 
   private fun log(message: String) {
     println("[generateTemplate] $message")
+  }
+
+  // Add services if missing.
+  private val serviceMapping = mapOf(
+    "hmpps-offender-categorisation-api" to "Categorisation Tool",
+  )
+
+  private fun getServiceLabel(serviceName: String) = serviceMapping[serviceName] ?: "Unknown".also {
+    log("Could not find service label for service $serviceName, please add service to TemplateGeneratorUtil.serviceMapping map")
   }
 }

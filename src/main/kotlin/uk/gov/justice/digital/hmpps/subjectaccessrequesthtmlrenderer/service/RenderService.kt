@@ -41,9 +41,9 @@ class RenderService(
       return RenderResult.DATA_ALREADY_EXISTS
     }
 
-    val content = getDataForSubject(renderRequest)
+    val data = getDataForSubject(renderRequest)
 
-    val renderedData = templateService.renderServiceDataHtml(renderRequest, content)
+    val renderedData = templateService.renderServiceDataHtml(renderRequest, data)
     storeRenderedHtml(renderRequest, renderedData)
 
     log.info("document $documentKey created and added to document store")

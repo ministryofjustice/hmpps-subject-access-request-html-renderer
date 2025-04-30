@@ -68,7 +68,7 @@ class RenderController(
     } catch (sarEx: SubjectAccessRequestException) {
       throw sarEx
     } catch (ex: Exception) {
-      // wrap exception with addtional context to aid debugging
+      // wrap exception with additional context to aid debugging
       throw SubjectAccessRequestException(
         message = "render request threw unexpected exception",
         cause = ex,
