@@ -24,8 +24,8 @@ class DynamicServicesClient(
       it.path("/subject-access-request")
         .queryParamIfPresent("prn", Optional.ofNullable(renderRequest.nomisId))
         .queryParamIfPresent("crn", Optional.ofNullable(renderRequest.ndeliusId))
-        .queryParam("fromDate", renderRequest.dateFrom!!)
-        .queryParam("toDate", renderRequest.dateTo!!)
+        .queryParamIfPresent("fromDate", Optional.ofNullable(renderRequest.dateFrom))
+        .queryParamIfPresent("toDate", Optional.ofNullable(renderRequest.dateTo))
         .build()
     }
     .retrieve()
