@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
@@ -36,6 +37,17 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
         .withQueryParam("crn", equalTo(params.crn))
         .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
         .withQueryParam("toDate", equalTo(params.dateTo.toString()))
+        .willReturn(responseDefinition),
+    )
+  }
+
+  fun stubGetSubjectAccessRequestDataSuccess(
+    responseDefinition: ResponseDefinitionBuilder,
+    expectedQueryParams: Map<String, StringValuePattern>,
+  ) {
+    stubFor(
+      get(urlPathEqualTo("/subject-access-request"))
+        .withQueryParams(expectedQueryParams)
         .willReturn(responseDefinition),
     )
   }
