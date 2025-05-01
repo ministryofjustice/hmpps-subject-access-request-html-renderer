@@ -24,6 +24,8 @@ data class RenderRequest(
 
   val serviceName: String? = null,
 
+  val serviceLabel: String? = null,
+
   val serviceUrl: String? = null,
 ) {
 
@@ -32,5 +34,5 @@ data class RenderRequest(
 
   override fun toString(): String = "RenderRequest(id=$id, nomisId=$nomisId, ndeliusId=$ndeliusId, " +
     "dateFrom=$dateFrom, dateTo=$dateTo, sarCaseReferenceNumber=$sarCaseReferenceNumber, serviceName=$serviceName, " +
-    "serviceUrl=$serviceUrl)"
+    "serviceLabel=$serviceLabel, serviceUrl=$serviceUrl)"
 }

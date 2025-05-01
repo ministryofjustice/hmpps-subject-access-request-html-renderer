@@ -22,6 +22,11 @@ class TemplateResources(
     ).readText()
   }
 
+  fun getNoDataTemplate(renderRequest: RenderRequest): String = getTemplateResource(
+    renderRequest = renderRequest,
+    resourcePath = "$templatesDirectory/template_no_data.mustache",
+  ).readText()
+
   private fun validateServiceName(renderRequest: RenderRequest): String {
     if (StringUtils.isEmpty(renderRequest.serviceName)) {
       throw missingServiceNameException(renderRequest)

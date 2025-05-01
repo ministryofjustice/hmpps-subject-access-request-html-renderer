@@ -115,9 +115,14 @@ abstract class IntegrationTestBase {
     dateTo = this.dateTo,
   )
 
-  protected fun newRenderRequestFor(serviceName: String, id: UUID? = UUID.randomUUID()): RenderRequest = RenderRequest(
+  protected fun newRenderRequestFor(
+    serviceName: String,
+    serviceLabel: String,
+    id: UUID? = UUID.randomUUID(),
+  ): RenderRequest = RenderRequest(
     id = id,
     serviceName = serviceName,
+    serviceLabel = serviceLabel,
     serviceUrl = "http://localhost:${sarDataSourceApi.port()}",
     nomisId = "nomis1234",
     ndeliusId = "ndelius1234",
