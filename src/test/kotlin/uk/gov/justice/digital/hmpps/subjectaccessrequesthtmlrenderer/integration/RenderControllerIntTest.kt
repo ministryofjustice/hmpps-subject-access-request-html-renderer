@@ -30,7 +30,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
@@ -42,6 +44,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var userDetailsRepository: UserDetailsRepository
 
+  @MockitoBean
+  private lateinit var prisonDetailsRepository: PrisonDetailsRepository
+
   @BeforeEach
   fun setup() {
     // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
@@ -50,6 +55,11 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
     whenever(userDetailsRepository.findByUsername(any())).doAnswer {
       (UserDetail(it.arguments[0] as String, "Homer Simpson"))
+    }
+
+    whenever(prisonDetailsRepository.findByPrisonId(any())).doAnswer {
+      val id = it.arguments[0] as String
+      PrisonDetail(id, "HMPPS Mordor")
     }
   }
 
