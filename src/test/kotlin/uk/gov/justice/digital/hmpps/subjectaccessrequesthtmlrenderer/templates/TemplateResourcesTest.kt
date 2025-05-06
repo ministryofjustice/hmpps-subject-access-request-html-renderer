@@ -18,9 +18,9 @@ class TemplateResourcesTest {
     value = [
       "court-case-service                       | <h1>Prepare a Case for Sentence</h1>",
       "create-and-vary-a-licence-api            | <h1>Create and vary a licence</h1>",
-      "G1                                       | <h1>G1</h1>",
-      "G2                                       | <h1>G2</h1>",
-      "G3                                       | <h1>G3</h1>",
+      "g1                                       | <h1>G1</h1>",
+      "g2                                       | <h1>G2</h1>",
+      "g3                                       | <h1>G3</h1>",
       "hmpps-accredited-programmes-api          | <h1>Accredited programmes</h1>",
       "hmpps-activities-management-api          | <h1>Manage Activities and Appointments</h1>",
       "hmpps-approved-premises-api              | <h1>Approved Premises</h1>",
