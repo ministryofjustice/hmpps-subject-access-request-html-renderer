@@ -1,0 +1,4784 @@
+<style>
+    * {
+        font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+        font-size: 12pt;
+        color: #0b0c0c;
+    }
+    /* --- HEADINGS --- */
+
+    h1, h2, h3 {
+        color: #0b0c0c;
+        font-weight: 700;
+        display: block;
+        margin-top: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    h1 {
+        font-size: 18pt;
+        line-height: 1.09375;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+    }
+
+    h2 {
+        font-size: 17pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h3 {
+        font-size: 16pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h4 {
+        font-size: 15pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h5 {
+        font-size: 14pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    /* --- SUMMARY LIST --- */
+
+    table.summary-list {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.summary-list tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.summary-list tr td {
+        border-bottom: 1px solid #b1b4b6;
+        /*margin-bottom: 5px;*/
+        overflow-wrap: break-word;
+        display: table-cell;
+        /*padding-top: 2px;*/
+        /*padding-bottom: 2px;*/
+        /*padding-right: 0;*/
+        margin-inline-start: 40px;
+        width: 70%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    table.summary-list tr td:first-child {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        vertical-align: top;
+    }
+
+    /* --- DATA TABLE --- */
+
+    table.data-table {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.data-table tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.data-table tr td {
+        border-bottom: 1px solid #b1b4b6;
+        margin-bottom: 5px;
+        overflow-wrap: break-word;
+        display: table-cell;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-right: 0;
+        margin-inline-start: 40px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: pre-wrap;
+        vertical-align: top;
+    }
+
+    table.data-table tr:first-child td {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        border-bottom: none;
+        vertical-align: top;
+    }
+
+    table.data-table tr td.data-column-5 { width: 5% }
+    table.data-table tr td.data-column-10 { width: 10% }
+    table.data-table tr td.data-column-15 { width: 15% }
+    table.data-table tr td.data-column-20 { width: 20% }
+    table.data-table tr td.data-column-25 { width: 25% }
+    table.data-table tr td.data-column-30 { width: 30% }
+    table.data-table tr td.data-column-35 { width: 35% }
+    table.data-table tr td.data-column-40 { width: 40% }
+    table.data-table tr td.data-column-45 { width: 45% }
+    table.data-table tr td.data-column-50 { width: 50% }
+    table.data-table tr td.data-column-55 { width: 55% }
+    table.data-table tr td.data-column-60 { width: 60% }
+    table.data-table tr td.data-column-65 { width: 65% }
+    table.data-table tr td.data-column-70 { width: 70% }
+    table.data-table tr td.data-column-75 { width: 75% }
+    table.data-table tr td.data-column-80 { width: 80% }
+    table.data-table tr td.data-column-85 { width: 85% }
+    table.data-table tr td.data-column-90 { width: 90% }
+    table.data-table tr td.data-column-95 { width: 95% }
+
+    table tr td.data-column-5 { width: 5% }
+    table tr td.data-column-10 { width: 10% }
+    table tr td.data-column-15 { width: 15% }
+    table tr td.data-column-20 { width: 20% }
+    table tr td.data-column-25 { width: 25% }
+    table tr td.data-column-30 { width: 30% }
+    table tr td.data-column-35 { width: 35% }
+    table tr td.data-column-40 { width: 40% }
+    table tr td.data-column-45 { width: 45% }
+    table tr td.data-column-50 { width: 50% }
+    table tr td.data-column-55 { width: 55% }
+    table tr td.data-column-60 { width: 60% }
+    table tr td.data-column-65 { width: 65% }
+    table tr td.data-column-70 { width: 70% }
+    table tr td.data-column-75 { width: 75% }
+    table tr td.data-column-80 { width: 80% }
+    table tr td.data-column-85 { width: 85% }
+    table tr td.data-column-90 { width: 90% }
+    table tr td.data-column-95 { width: 95% }
+
+    table.summary-list tr td.data-column-5 { width: 5% }
+    table.summary-list tr td.data-column-10 { width: 10% }
+    table.summary-list tr td.data-column-15 { width: 15% }
+    table.summary-list tr td.data-column-20 { width: 20% }
+    table.summary-list tr td.data-column-25 { width: 25% }
+    table.summary-list tr td.data-column-30 { width: 30% }
+    table.summary-list tr td.data-column-35 { width: 35% }
+    table.summary-list tr td.data-column-40 { width: 40% }
+    table.summary-list tr td.data-column-45 { width: 45% }
+    table.summary-list tr td.data-column-50 { width: 50% }
+    table.summary-list tr td.data-column-55 { width: 55% }
+    table.summary-list tr td.data-column-60 { width: 60% }
+    table.summary-list tr td.data-column-65 { width: 65% }
+    table.summary-list tr td.data-column-70 { width: 70% }
+    table.summary-list tr td.data-column-75 { width: 75% }
+    table.summary-list tr td.data-column-80 { width: 80% }
+    table.summary-list tr td.data-column-85 { width: 85% }
+    table.summary-list tr td.data-column-90 { width: 90% }
+    table.summary-list tr td.data-column-95 { width: 95% }
+
+    ul {
+        padding: 0 0 0 10px;
+    }
+
+</style>
+
+<h1>Use of force</h1>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>07 September 2020, 2:02:00 am</td>
+            <td>30 March 2021, 11:31:16 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>FIGHT_BETWEEN_PRISONERS</li><li>REFUSAL_TO_LOCATE_TO_CELL</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>REFUSAL_TO_LOCATE_TO_CELL</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>NTRG</td>
+                    <td>sdfsdf</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>SEGREGATION_UNIT</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 323</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>30 March 2021, 11:31:16 am</td></tr>
+            <tr><td>Updated date</td><td>02 April 2021, 11:35:26 am</td></tr>
+            <tr><td>Submitted date</td><td>30 March 2021, 11:31:16 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 180</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>07 April 2021, 2:03:00 am</td>
+            <td>08 April 2021, 9:23:51 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_A_MEMBER_OF_STAFF</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>VEHICLE</td>
+                    <td>adcdas</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>CELLULAR_VEHICLE</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 334</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Updated date</td><td>21 April 2021, 10:09:25 am</td></tr>
+            <tr><td>Submitted date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>REMOVAL_REQUESTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 332</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Updated date</td><td>11 April 2021, 9:25:19 am</td></tr>
+            <tr><td>Submitted date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 333</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Updated date</td><td>11 April 2021, 9:25:20 am</td></tr>
+            <tr><td>Submitted date</td><td>08 April 2021, 9:23:51 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 280</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>04 May 2021, 12:12:00 pm</td>
+            <td>No Data Held</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>IN_PROGRESS</td>
+            <td>BFI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_BY_A_MEMBER_OF_PUBLIC</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+    
+        <p>No Data Held</p>
+    
+    <h3>End of information for use of force incident 357</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>03 March 2021, 9:12:00 pm</td>
+            <td>30 March 2021, 11:14:13 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>YES</td>
+            <td>Yes</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                    <tr>
+                        <td>assaasasas</td>
+                        <td>asasasasasasasa</td>
+                    </tr>
+                
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul><li>Test User</li><li>Test User 2</li></ul></td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_A_MEMBER_OF_STAFF</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>OTHER</td>
+                    <td>asdsadasd</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>dsdsd</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>fsf FGSDgf s gfsdgGG  gf ggrf</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 319</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>30 March 2021, 11:14:13 am</td></tr>
+            <tr><td>Updated date</td><td>02 April 2021, 11:15:17 am</td></tr>
+            <tr><td>Submitted date</td><td>30 March 2021, 11:14:13 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 245</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>11 April 2021, 12:21:00 pm</td>
+            <td>12 April 2021, 9:45:20 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_BY_A_MEMBER_OF_PUBLIC</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>FULL</td>
+                    <td>dsdsd</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>SPECIAL_ACCOMMODATION</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 346</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>ffddsf f dfsdf sdfsdf sdfsd</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>12 April 2021, 9:45:20 am</td></tr>
+            <tr><td>Updated date</td><td>12 April 2021, 9:45:39 am</td></tr>
+            <tr><td>Submitted date</td><td>12 April 2021, 9:45:39 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Statement ID</td><td>346</td></tr>
+                <tr><td>Additional comment</td><td>dasfds  f fgsf gdf</td></tr>
+                <tr><td>Date submitted</td><td>13 April 2021, 10:54:20 am</td></tr>
+            </table>
+            <br>
+        
+        
+        <br>
+    
+        <h4>Statement 347</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>12 April 2021, 9:45:20 am</td></tr>
+            <tr><td>Updated date</td><td>15 April 2021, 9:50:02 am</td></tr>
+            <tr><td>Submitted date</td><td>12 April 2021, 9:45:20 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 287</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>19 April 2021, 2:21:00 am</td>
+            <td>27 April 2021, 12:08:11 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>PHYSICAL_THREAT</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>NTRG</td>
+                    <td>dsd</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>SEGREGATION_UNIT</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 386</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>27 April 2021, 12:08:11 pm</td></tr>
+            <tr><td>Updated date</td><td>27 April 2021, 12:11:48 pm</td></tr>
+            <tr><td>Submitted date</td><td>27 April 2021, 12:08:11 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 385</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>27 April 2021, 12:08:11 pm</td></tr>
+            <tr><td>Updated date</td><td>30 April 2021, 12:10:20 pm</td></tr>
+            <tr><td>Submitted date</td><td>27 April 2021, 12:08:11 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 314</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>No Data Held</td>
+            <td>No Data Held</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>IN_PROGRESS</td>
+            <td>TRN</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           
+               <p>No Data Held</p>
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+    
+
+    <h2>Statements</h2>
+    
+    
+        <p>No Data Held</p>
+    
+    <h3>End of information for use of force incident 525</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>No Data Held</td>
+            <td>No Data Held</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>IN_PROGRESS</td>
+            <td>TRN</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           
+               <p>No Data Held</p>
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>SELF_HARM</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+    
+
+    <h2>Statements</h2>
+    
+    
+        <p>No Data Held</p>
+    
+    <h3>End of information for use of force incident 437</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>19 June 2020, 3:09:00 pm</td>
+            <td>22 June 2020, 8:54:45 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>FULL</td>
+                    <td>sdsds</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 215</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>12 October 2020, 9:53:39 am</td></tr>
+            <tr><td>Updated date</td><td>16 October 2024, 10:44:14 am</td></tr>
+            <tr><td>Submitted date</td><td>22 June 2020, 8:54:45 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 216</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>12 October 2020, 9:53:52 am</td></tr>
+            <tr><td>Updated date</td><td>16 October 2024, 10:44:14 am</td></tr>
+            <tr><td>Submitted date</td><td>22 June 2020, 8:54:45 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 217</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>12 October 2020, 9:54:10 am</td></tr>
+            <tr><td>Updated date</td><td>16 October 2024, 10:44:14 am</td></tr>
+            <tr><td>Submitted date</td><td>22 June 2020, 8:54:45 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 168</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>sdasdsdsadasd</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>22 June 2020, 8:54:45 am</td></tr>
+            <tr><td>Updated date</td><td>09 July 2020, 11:56:00 am</td></tr>
+            <tr><td>Submitted date</td><td>09 July 2020, 11:56:00 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 151</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>No Data Held</td>
+            <td>No Data Held</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>IN_PROGRESS</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           
+               <p>No Data Held</p>
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>Yes</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+    
+
+    <h2>Statements</h2>
+    
+    
+        <p>No Data Held</p>
+    
+    <h3>End of information for use of force incident 238</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>04 August 2020, 8:47:00 pm</td>
+            <td>04 August 2020, 8:48:23 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>COMPLETE</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>FULL</td>
+                    <td>dsdsd</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>OWN_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 198</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>sdsdsds</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>04 August 2020, 8:48:23 pm</td></tr>
+            <tr><td>Updated date</td><td>04 August 2020, 8:49:03 pm</td></tr>
+            <tr><td>Submitted date</td><td>04 August 2020, 8:49:03 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Statement ID</td><td>198</td></tr>
+                <tr><td>Additional comment</td><td>this is an additional comment</td></tr>
+                <tr><td>Date submitted</td><td>01 October 2020, 1:08:37 pm</td></tr>
+            </table>
+            <br>
+        
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 175</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>22 June 2020, 9:43:00 am</td>
+            <td>09 July 2020, 11:54:10 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>COMPLETE</td>
+            <td>AGI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>Yes</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                    <tr>
+                        <td>sasa</td>
+                        <td>sasasasas</td>
+                    </tr>
+                
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>sdsds</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 177</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>zxczcxc</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>09 July 2020, 11:54:10 am</td></tr>
+            <tr><td>Updated date</td><td>09 July 2020, 11:54:34 am</td></tr>
+            <tr><td>Submitted date</td><td>09 July 2020, 11:54:34 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Statement ID</td><td>177</td></tr>
+                <tr><td>Additional comment</td><td>sasasa</td></tr>
+                <tr><td>Date submitted</td><td>09 July 2020, 11:55:01 am</td></tr>
+            </table>
+            <br>
+        
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 153</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>22 June 2020, 9:11:00 am</td>
+            <td>22 June 2020, 9:11:50 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>COMPLETE</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>YES</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>SIDE</td>
+                    <td>asds</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 169</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>sasdsdsd</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>22 June 2020, 9:11:50 am</td></tr>
+            <tr><td>Updated date</td><td>09 July 2020, 11:55:31 am</td></tr>
+            <tr><td>Submitted date</td><td>09 July 2020, 11:55:31 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 152</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>04 May 2021, 9:21:00 pm</td>
+            <td>05 May 2021, 2:18:55 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>FIGHT_BETWEEN_PRISONERS</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>FULL</td>
+                    <td>bob</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>CELLULAR_VEHICLE</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 407</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>xsfadfas</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>05 May 2021, 2:18:55 pm</td></tr>
+            <tr><td>Updated date</td><td>05 May 2021, 2:21:00 pm</td></tr>
+            <tr><td>Submitted date</td><td>05 May 2021, 2:21:00 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 408</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>05 May 2021, 2:18:55 pm</td></tr>
+            <tr><td>Updated date</td><td>08 May 2021, 2:20:16 pm</td></tr>
+            <tr><td>Submitted date</td><td>05 May 2021, 2:18:55 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 327</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>04 May 2021, 12:34:00 pm</td>
+            <td>05 May 2021, 2:56:40 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_ANOTHER_PRISONER</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>Fred Blogs</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>OWN_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 410</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>05 May 2021, 2:56:40 pm</td></tr>
+            <tr><td>Updated date</td><td>08 May 2021, 3:00:21 pm</td></tr>
+            <tr><td>Submitted date</td><td>05 May 2021, 2:56:40 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 409</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>Your statement</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>05 May 2021, 2:56:40 pm</td></tr>
+            <tr><td>Updated date</td><td>05 May 2021, 2:58:55 pm</td></tr>
+            <tr><td>Submitted date</td><td>05 May 2021, 2:58:55 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 328</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>10 July 2022, 2:21:00 am</td>
+            <td>11 July 2022, 9:35:43 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>Yes</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>HMPPS Mordor</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul><li>Test User</li></ul></td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>Yes</td>
+                     <td>Yes</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>Yes</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td><li>ON_BACK</li></td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_ANOTHER_PRISONER</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>dsdsd</td>
+                    <td>Yes</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 524</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>sddsfsdfsdg</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>11 July 2022, 9:35:43 pm</td></tr>
+            <tr><td>Updated date</td><td>11 July 2022, 9:35:54 pm</td></tr>
+            <tr><td>Submitted date</td><td>11 July 2022, 9:35:54 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 525</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>11 July 2022, 9:35:43 pm</td></tr>
+            <tr><td>Updated date</td><td>14 July 2022, 9:40:09 pm</td></tr>
+            <tr><td>Submitted date</td><td>11 July 2022, 9:35:43 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 404</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>13 June 2022, 2:21:00 am</td>
+            <td>11 July 2022, 9:34:02 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>COMPLETE</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>YES</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul><li>dsd</li></ul></td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>Yes</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_A_MEMBER_OF_STAFF</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>NTRG</td>
+                    <td>dsfdsfs</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>SEGREGATION_UNIT</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 523</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>cdcdvdvc</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>11 July 2022, 9:34:02 pm</td></tr>
+            <tr><td>Updated date</td><td>11 July 2022, 9:34:12 pm</td></tr>
+            <tr><td>Submitted date</td><td>11 July 2022, 9:34:12 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 398</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>10 June 2024, 12:00:00 pm</td>
+            <td>No Data Held</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>IN_PROGRESS</td>
+            <td>ASI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul></ul>No Data Held</td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>NO</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>NONE</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>NO</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No</td>
+                     <td><li>STANDING</li></td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+            <table class="summary-list">
+                <tr><td>Reasons</td><td><ul><li>ASSAULT_ON_ANOTHER_PRISONER</li></ul></td></tr>
+                <tr><td>Primary Reason (if more than one)</td><td>No Data Held</td></tr>
+            </table>
+        
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>ee</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>OWN_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+    
+        <p>No Data Held</p>
+    
+    <h3>End of information for use of force incident 491</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>09 February 2021, 12:02:00 pm</td>
+            <td>11 February 2021, 4:20:49 pm</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-50">Name</td>
+                     <td class="data-column-50">Prison name</td>
+                 </tr>
+                 <tr>
+                     <td>Homer Simpson</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+         
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>No</td></tr>
+               <tr><td>Authorised by</td><td>No Data Held</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul><li>Test User</li></ul></td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>SIDE</td>
+                    <td>dcsf</td>
+                    <td>No</td>
+                    <td>No</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td>No</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>SPECIAL_ACCOMMODATION</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 262</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>11 February 2021, 4:20:49 pm</td></tr>
+            <tr><td>Updated date</td><td>14 February 2021, 4:25:12 pm</td></tr>
+            <tr><td>Submitted date</td><td>11 February 2021, 4:20:49 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+        <h4>Statement 261</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>sdccxvxc</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>11 February 2021, 4:20:49 pm</td></tr>
+            <tr><td>Updated date</td><td>11 February 2021, 4:21:25 pm</td></tr>
+            <tr><td>Submitted date</td><td>11 February 2021, 4:21:25 pm</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>SUBMITTED</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 227</h3>
+
+    <h2>Incident of use of force</h2>
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-50">Incident date</td>
+            <td class="data-column-50">Date submitted</td>
+        </tr>
+        <tr>
+            <td>03 March 2021, 12:02:00 pm</td>
+            <td>04 March 2021, 8:29:02 am</td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Status</td>
+            <td class="data-column-25">Agency ID</td>
+            <td class="data-column-25">Reporter name</td>
+            <td class="data-column-25"></td>
+        </tr>
+        <tr>
+            <td>SUBMITTED</td>
+            <td>MDI</td>
+            <td>Homer Simpson</td>
+            <td></td>
+        </tr>
+    </table>
+
+    <br>
+    <h2>Form response</h2>
+    
+        <h4>Evidence</h4>
+        <br>
+        
+        <table class="data-table">
+            <tr>
+                <td>CCTV recording</td>
+                <td>Bagged evidence</td>
+                <td>Photographs taken</td>
+            </tr>
+        <tr>
+            <td>NO</td>
+            <td>No</td>
+            <td>No</td>
+        </tr>
+        </table>
+            <br>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Evidence tag reference</td>
+                    <td class="data-column-75">Description</td>
+                </tr>
+                
+                
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                
+            </table>
+        
+        
+        <br>
+        <h4>Involved staff</h4>
+         
+         
+             <p>No Data Held</p>
+         
+
+        <h4>Incident details</h4>
+        <br>
+           
+           <table class="summary-list">
+               <tr><td>Location</td><td>Hogwarts</td></tr>
+               <tr><td>Planned use of force</td><td>Yes</td></tr>
+               <tr><td>Authorised by</td><td>Admin User</td></tr>
+               <tr>
+                   <td>Witnesses</td>
+                   <td><ul><li>ssdsdd</li></ul></td>
+               </tr>
+           </table>
+           
+           
+
+        <br>
+        <h4>Use of force details</h4>
+        <br>
+         
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Body-worn camera</td>
+                     <td class="data-column-50">Body-worn camera numbers</td>
+                     <td class="data-column-25">Handcuffs applied</td>
+                 </tr>
+                 <tr>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pava drawn</td>
+                     <td class="data-column-25">Pava used</td>
+                     <td class="data-column-25">Baton drawn</td>
+                     <td class="data-column-25">Baton used</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Pain inducing techniques</td>
+                     <td class="data-column-50">Pain inducing techniques used</td>
+                     <td class="data-column-25">Personal protection techniques</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>Yes</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Positive communication</td>
+                     <td class="data-column-50">Weapons observed</td>
+                     <td class="data-column-25">Weapon types</td>
+                 </tr>
+                 <tr>
+                     <td>Yes</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+             <table class="data-table">
+                 <tr>
+                     <td class="data-column-25">Guiding hold</td>
+                     <td class="data-column-25">Escorting hold</td>
+                     <td class="data-column-50">Restraint positions</td>
+                 </tr>
+                 <tr>
+                     <td>No</td>
+                     <td>No Data Held</td>
+                     <td>No Data Held</td>
+                 </tr>
+             </table>
+        
+        
+
+        <br>
+        <h4>Reasons for use of force</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h4>Relocation and injuries</h4>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Relocation type</td>
+                    <td class="data-column-25">F213 completed by</td>
+                    <td class="data-column-25">Prisoner injuries</td>
+                    <td class="data-column-25">Healthcare involved</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>sdadas</td>
+                    <td>No</td>
+                    <td>Yes</td>
+
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Healthcare practioner name</td>
+                    <td class="data-column-25">Was the prisoner compliant?</td>
+                    <td class="data-column-25">Staff medical attention</td>
+                    <td class="data-column-25">Prisoner hospitalisation</td>
+                </tr>
+                <tr>
+                    <td>dsffds</td>
+                    <td>Yes</td>
+                    <td>Yes</td>
+                    <td>No</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Prisoner relocation</td>
+                    <td class="data-column-50">Other relocation type</td>
+                </tr>
+                <tr>
+                    <td>GATED_CELL</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+    
+
+    <h2>Statements</h2>
+    
+        <h4>Statement 292</h4>
+        <table class="data-table">
+            <tr><td>Statement</td></tr><tr><td>No Data Held</td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Created date</td><td>04 March 2021, 8:29:02 am</td></tr>
+            <tr><td>Updated date</td><td>07 March 2021, 8:30:32 am</td></tr>
+            <tr><td>Submitted date</td><td>04 March 2021, 8:29:02 am</td></tr>
+            <tr><td>Name</td><td>Homer Simpson</td></tr>
+            <tr><td>Statement status</td><td>PENDING</td></tr>
+        </table>
+
+        <h4>Statement amendments</h4>
+        <br>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+    
+    
+    <h3>End of information for use of force incident 243</h3>
+

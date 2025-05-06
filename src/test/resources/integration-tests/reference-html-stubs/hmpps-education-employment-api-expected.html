@@ -1,0 +1,1321 @@
+<style>
+    * {
+        font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+        font-size: 12pt;
+        color: #0b0c0c;
+    }
+    /* --- HEADINGS --- */
+
+    h1, h2, h3 {
+        color: #0b0c0c;
+        font-weight: 700;
+        display: block;
+        margin-top: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    h1 {
+        font-size: 18pt;
+        line-height: 1.09375;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+    }
+
+    h2 {
+        font-size: 17pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h3 {
+        font-size: 16pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h4 {
+        font-size: 15pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h5 {
+        font-size: 14pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    /* --- SUMMARY LIST --- */
+
+    table.summary-list {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.summary-list tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.summary-list tr td {
+        border-bottom: 1px solid #b1b4b6;
+        /*margin-bottom: 5px;*/
+        overflow-wrap: break-word;
+        display: table-cell;
+        /*padding-top: 2px;*/
+        /*padding-bottom: 2px;*/
+        /*padding-right: 0;*/
+        margin-inline-start: 40px;
+        width: 70%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    table.summary-list tr td:first-child {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        vertical-align: top;
+    }
+
+    /* --- DATA TABLE --- */
+
+    table.data-table {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.data-table tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.data-table tr td {
+        border-bottom: 1px solid #b1b4b6;
+        margin-bottom: 5px;
+        overflow-wrap: break-word;
+        display: table-cell;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-right: 0;
+        margin-inline-start: 40px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: pre-wrap;
+        vertical-align: top;
+    }
+
+    table.data-table tr:first-child td {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        border-bottom: none;
+        vertical-align: top;
+    }
+
+    table.data-table tr td.data-column-5 { width: 5% }
+    table.data-table tr td.data-column-10 { width: 10% }
+    table.data-table tr td.data-column-15 { width: 15% }
+    table.data-table tr td.data-column-20 { width: 20% }
+    table.data-table tr td.data-column-25 { width: 25% }
+    table.data-table tr td.data-column-30 { width: 30% }
+    table.data-table tr td.data-column-35 { width: 35% }
+    table.data-table tr td.data-column-40 { width: 40% }
+    table.data-table tr td.data-column-45 { width: 45% }
+    table.data-table tr td.data-column-50 { width: 50% }
+    table.data-table tr td.data-column-55 { width: 55% }
+    table.data-table tr td.data-column-60 { width: 60% }
+    table.data-table tr td.data-column-65 { width: 65% }
+    table.data-table tr td.data-column-70 { width: 70% }
+    table.data-table tr td.data-column-75 { width: 75% }
+    table.data-table tr td.data-column-80 { width: 80% }
+    table.data-table tr td.data-column-85 { width: 85% }
+    table.data-table tr td.data-column-90 { width: 90% }
+    table.data-table tr td.data-column-95 { width: 95% }
+
+    table tr td.data-column-5 { width: 5% }
+    table tr td.data-column-10 { width: 10% }
+    table tr td.data-column-15 { width: 15% }
+    table tr td.data-column-20 { width: 20% }
+    table tr td.data-column-25 { width: 25% }
+    table tr td.data-column-30 { width: 30% }
+    table tr td.data-column-35 { width: 35% }
+    table tr td.data-column-40 { width: 40% }
+    table tr td.data-column-45 { width: 45% }
+    table tr td.data-column-50 { width: 50% }
+    table tr td.data-column-55 { width: 55% }
+    table tr td.data-column-60 { width: 60% }
+    table tr td.data-column-65 { width: 65% }
+    table tr td.data-column-70 { width: 70% }
+    table tr td.data-column-75 { width: 75% }
+    table tr td.data-column-80 { width: 80% }
+    table tr td.data-column-85 { width: 85% }
+    table tr td.data-column-90 { width: 90% }
+    table tr td.data-column-95 { width: 95% }
+
+    table.summary-list tr td.data-column-5 { width: 5% }
+    table.summary-list tr td.data-column-10 { width: 10% }
+    table.summary-list tr td.data-column-15 { width: 15% }
+    table.summary-list tr td.data-column-20 { width: 20% }
+    table.summary-list tr td.data-column-25 { width: 25% }
+    table.summary-list tr td.data-column-30 { width: 30% }
+    table.summary-list tr td.data-column-35 { width: 35% }
+    table.summary-list tr td.data-column-40 { width: 40% }
+    table.summary-list tr td.data-column-45 { width: 45% }
+    table.summary-list tr td.data-column-50 { width: 50% }
+    table.summary-list tr td.data-column-55 { width: 55% }
+    table.summary-list tr td.data-column-60 { width: 60% }
+    table.summary-list tr td.data-column-65 { width: 65% }
+    table.summary-list tr td.data-column-70 { width: 70% }
+    table.summary-list tr td.data-column-75 { width: 75% }
+    table.summary-list tr td.data-column-80 { width: 80% }
+    table.summary-list tr td.data-column-85 { width: 85% }
+    table.summary-list tr td.data-column-90 { width: 90% }
+    table.summary-list tr td.data-column-95 { width: 95% }
+
+    ul {
+        padding: 0 0 0 10px;
+    }
+
+</style>
+
+<h1>Work Readiness</h1>
+
+    <br>
+    <table class="data-table">
+        <tr>
+            <td class="data-column-25">Created date</td>
+            <td class="data-column-25">Modified date</td>
+        </tr>
+        <tr>
+            <td>24 March 2023, 1:59:16 pm</td>
+            <td>25 March 2023, 6:14:28 pm</td>
+        </tr>
+    </table>
+
+    <h2>Profile data</h2>
+    
+        <table class="summary-list">
+            <tr><td>Prison name</td><td>Moorland</td></tr>
+            <tr><td>Status</td><td>SUPPORT_NEEDED</td></tr>
+            <tr><td>Status change</td><td>No</td></tr>
+            <tr><td>Status change type</td><td>NEW</td></tr>
+            <tr><td>Status change date</td><td>08 May 2023, 1:59:16 pm</td></tr>
+        </table>
+
+        <h3>Support Accepted</h3>
+        
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>25 March 2023, 6:14:28 pm</td></tr>
+            </table>
+
+            <h4>Actions Required</h4>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>25 March 2023, 6:14:04 pm</td></tr>
+                </table>
+                <h5>Actions</h5>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>BIRTH_CERTIFICATE, PASSPORT</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h4>Work Impacts</h4>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>25 March 2023, 6:14:28 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>Yes</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, CARING_RESPONSIBILITIES, PHYSICAL_HEALTH_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h4>Work Interests</h4>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 2:00:29 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY, RETAIL</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h4>Work Experience</h4>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+        
+        
+
+        <h3>Support Declined</h3>
+        
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>15 November 2023, 6:14:04 pm</td></tr>
+                <tr><td>Support to work declined reason</td><td>FULL_TIME_CARER, HEALTH</td></tr>
+                <tr><td>Support to work declined reason other</td><td>other reason</td></tr>
+                <tr><td>Circumstance changes required to work</td><td>DEPENDENCY_SUPPORT, MENTAL_HEALTH_SUPPORT</td></tr>
+                <tr><td>Circumstance changes required to work other</td><td>other changes</td></tr>
+            </table>
+        
+        
+
+        <h3>Support Accepted History</h3>
+        
+            <h4>Support Accepted</h4>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>25 March 2023, 6:14:04 pm</td></tr>
+            </table>
+
+            <h5>Actions Required</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>25 March 2023, 6:14:04 pm</td></tr>
+                </table>
+                <br/>
+                <b>Actions</b>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h5>Work Impacts</h5>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>24 March 2023, 1:59:59 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, PHYSICAL_HEALTH_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Interests</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 2:00:29 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY, RETAIL</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Experience</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+        
+            <h4>Support Accepted</h4>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>24 March 2023, 2:00:29 pm</td></tr>
+            </table>
+
+            <h5>Actions Required</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:27 pm</td></tr>
+                </table>
+                <br/>
+                <b>Actions</b>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h5>Work Impacts</h5>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>24 March 2023, 1:59:59 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, PHYSICAL_HEALTH_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Interests</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 2:00:29 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY, RETAIL</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Experience</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+        
+            <h4>Support Accepted</h4>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>24 March 2023, 1:59:59 pm</td></tr>
+            </table>
+
+            <h5>Actions Required</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:27 pm</td></tr>
+                </table>
+                <br/>
+                <b>Actions</b>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h5>Work Impacts</h5>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>24 March 2023, 1:59:59 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, PHYSICAL_HEALTH_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Interests</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Experience</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+        
+            <h4>Support Accepted</h4>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>24 March 2023, 1:59:27 pm</td></tr>
+            </table>
+
+            <h5>Actions Required</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:27 pm</td></tr>
+                </table>
+                <br/>
+                <b>Actions</b>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>IN_PROGRESS</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h5>Work Impacts</h5>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>24 March 2023, 1:59:16 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, DEPENDENCY_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Interests</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Experience</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+        
+            <h4>Support Accepted</h4>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+            </table>
+
+            <h5>Actions Required</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                </table>
+                <br/>
+                <b>Actions</b>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>BANK_ACCOUNT</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>CV_AND_COVERING_LETTER</td>
+                            <td>COMPLETED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>DISCLOSURE_LETTER</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>EMAIL</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>PHONE</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>HOUSING</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                    <table class="data-table">
+                        <tr>
+                            <td class="data-column-20">Todo Item</td>
+                            <td class="data-column-20">Status</td>
+                            <td class="data-column-20">Other</td>
+                            <td class="data-column-40">Identity documents</td>
+                        </tr>
+                        <tr>
+                            <td>ID</td>
+                            <td>NOT_STARTED</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    </table>
+                
+                
+            
+            
+
+            <h5>Work Impacts</h5>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Modified date</td>
+                        <td class="data-column-50">Caring responsibilities full time</td>
+                    </tr>
+                    <tr>
+                        <td>24 March 2023, 1:59:16 pm</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Able to manage mental health</td>
+                        <td class="data-column-50">Able to manage dependencies</td>
+                    </tr>
+                    <tr>
+                        <td>No</td>
+                        <td>No</td>
+                    </tr>
+                </table>
+                <table class="summary-list">
+                    <tr><td>Ability to work impacted by</td><td>FAMILY_ISSUES, DEPENDENCY_ISSUES</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Interests</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Work types of interest</td><td>OUTDOOR, BEAUTY</td></tr>
+                    <tr><td>Work types of interest other</td><td>No Data Held</td></tr>
+                    <tr><td>Job of particular interest</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+            <h5>Work Experience</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Modified date</td><td>24 March 2023, 1:59:16 pm</td></tr>
+                    <tr><td>Qualifications and training</td><td>FIRST_AID, FOOD_HYGIENE, DRIVING_LICENSE</td></tr>
+                    <tr><td>Previous work or volunteering</td><td>No Data Held</td></tr>
+                    <tr><td>Qualifications and training other</td><td>No Data Held</td></tr>
+                </table>
+            
+            
+
+        
+        
+
+        <h3>Support Declined History</h3>
+        
+            <h5>Support Declined</h5>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>15 November 2023, 6:14:04 pm</td></tr>
+                <tr><td>Support to work declined reason</td><td>FULL_TIME_CARER, HEALTH</td></tr>
+                <tr><td>Support to work declined reason other</td><td>other reason, </td></tr>
+                <tr><td>Circumstance changes required to work</td><td>DEPENDENCY_SUPPORT, MENTAL_HEALTH_SUPPORT</td></tr>
+                <tr><td>Circumstance changes required to work other</td><td>other changes, </td></tr>
+            </table>
+        
+            <h5>Support Declined</h5>
+            <table class="summary-list">
+                <tr><td>Modified date</td><td>13 October 2023, 1:11:34 pm</td></tr>
+                <tr><td>Support to work declined reason</td><td>OTHER</td></tr>
+                <tr><td>Support to work declined reason other</td><td>other reason</td></tr>
+                <tr><td>Circumstance changes required to work</td><td>OTHER</td></tr>
+                <tr><td>Circumstance changes required to work other</td><td>other changes</td></tr>
+            </table>
+        
+        
+
+    
+    

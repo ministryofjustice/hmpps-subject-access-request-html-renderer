@@ -30,8 +30,10 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.LocationDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
@@ -47,6 +49,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
   @MockitoBean
   private lateinit var prisonDetailsRepository: PrisonDetailsRepository
 
+  @MockitoBean
+  private lateinit var locationDetailsRepository: LocationDetailsRepository
+
   @BeforeEach
   fun setup() {
     // Remove the cache client token to force each test to obtain an Auth token before calling out to external APIs
@@ -61,6 +66,16 @@ class RenderControllerIntTest : IntegrationTestBase() {
       val id = it.arguments[0] as String
       PrisonDetail(id, "HMPPS Mordor")
     }
+
+    whenever(locationDetailsRepository.findByDpsId(any())).doAnswer {
+      val dpsId = it.arguments[0] as String
+      LocationDetail(dpsId, 666, "Hogwarts")
+    }
+
+    whenever(locationDetailsRepository.findByNomisId(any())).doAnswer {
+      val nomisId = it.arguments[0] as Int
+      LocationDetail("666", nomisId, "Hogwarts")
+    }
   }
 
   @AfterEach
@@ -74,9 +89,33 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api | Incentives",
+        "keyworker-api | Keyworker",
+        "offender-case-notes | Sensitive Case Notes",
+        "court-case-service | Prepare a Case for Sentence",
+        "hmpps-restricted-patients-api | Restricted Patients",
+        "hmpps-accredited-programmes-api | Accredited Programmes",
+        "hmpps-complexity-of-need | Complexity Of Need",
+        "offender-management-allocation-manager | Manage Prison Offender Manager Cases",
         "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-education-and-work-plan-api | Personal Learning Plan",
+        "hmpps-non-associations-api | Non-associations",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-manage-adjudications-api | Manage Adjudications",
+        "hmpps-offender-categorisation-api | Categorisation Tool",
+        "make-recall-decision-api | Consider a Recall",
+        "hmpps-hdc-api | Home Detention Curfew",
+        "create-and-vary-a-licence-api | Create and Vary a Licence",
+        "hmpps-uof-data-api | Use of Force",
+        "hmpps-activities-management-api | Manage Activities and Appointments",
+        "hmpps-interventions-service | Refer and Monitor an Intervention",
+        "hmpps-resettlement-passport-api | Prepare Someone for Release",
+        "hmpps-approved-premises-api | Approved Premises",
+        "hmpps-education-employment-api | Education Employment",
+        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
+        "g1 | G1",
+        "g2 | G2",
+        "g3 | G3",
       ],
       delimiterString = "|",
     )
@@ -152,10 +191,33 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api | Incentives",
+        "keyworker-api | Keyworker",
+        "offender-case-notes | Sensitive Case Notes",
+        "court-case-service | Prepare a Case for Sentence",
+        "hmpps-restricted-patients-api | Restricted Patients",
+        "hmpps-accredited-programmes-api | Accredited Programmes",
+        "hmpps-complexity-of-need | Complexity Of Need",
+        "offender-management-allocation-manager | Manage Prison Offender Manager Cases",
         "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-education-and-work-plan-api | Personal Learning Plan",
+        "hmpps-non-associations-api | Non-associations",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-manage-adjudications-api | Manage Adjudications",
+        "hmpps-offender-categorisation-api | Categorisation Tool",
+        "make-recall-decision-api | Consider a Recall",
+        "hmpps-hdc-api | Home Detention Curfew",
+        "create-and-vary-a-licence-api | Create and Vary a Licence",
+        "hmpps-uof-data-api | Use of Force",
+        "hmpps-activities-management-api | Manage Activities and Appointments",
+        "hmpps-interventions-service | Refer and Monitor an Intervention",
+        "hmpps-resettlement-passport-api | Prepare Someone for Release",
+        "hmpps-approved-premises-api | Approved Premises",
+        "hmpps-education-employment-api | Education Employment",
+        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
-        "G1 | G1",
+        "g1 | G1",
+        "g2 | G2",
+        "g3 | G3",
       ],
       delimiterString = "|",
     )
@@ -185,10 +247,33 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api | Incentives",
+        "keyworker-api | Keyworker",
+        "offender-case-notes | Sensitive Case Notes",
+        "court-case-service | Prepare a Case for Sentence",
+        "hmpps-restricted-patients-api | Restricted Patients",
+        "hmpps-accredited-programmes-api | Accredited Programmes",
+        "hmpps-complexity-of-need | Complexity Of Need",
+        "offender-management-allocation-manager | Manage Prison Offender Manager Cases",
         "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-education-and-work-plan-api | Personal Learning Plan",
+        "hmpps-non-associations-api | Non-associations",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-manage-adjudications-api | Manage Adjudications",
+        "hmpps-offender-categorisation-api | Categorisation Tool",
+        "make-recall-decision-api | Consider a Recall",
+        "hmpps-hdc-api | Home Detention Curfew",
+        "create-and-vary-a-licence-api | Create and Vary a Licence",
+        "hmpps-uof-data-api | Use of Force",
+        "hmpps-activities-management-api | Manage Activities and Appointments",
+        "hmpps-interventions-service | Refer and Monitor an Intervention",
+        "hmpps-resettlement-passport-api | Prepare Someone for Release",
+        "hmpps-approved-premises-api | Approved Premises",
+        "hmpps-education-employment-api | Education Employment",
+        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
-        "G1 | G1",
+        "g1 | G1",
+        "g2 | G2",
+        "g3 | G3",
       ],
       delimiterString = "|",
     )
@@ -221,10 +306,33 @@ class RenderControllerIntTest : IntegrationTestBase() {
     @ParameterizedTest
     @CsvSource(
       value = [
-        "hmpps-incentives-api | Incentives",
+        "keyworker-api | Keyworker",
+        "offender-case-notes | Sensitive Case Notes",
+        "court-case-service | Prepare a Case for Sentence",
+        "hmpps-restricted-patients-api | Restricted Patients",
+        "hmpps-accredited-programmes-api | Accredited Programmes",
+        "hmpps-complexity-of-need | Complexity Of Need",
+        "offender-management-allocation-manager | Manage Prison Offender Manager Cases",
         "hmpps-book-secure-move-api | Book a Secure Move",
+        "hmpps-education-and-work-plan-api | Personal Learning Plan",
+        "hmpps-non-associations-api | Non-associations",
+        "hmpps-incentives-api | Incentives",
+        "hmpps-manage-adjudications-api | Manage Adjudications",
+        "hmpps-offender-categorisation-api | Categorisation Tool",
+        "make-recall-decision-api | Consider a Recall",
+        "hmpps-hdc-api | Home Detention Curfew",
+        "create-and-vary-a-licence-api | Create and Vary a Licence",
+        "hmpps-uof-data-api | Use of Force",
+        "hmpps-activities-management-api | Manage Activities and Appointments",
+        "hmpps-interventions-service | Refer and Monitor an Intervention",
+        "hmpps-resettlement-passport-api | Prepare Someone for Release",
+        "hmpps-approved-premises-api | Approved Premises",
+        "hmpps-education-employment-api | Education Employment",
+        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
-        "G1 | G1",
+        "g1 | G1",
+        "g2 | G2",
+        "g3 | G3",
       ],
       delimiterString = "|",
     )
