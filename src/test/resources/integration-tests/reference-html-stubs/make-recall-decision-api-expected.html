@@ -1,0 +1,2281 @@
+<style>
+    * {
+        font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+        font-size: 12pt;
+        color: #0b0c0c;
+    }
+    /* --- HEADINGS --- */
+
+    h1, h2, h3 {
+        color: #0b0c0c;
+        font-weight: 700;
+        display: block;
+        margin-top: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    h1 {
+        font-size: 18pt;
+        line-height: 1.09375;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+    }
+
+    h2 {
+        font-size: 17pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h3 {
+        font-size: 16pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h4 {
+        font-size: 15pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h5 {
+        font-size: 14pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    /* --- SUMMARY LIST --- */
+
+    table.summary-list {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.summary-list tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.summary-list tr td {
+        border-bottom: 1px solid #b1b4b6;
+        /*margin-bottom: 5px;*/
+        overflow-wrap: break-word;
+        display: table-cell;
+        /*padding-top: 2px;*/
+        /*padding-bottom: 2px;*/
+        /*padding-right: 0;*/
+        margin-inline-start: 40px;
+        width: 70%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    table.summary-list tr td:first-child {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        vertical-align: top;
+    }
+
+    /* --- DATA TABLE --- */
+
+    table.data-table {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.data-table tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.data-table tr td {
+        border-bottom: 1px solid #b1b4b6;
+        margin-bottom: 5px;
+        overflow-wrap: break-word;
+        display: table-cell;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-right: 0;
+        margin-inline-start: 40px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: pre-wrap;
+        vertical-align: top;
+    }
+
+    table.data-table tr:first-child td {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        border-bottom: none;
+        vertical-align: top;
+    }
+
+    table.data-table tr td.data-column-5 { width: 5% }
+    table.data-table tr td.data-column-10 { width: 10% }
+    table.data-table tr td.data-column-15 { width: 15% }
+    table.data-table tr td.data-column-20 { width: 20% }
+    table.data-table tr td.data-column-25 { width: 25% }
+    table.data-table tr td.data-column-30 { width: 30% }
+    table.data-table tr td.data-column-35 { width: 35% }
+    table.data-table tr td.data-column-40 { width: 40% }
+    table.data-table tr td.data-column-45 { width: 45% }
+    table.data-table tr td.data-column-50 { width: 50% }
+    table.data-table tr td.data-column-55 { width: 55% }
+    table.data-table tr td.data-column-60 { width: 60% }
+    table.data-table tr td.data-column-65 { width: 65% }
+    table.data-table tr td.data-column-70 { width: 70% }
+    table.data-table tr td.data-column-75 { width: 75% }
+    table.data-table tr td.data-column-80 { width: 80% }
+    table.data-table tr td.data-column-85 { width: 85% }
+    table.data-table tr td.data-column-90 { width: 90% }
+    table.data-table tr td.data-column-95 { width: 95% }
+
+    table tr td.data-column-5 { width: 5% }
+    table tr td.data-column-10 { width: 10% }
+    table tr td.data-column-15 { width: 15% }
+    table tr td.data-column-20 { width: 20% }
+    table tr td.data-column-25 { width: 25% }
+    table tr td.data-column-30 { width: 30% }
+    table tr td.data-column-35 { width: 35% }
+    table tr td.data-column-40 { width: 40% }
+    table tr td.data-column-45 { width: 45% }
+    table tr td.data-column-50 { width: 50% }
+    table tr td.data-column-55 { width: 55% }
+    table tr td.data-column-60 { width: 60% }
+    table tr td.data-column-65 { width: 65% }
+    table tr td.data-column-70 { width: 70% }
+    table tr td.data-column-75 { width: 75% }
+    table tr td.data-column-80 { width: 80% }
+    table tr td.data-column-85 { width: 85% }
+    table tr td.data-column-90 { width: 90% }
+    table tr td.data-column-95 { width: 95% }
+
+    table.summary-list tr td.data-column-5 { width: 5% }
+    table.summary-list tr td.data-column-10 { width: 10% }
+    table.summary-list tr td.data-column-15 { width: 15% }
+    table.summary-list tr td.data-column-20 { width: 20% }
+    table.summary-list tr td.data-column-25 { width: 25% }
+    table.summary-list tr td.data-column-30 { width: 30% }
+    table.summary-list tr td.data-column-35 { width: 35% }
+    table.summary-list tr td.data-column-40 { width: 40% }
+    table.summary-list tr td.data-column-45 { width: 45% }
+    table.summary-list tr td.data-column-50 { width: 50% }
+    table.summary-list tr td.data-column-55 { width: 55% }
+    table.summary-list tr td.data-column-60 { width: 60% }
+    table.summary-list tr td.data-column-65 { width: 65% }
+    table.summary-list tr td.data-column-70 { width: 70% }
+    table.summary-list tr td.data-column-75 { width: 75% }
+    table.summary-list tr td.data-column-80 { width: 80% }
+    table.summary-list tr td.data-column-85 { width: 85% }
+    table.summary-list tr td.data-column-90 { width: 90% }
+    table.summary-list tr td.data-column-95 { width: 95% }
+
+    ul {
+        padding: 0 0 0 10px;
+    }
+
+</style>
+
+<h1>Consider a Recall</h1>
+<br>
+
+    <h3>Recommendations</h3>
+    <br>
+    
+        <table class="data-table">
+            <tr><td class="data-column-30">Sensitive</td></tr>
+            <tr><td>Yes</td></tr>
+        </table>
+        <br>
+        <h5>Recall considered list</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-20">Recall type</td>
+                <td class="data-column-80">Details</td>
+            </tr>
+            <tr>
+                <td>FIXED_TERM</td>
+                <td>Test</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Manager recall decision</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>RECALL</td>
+                <td>Test</td>
+            </tr>
+        </table>
+        <br>
+        <h5>Consideration Rationale</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Date created</td>
+                    <td class="data-column-30">Time created</td>
+                    <td class="data-column-35">Sensitive</td>
+                </tr>
+                <tr>
+                    <td>29 January 2025</td>
+                    <td>14:47</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Custody status</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Selected</td>
+                    <td class="data-column-65">Details</td>
+                </tr>
+                <tr>
+                    <td>NO</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Local police contact</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Contact name</td>
+                    <td class="data-column-25">Phone number</td>
+                    <td class="data-column-25">Fax number</td>
+                    <td class="data-column-25">Email address</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>test@email.com</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Emergency recall</td>
+                <td class="data-column-25">Indeterminate sentence</td>
+                <td class="data-column-25">Extended sentence</td>
+                <td class="data-column-25">Active custodial conviction count</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No</td>
+                <td>No</td>
+                <td>1</td>
+            </tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Response to probation</td></tr>
+            <tr><td>Test</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Thoughts leading to recall</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Trigger leading to recall</td></tr>
+            <tr><td>Test</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">What led to recall</td></tr>
+            <tr><td>test</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Has victims in contact scheme</td></tr>
+            <tr><td>NO</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Indeterminate sentence type</td></tr>
+            <tr><td>NO</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Has arrest issues</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>She bites people</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Has contraband risk</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Status</td>
+                <td class="data-column-30">Region</td>
+                <td class="data-column-35">Local delivery unit</td>
+            </tr>
+            <tr>
+                <td>DRAFT</td>
+                <td>South West</td>
+                <td>All South West</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Last Decision not to recall letter A downloaded</td>
+                <td class="data-column-30">Review practitioners concerns</td>
+                <td class="data-column-35">ODM name</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>Yes</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Senior Probation Officer recall type</td>
+                <td class="data-column-35">Review offender profile</td>
+            </tr>
+            <tr>
+                <td>RECALL</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Explain the decision</td>
+                <td class="data-column-30">Created</td>
+                <td class="data-column-35">Last modified</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>29 January 2025, 2:44:42 pm</td>
+                <td>29 January 2025, 3:15:16 pm</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-100">Senior Probation Officer recall rationale</td></tr>
+            <tr><td>Test</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Senior Probation Officer cancel recommendation rationale</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+
+        <h5>Person on probation</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Name</td>
+                    <td class="data-column-25">First name</td>
+                    <td class="data-column-25">Middle names</td>
+                    <td class="data-column-25">Surname</td>
+                </tr>
+                <tr>
+                    <td>Test User</td>
+                    <td>Test</td>
+                    <td>No Data Held</td>
+                    <td>User</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Gender</td>
+                    <td class="data-column-25">Ethnicity</td>
+                    <td class="data-column-25">Date of birth</td>
+                    <td class="data-column-25">Criminal records office number</td>
+                </tr>
+                <tr>
+                    <td>Female</td>
+                    <td>No Data Held</td>
+                    <td>29 September 1982</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Most recent prison number</td>
+                    <td class="data-column-25">Prisoner number</td>
+                    <td class="data-column-25">Police National Computer number</td>
+                    <td class="data-column-25">Primary language</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>A0610EC</td>
+                    <td>1982/2696655U</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Has been reviewed</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements level</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements start date</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements category</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    
+                </tr>
+            </table>
+            <p><b>Addresses</b></p>
+            
+            
+                <p>No Data Held</p>
+            
+        
+        
+
+        <h5>Conviction detail</h5>
+        
+            <table class="data-table">
+                <tr><td class="data-column-100">Index offence description</td></tr>
+                <tr><td>Making false statement to obtain insurance - 80902</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-25">Date of original offence</td></tr>
+                <tr><td>22 December 2024</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Sentence description</td></tr>
+                <tr><td>Adult Custody &lt; 12m</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Date of sentence</td>
+                    <td class="data-column-25">Length of sentence</td>
+                    <td class="data-column-25">Units</td>
+                </tr>
+                <tr>
+                    <td>22 December 2024</td>
+                    <td>6</td>
+                    <td>Months</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Sentence expiry</td>
+                    <td class="data-column-25">Second sentence length</td>
+                    <td class="data-column-25">Units</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Licence expiry</td>
+                    <td class="data-column-25">Custodial term</td>
+                    <td class="data-column-25">Extended term</td>
+                    <td class="data-column-25">Has been reviewed</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-20">Alternatives to recall tried</td>
+                <td class="data-column-80">Details</td>
+            </tr>
+            
+                <tr>
+                    <td>WARNINGS_LETTER</td>
+                    <td>Test</td>
+                </tr>
+            
+            
+        </table>
+
+        <h5>Licence conditions breached</h5>
+        
+            <table class="data-table">
+                <tr><td class="data-column-20">Standard licence conditions</td></tr>
+                <tr><td><li>NO_OFFENCE</li></td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">All options</td></tr>
+                
+                    <tr>
+                        <td>GOOD_BEHAVIOUR</td>
+                        <td>Be of good behaviour and not behave in a way which undermines the purpose of the licence period</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_OFFENCE</td>
+                        <td>Not commit any offence</td>
+                    </tr>
+                
+                    <tr>
+                        <td>KEEP_IN_TOUCH</td>
+                        <td>Keep in touch with the supervising officer in accordance with instructions given by the supervising officer</td>
+                    </tr>
+                
+                    <tr>
+                        <td>SUPERVISING_OFFICER_VISIT</td>
+                        <td>Receive visits from the supervising officer in accordance with instructions given by the supervising officer</td>
+                    </tr>
+                
+                    <tr>
+                        <td>ADDRESS_APPROVED</td>
+                        <td>Reside permanently at an address approved by the supervising officer and obtain the prior permission of the supervising officer for any stay of one or more nights at a different address</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_WORK_UNDERTAKEN</td>
+                        <td>Not undertake work, or a particular type of work, unless it is approved by the supervising officer and notify the supervising officer in advance of any proposal to undertake work or a particular type of work</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_TRAVEL_OUTSIDE_UK</td>
+                        <td>Not travel outside the United Kingdom, the Channel Islands or the Isle of Man except with the prior permission of your supervising officer or for the purposes of immigration deportation or removal</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NAME_CHANGE</td>
+                        <td>Tell your supervising officer if you use a name which is different to the name or names which appear on your licence</td>
+                    </tr>
+                
+                    <tr>
+                        <td>CONTACT_DETAILS</td>
+                        <td>Tell your supervising officer if you change or add any contact details, including phone number or email</td>
+                    </tr>
+                
+                
+            </table>
+            <br>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Additional licence conditions</td>
+                        <td class="data-column-30">Main Category code</td>
+                        <td class="data-column-35">Sub Category code</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">All options</td>
+                        <td class="data-column-30">Main Category code</td>
+                        <td class="data-column-35">Sub Category code</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-65">Details</td>
+                        <td class="data-column-35">Note</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+            
+        
+        
+
+        <h5>Create and Vary a Licence conditions breached</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-100">Additional licence conditions text</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Vulnerabilities</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            
+                <tr>
+                    <td>RISK_OF_SUICIDE_OR_SELF_HARM</td>
+                    <td>test</td>
+                </tr>
+            
+            
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Under integrated offender management</td></tr>
+            <tr><td>NO</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-100">Index offence details</td></tr>
+            <tr><td>OASys Question - &#x27;2.1 Brief offence(s) details (indicate what exactly happened, when, where and how)&#x27; - Answer Input - &#x27;High Rosh risk to Partners, Medium Rosh risk to male peers &amp; children&#x27;</td></tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-100">Offence analysis</td></tr>
+            <tr><td>test</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Offence data from latest complete assessment</td>
+                <td class="data-column-65">Offences match</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Fixed term additional licence conditions</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Is main address where person can be found</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>Pacific Ocean</td>
+            </tr>
+        </table>
+        <br>
+        
+        <br>
+        <h5>Reasons for no recall</h5>
+        
+        
+            <p>No data held</p>
+        
+        <br>
+        <h5>Next appointment</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h5>Has been reviewed</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h5>Previous releases</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last release date</td>
+                    <td class="data-column-30">Has been released previously</td>
+                    <td class="data-column-35">Last releasing prison/custodial establishment</td>
+                </tr>
+                <tr>
+                    <td>23 December 2024</td>
+                    <td>No</td>
+                    <td>Swansea HMP</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-20">Previous release dates</td></tr>
+                <tr><td>No Data Held</td></tr>
+            </table>
+        
+        
+        <br>
+        <h5>Previous recalls</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last recall date</td>
+                    <td class="data-column-30">Has been recalled previously</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td></td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-20">Previous recall dates</td></tr>
+                <tr><td>No Data Held</td></tr>
+            </table>
+        
+        
+        <br>
+        <table class="summary-list">
+            <tr><td class="data-column-100">Recommendation started domain event set</td><td>No</td></tr>
+        </table>
+        <br>
+        <h5>Current Risk of Serious Harm for part A</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Risk to children</td>
+                    <td class="data-column-30">Risk to public</td>
+                    <td class="data-column-35">Risk to known adult</td>
+                </tr>
+                <tr>
+                    <td>MEDIUM</td>
+                    <td>MEDIUM</td>
+                    <td>MEDIUM</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Risk to staff</td>
+                    <td class="data-column-30">Risk to prisoners</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>VERY_HIGH</td>
+                    <td>MEDIUM</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Risk of Serious Harm summary</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Nature of risk</td>
+                    <td class="data-column-30">Who is at risk</td>
+                    <td class="data-column-35">Risk imminence</td>
+                </tr>
+                <tr>
+                    <td>OASys Question - &#x27;R10.2 - What is the nature of the risk&#x27; - Answer Input - &#x27;Test Nature&#x27;</td>
+                    <td>OASys Question - &#x27;R10.1 Who is at risk.&#x27; - Answer Input - &#x27;Child&#x27;</td>
+                    <td>OASys Question - &#x27;R10.3 - When is the risk likely to be greatest Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release&#x27; - Answer Input - &#x27;Test Risk Greatest&#x27;</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last updates</td>
+                    <td class="data-column-30">Error</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>23 December 2024, 10:10:28 am</td>
+                    <td>No Data Held</td>
+                    <td></td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Risk increase factors</td></tr>
+                <tr><td>OASys Question - &#x27;R10.4 What circumstances are likely to increase risk Describe factors, actions, events which might increase level of risk, now and in the future - &#x27;Test Circumstances&#x27;</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Risk mitigation factors</td></tr>
+                <tr><td>OASys Question - &#x27;R10.5 - What factors are likely to reduce the risk Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped him / her? &#x27; - Answer Input - &#x27;Test Factors to reduce the risk&#x27;</td></tr>
+            </table>
+            <br>
+            <h5>Risk of serious harm</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Overall risk</td><td>MEDIUM</td></tr>
+                </table>
+                <br>
+                <p><b>Risk in custody</b></p>
+                
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to children</td>
+                        <td class="data-column-30">Risk to public</td>
+                        <td class="data-column-35">Risk to known adult</td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to staff</td>
+                        <td class="data-column-30">Risk to prisoners</td>
+                        <td class="data-column-35"></td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td></td>
+                    </tr>
+                </table>
+                
+                
+                <p><b>Risk in community</b></p>
+                
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to children</td>
+                        <td class="data-column-30">Risk to public</td>
+                        <td class="data-column-35">Risk to known adult</td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to staff</td>
+                        <td class="data-column-30">Risk to prisoners</td>
+                        <td class="data-column-35"></td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>No Data Held</td>
+                        <td></td>
+                    </tr>
+                </table>
+                
+                
+            
+            
+        
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Senior Probation Officer telephone</td>
+                <td class="data-column-30">Countersign Senior Probation Officer exposition</td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>87685898786765889</td>
+                <td>I like recalling people</td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Assistant Chief Officer telephone</td>
+                <td class="data-column-30">Countersign Assistant Chief Officer exposition</td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>I don&#x27;t want to</td>
+                <td>78565869798787668</td>
+                <td></td>
+            </tr>
+        </table>
+        <br>
+        <h5>Who completed part A</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Name</td>
+                    <td class="data-column-30">Email</td>
+                    <td class="data-column-35">Telephone</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>test@email.com</td>
+                    <td>1234567890</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Region</td>
+                    <td class="data-column-30">Local delivery unit</td>
+                    <td class="data-column-35">Probation practitioner for offender</td>
+                </tr>
+                <tr>
+                    <td>N07</td>
+                    <td>test</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Practitioner for part A</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Revocation order recipients</td></tr>
+            <tr><td><li>test@email.com</li></td></tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-20">Public Protection Casework Section query emails</td></tr>
+            <tr><td><li>test@email.com</li></td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Decision date</td><td>12 December 2024, 12:00:00 am</td></tr>
+            <tr><td>Date of release</td><td>No Data Held</td></tr>
+            <tr><td>Conditional release date</td><td>No Data Held</td></tr>
+            <tr><td>Location description</td><td>No Data Held</td></tr>
+        </table>
+        <br>
+        <h5>Prison offender</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Location description</td>
+                    <td class="data-column-30">Booking no</td>
+                    <td class="data-column-35">Status</td>
+                </tr>
+                <tr>
+                    <td>Outside - released from Swansea (HMP)</td>
+                    <td>60511A</td>
+                    <td>INACTIVE OUT</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">First name</td>
+                    <td class="data-column-30">Middle name</td>
+                    <td class="data-column-35">Last name</td>
+                </tr>
+                <tr>
+                    <td>TEST</td>
+                    <td>No Data Held</td>
+                    <td>USER</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Date of birth</td>
+                    <td class="data-column-30">Gender</td>
+                    <td class="data-column-35">Ethnicity</td>
+                </tr>
+                <tr>
+                    <td>1982-09-29</td>
+                    <td>Female</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Criminal records office number</td>
+                    <td class="data-column-30">Police National Computer number</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>1982/2696655U</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+
+        <h5>Prison index offence</h5>
+        
+            <table class="summary-list">
+                <tr><td>Prison index offence</td><td>No Data Held</td></tr>
+            </table>
+            <p><b>All options</b></p>
+            
+            
+                <p>No Data Held</p>
+            
+        
+        
+
+        <br>
+        <h5>Book recall to Public Protection Unit Database</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Custody type</td>
+                    <td class="data-column-30">Releasing prison</td>
+                    <td class="data-column-35">Decision date</td>
+                </tr>
+                <tr>
+                    <td>Determinate</td>
+                    <td>1/2 Suttons Drive (test)</td>
+                    <td>12 December 2024, 12:00:00 am</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Index offence</td>
+                    <td class="data-column-30">Public Protection Unit Database sentence ID</td>
+                    <td class="data-column-35">Multi-agency Public Protection Arrangements level</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>Level 1 – Single Agency Management</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Police force</td>
+                    <td class="data-column-30">Probation area</td>
+                    <td class="data-column-35">Date received</td>
+                </tr>
+
+                <tr>
+                    <td>Avon &amp; Somerset Constabulary</td>
+                    <td>Bedfordshire</td>
+                    <td>29 January 2025, 3:07:12 pm</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Gender</td>
+                    <td class="data-column-30">Ethnicity</td>
+                    <td class="data-column-35">Sentence date</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>Asian or Asian British - Bangladeshi</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">First names</td>
+                    <td class="data-column-30">Last name</td>
+                    <td class="data-column-35">Date of birth</td>
+                </tr>
+                <tr>
+                    <td>Test</td>
+                    <td>User</td>
+                    <td>29 September 1982</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Criminal records office number</td>
+                    <td class="data-column-30">Prison no</td>
+                    <td class="data-column-35">Legislation released under</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>60511A</td>
+                    <td>CJA 1991</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Minute</td>
+                    <td class="data-column-30"></td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Public Protection Unit Database offender</h5>
+        
+        <br>
+        <h5>Booking momento</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Over 18</td>
+                <td class="data-column-30">Under 18</td>
+                <td class="data-column-35">Multi-agency Public Protection Arrangements level above 1</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No</td>
+                <td>No</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Sentence under 12 months</td>
+                <td class="data-column-30">Sentence 12 months or over</td>
+                <td class="data-column-35">Convicted of serious offence</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No</td>
+                <td>No</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Last part A download time</td>
+                <td class="data-column-30">Countersign Senior Probation Officer date</td>
+                <td class="data-column-35">Deleted?</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+                <td>No</td>
+            </tr>
+        </table>
+<!-- CounterSign names and emails have been removed from this section so as not to over-reveal staff information -->
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Assistant Chief Officer date</td>
+                <td class="data-column-30"></td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    
+        <table class="data-table">
+            <tr><td class="data-column-30">Sensitive</td></tr>
+            <tr><td>No</td></tr>
+        </table>
+        <br>
+        <h5>Recall considered list</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-20">Recall type</td>
+                <td class="data-column-80">Details</td>
+            </tr>
+            <tr>
+                <td>STANDARD</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Manager recall decision</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>RECALL</td>
+                <td>test</td>
+            </tr>
+        </table>
+        <br>
+        <h5>Consideration Rationale</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Date created</td>
+                    <td class="data-column-30">Time created</td>
+                    <td class="data-column-35">Sensitive</td>
+                </tr>
+                <tr>
+                    <td>29 January 2025</td>
+                    <td>15:17</td>
+                    <td>No</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Custody status</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Selected</td>
+                    <td class="data-column-65">Details</td>
+                </tr>
+                <tr>
+                    <td>YES_PRISON</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Local police contact</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Contact name</td>
+                    <td class="data-column-25">Phone number</td>
+                    <td class="data-column-25">Fax number</td>
+                    <td class="data-column-25">Email address</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>test@email.com</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Emergency recall</td>
+                <td class="data-column-25">Indeterminate sentence</td>
+                <td class="data-column-25">Extended sentence</td>
+                <td class="data-column-25">Active custodial conviction count</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>Yes</td>
+                <td>No</td>
+                <td>1</td>
+            </tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Response to probation</td></tr>
+            <tr><td>No response</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Thoughts leading to recall</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Trigger leading to recall</td></tr>
+            <tr><td>I want to</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">What led to recall</td></tr>
+            <tr><td>recommendation</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Has victims in contact scheme</td></tr>
+            <tr><td>NO</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Indeterminate sentence type</td></tr>
+            <tr><td>LIFE</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Has arrest issues</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-25">Has contraband risk</td>
+                <td class="data-column-75">Details</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Status</td>
+                <td class="data-column-30">Region</td>
+                <td class="data-column-35">Local delivery unit</td>
+            </tr>
+            <tr>
+                <td>DRAFT</td>
+                <td>South West</td>
+                <td>All South West</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Last Decision not to recall letter A downloaded</td>
+                <td class="data-column-30">Review practitioners concerns</td>
+                <td class="data-column-35">ODM name</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>Yes</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Senior Probation Officer recall type</td>
+                <td class="data-column-35">Review offender profile</td>
+            </tr>
+            <tr>
+                <td>RECALL</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Explain the decision</td>
+                <td class="data-column-30">Created</td>
+                <td class="data-column-35">Last modified</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>29 January 2025, 3:16:05 pm</td>
+                <td>29 January 2025, 3:59:26 pm</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-100">Senior Probation Officer recall rationale</td></tr>
+            <tr><td>test</td></tr>
+        </table>
+
+        <table class="data-table">
+            <tr><td class="data-column-100">Senior Probation Officer cancel recommendation rationale</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+
+        <h5>Person on probation</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Name</td>
+                    <td class="data-column-25">First name</td>
+                    <td class="data-column-25">Middle names</td>
+                    <td class="data-column-25">Surname</td>
+                </tr>
+                <tr>
+                    <td>Test User</td>
+                    <td>Test</td>
+                    <td>No Data Held</td>
+                    <td>User</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Gender</td>
+                    <td class="data-column-25">Ethnicity</td>
+                    <td class="data-column-25">Date of birth</td>
+                    <td class="data-column-25">Criminal records office number</td>
+                </tr>
+                <tr>
+                    <td>Female</td>
+                    <td>No Data Held</td>
+                    <td>29 September 1982</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Most recent prison number</td>
+                    <td class="data-column-25">Prisoner number</td>
+                    <td class="data-column-25">Police National Computer number</td>
+                    <td class="data-column-25">Primary language</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>A0610EC</td>
+                    <td>1982/2696655U</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Has been reviewed</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements level</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements start date</td>
+                    <td class="data-column-25">Multi-agency Public Protection Arrangements category</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    
+                </tr>
+            </table>
+            <p><b>Addresses</b></p>
+            
+            
+                <p>No Data Held</p>
+            
+        
+        
+
+        <h5>Conviction detail</h5>
+        
+            <table class="data-table">
+                <tr><td class="data-column-100">Index offence description</td></tr>
+                <tr><td>Making false statement to obtain insurance - 80902</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-25">Date of original offence</td></tr>
+                <tr><td>22 December 2024</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Sentence description</td></tr>
+                <tr><td>Adult Custody &lt; 12m</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Date of sentence</td>
+                    <td class="data-column-25">Length of sentence</td>
+                    <td class="data-column-25">Units</td>
+                </tr>
+                <tr>
+                    <td>22 December 2024</td>
+                    <td>6</td>
+                    <td>Months</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-50">Sentence expiry</td>
+                    <td class="data-column-25">Second sentence length</td>
+                    <td class="data-column-25">Units</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-25">Licence expiry</td>
+                    <td class="data-column-25">Custodial term</td>
+                    <td class="data-column-25">Extended term</td>
+                    <td class="data-column-25">Has been reviewed</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-20">Alternatives to recall tried</td>
+                <td class="data-column-80">Details</td>
+            </tr>
+            
+                <tr>
+                    <td>NONE</td>
+                    <td>No Data Held</td>
+                </tr>
+            
+            
+        </table>
+
+        <h5>Licence conditions breached</h5>
+        
+            <table class="data-table">
+                <tr><td class="data-column-20">Standard licence conditions</td></tr>
+                <tr><td><li>KEEP_IN_TOUCH</li></td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">All options</td></tr>
+                
+                    <tr>
+                        <td>GOOD_BEHAVIOUR</td>
+                        <td>Be of good behaviour and not behave in a way which undermines the purpose of the licence period</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_OFFENCE</td>
+                        <td>Not commit any offence</td>
+                    </tr>
+                
+                    <tr>
+                        <td>KEEP_IN_TOUCH</td>
+                        <td>Keep in touch with the supervising officer in accordance with instructions given by the supervising officer</td>
+                    </tr>
+                
+                    <tr>
+                        <td>SUPERVISING_OFFICER_VISIT</td>
+                        <td>Receive visits from the supervising officer in accordance with instructions given by the supervising officer</td>
+                    </tr>
+                
+                    <tr>
+                        <td>ADDRESS_APPROVED</td>
+                        <td>Reside permanently at an address approved by the supervising officer and obtain the prior permission of the supervising officer for any stay of one or more nights at a different address</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_WORK_UNDERTAKEN</td>
+                        <td>Not undertake work, or a particular type of work, unless it is approved by the supervising officer and notify the supervising officer in advance of any proposal to undertake work or a particular type of work</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NO_TRAVEL_OUTSIDE_UK</td>
+                        <td>Not travel outside the United Kingdom, the Channel Islands or the Isle of Man except with the prior permission of your supervising officer or for the purposes of immigration deportation or removal</td>
+                    </tr>
+                
+                    <tr>
+                        <td>NAME_CHANGE</td>
+                        <td>Tell your supervising officer if you use a name which is different to the name or names which appear on your licence</td>
+                    </tr>
+                
+                    <tr>
+                        <td>CONTACT_DETAILS</td>
+                        <td>Tell your supervising officer if you change or add any contact details, including phone number or email</td>
+                    </tr>
+                
+                
+            </table>
+            <br>
+            
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Additional licence conditions</td>
+                        <td class="data-column-30">Main Category code</td>
+                        <td class="data-column-35">Sub Category code</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">All options</td>
+                        <td class="data-column-30">Main Category code</td>
+                        <td class="data-column-35">Sub Category code</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-65">Details</td>
+                        <td class="data-column-35">Note</td>
+                    </tr>
+                    
+                    
+                        <tr>
+                            <td>No Data Held</td>
+                            <td>No Data Held</td>
+                        </tr>
+                    
+                </table>
+            
+        
+        
+
+        <h5>Create and Vary a Licence conditions breached</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-100">Additional licence conditions text</td></tr>
+            <tr><td>No Data Held</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Vulnerabilities</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            
+                <tr>
+                    <td>RISK_OF_SUICIDE_OR_SELF_HARM</td>
+                    <td>test</td>
+                </tr>
+            
+            
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Under integrated offender management</td></tr>
+            <tr><td>NO</td></tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-100">Index offence details</td></tr>
+            <tr><td>OASys Question - &#x27;2.1 Brief offence(s) details (indicate what exactly happened, when, where and how)&#x27; - Answer Input - &#x27;High Rosh risk to Partners, Medium Rosh risk to male peers &amp; children&#x27;</td></tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-100">Offence analysis</td></tr>
+            <tr><td>test</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Offence data from latest complete assessment</td>
+                <td class="data-column-65">Offences match</td>
+            </tr>
+            <tr>
+                <td>Yes</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Fixed term additional licence conditions</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Indeterminate/extended sentence details</td>
+                    <td class="data-column-65">Details</td>
+                </tr>
+                
+                    <tr>
+                        <td>BEHAVIOUR_SIMILAR_TO_INDEX_OFFENCE</td>
+                        <td>test</td>
+                    </tr>
+                
+                    <tr>
+                        <td>BEHAVIOUR_LEADING_TO_SEXUAL_OR_VIOLENT_OFFENCE</td>
+                        <td>test</td>
+                    </tr>
+                
+                
+            </table>
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Is main address where person can be found</td>
+                <td class="data-column-65">Details</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <br>
+        
+        <br>
+        <h5>Reasons for no recall</h5>
+        
+        
+            <p>No data held</p>
+        
+        <br>
+        <h5>Next appointment</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h5>Has been reviewed</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <br>
+        <h5>Previous releases</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last release date</td>
+                    <td class="data-column-30">Has been released previously</td>
+                    <td class="data-column-35">Last releasing prison/custodial establishment</td>
+                </tr>
+                <tr>
+                    <td>23 December 2024</td>
+                    <td>No</td>
+                    <td>Swansea HMP</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-20">Previous release dates</td></tr>
+                <tr><td>No Data Held</td></tr>
+            </table>
+        
+        
+        <br>
+        <h5>Previous recalls</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last recall date</td>
+                    <td class="data-column-30">Has been recalled previously</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No</td>
+                    <td></td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-20">Previous recall dates</td></tr>
+                <tr><td>No Data Held</td></tr>
+            </table>
+        
+        
+        <br>
+        <table class="summary-list">
+            <tr><td class="data-column-100">Recommendation started domain event set</td><td>No</td></tr>
+        </table>
+        <br>
+        <h5>Current Risk of Serious Harm for part A</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Risk to children</td>
+                    <td class="data-column-30">Risk to public</td>
+                    <td class="data-column-35">Risk to known adult</td>
+                </tr>
+                <tr>
+                    <td>HIGH</td>
+                    <td>VERY_HIGH</td>
+                    <td>HIGH</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Risk to staff</td>
+                    <td class="data-column-30">Risk to prisoners</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>HIGH</td>
+                    <td>HIGH</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Risk of Serious Harm summary</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Nature of risk</td>
+                    <td class="data-column-30">Who is at risk</td>
+                    <td class="data-column-35">Risk imminence</td>
+                </tr>
+                <tr>
+                    <td>OASys Question - &#x27;R10.2 - What is the nature of the risk&#x27; - Answer Input - &#x27;Test Nature&#x27;</td>
+                    <td>OASys Question - &#x27;R10.1 Who is at risk.&#x27; - Answer Input - &#x27;Child&#x27;</td>
+                    <td>OASys Question - &#x27;R10.3 - When is the risk likely to be greatest Consider the timescale and indicate whether risk is immediate or not. Consider the risks in custody as well as on release&#x27; - Answer Input - &#x27;Test Risk Greatest&#x27;</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Last updates</td>
+                    <td class="data-column-30">Error</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>23 December 2024, 10:10:28 am</td>
+                    <td>No Data Held</td>
+                    <td></td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Risk increase factors</td></tr>
+                <tr><td>OASys Question - &#x27;R10.4 What circumstances are likely to increase risk Describe factors, actions, events which might increase level of risk, now and in the future - &#x27;Test Circumstances&#x27;</td></tr>
+            </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">Risk mitigation factors</td></tr>
+                <tr><td>OASys Question - &#x27;R10.5 - What factors are likely to reduce the risk Describe factors, actions, and events which may reduce or contain the level of risk. What has previously stopped him / her? &#x27; - Answer Input - &#x27;Test Factors to reduce the risk&#x27;</td></tr>
+            </table>
+            <br>
+            <h5>Risk of serious harm</h5>
+            
+                <table class="summary-list">
+                    <tr><td>Overall risk</td><td>MEDIUM</td></tr>
+                </table>
+                <br>
+                <p><b>Risk in custody</b></p>
+                
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to children</td>
+                        <td class="data-column-30">Risk to public</td>
+                        <td class="data-column-35">Risk to known adult</td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to staff</td>
+                        <td class="data-column-30">Risk to prisoners</td>
+                        <td class="data-column-35"></td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td></td>
+                    </tr>
+                </table>
+                
+                
+                <p><b>Risk in community</b></p>
+                
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to children</td>
+                        <td class="data-column-30">Risk to public</td>
+                        <td class="data-column-35">Risk to known adult</td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                        <td>MEDIUM</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-35">Risk to staff</td>
+                        <td class="data-column-30">Risk to prisoners</td>
+                        <td class="data-column-35"></td>
+                    </tr>
+                    <tr>
+                        <td>MEDIUM</td>
+                        <td>No Data Held</td>
+                        <td></td>
+                    </tr>
+                </table>
+                
+                
+            
+            
+        
+        
+        <br>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Senior Probation Officer telephone</td>
+                <td class="data-column-30">Countersign Senior Probation Officer exposition</td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>7585475768967587</td>
+                <td>test</td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Assistant Chief Officer telephone</td>
+                <td class="data-column-30">Countersign Assistant Chief Officer exposition</td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>test</td>
+                <td>7585475768967587</td>
+                <td></td>
+            </tr>
+        </table>
+        <br>
+        <h5>Who completed part A</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Name</td>
+                    <td class="data-column-30">Email</td>
+                    <td class="data-column-35">Telephone</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>test@email.com</td>
+                    <td>7585475768967587</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Region</td>
+                    <td class="data-column-30">Local delivery unit</td>
+                    <td class="data-column-35">Probation practitioner for offender</td>
+                </tr>
+                <tr>
+                    <td>N56</td>
+                    <td>test</td>
+                    <td>No</td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Practitioner for part A</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Name</td>
+                    <td class="data-column-30">Email</td>
+                    <td class="data-column-35">Telephone</td>
+                </tr>
+                <tr>
+                    <td>test</td>
+                    <td>test@email.com</td>
+                    <td>7585475768967587</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Region</td>
+                    <td class="data-column-30">Local delivery unit</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>N53</td>
+                    <td>test</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <table class="data-table">
+            <tr><td class="data-column-20">Revocation order recipients</td></tr>
+            <tr><td><li>test@email.com</li></td></tr>
+        </table>
+        <table class="data-table">
+            <tr><td class="data-column-20">Public Protection Casework Section query emails</td></tr>
+            <tr><td><li>test@email.com</li></td></tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Decision date</td><td>12 December 2025, 12:00:00 am</td></tr>
+            <tr><td>Date of release</td><td>No Data Held</td></tr>
+            <tr><td>Conditional release date</td><td>No Data Held</td></tr>
+            <tr><td>Location description</td><td>No Data Held</td></tr>
+        </table>
+        <br>
+        <h5>Prison offender</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Location description</td>
+                    <td class="data-column-30">Booking no</td>
+                    <td class="data-column-35">Status</td>
+                </tr>
+                <tr>
+                    <td>Outside - released from Swansea (HMP)</td>
+                    <td>60511A</td>
+                    <td>INACTIVE OUT</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">First name</td>
+                    <td class="data-column-30">Middle name</td>
+                    <td class="data-column-35">Last name</td>
+                </tr>
+                <tr>
+                    <td>TEST</td>
+                    <td>No Data Held</td>
+                    <td>USER</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Date of birth</td>
+                    <td class="data-column-30">Gender</td>
+                    <td class="data-column-35">Ethnicity</td>
+                </tr>
+                <tr>
+                    <td>1982-09-29</td>
+                    <td>Female</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Criminal records office number</td>
+                    <td class="data-column-30">Police National Computer number</td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>1982/2696655U</td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+
+        <h5>Prison index offence</h5>
+        
+        
+            <p>No Data Held</p>
+        
+
+        <br>
+        <h5>Book recall to Public Protection Unit Database</h5>
+        
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Custody type</td>
+                    <td class="data-column-30">Releasing prison</td>
+                    <td class="data-column-35">Decision date</td>
+                </tr>
+                <tr>
+                    <td>Determinate</td>
+                    <td>1/2 Suttons Drive (test)</td>
+                    <td>12 December 2025, 12:00:00 am</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Index offence</td>
+                    <td class="data-column-30">Public Protection Unit Database sentence ID</td>
+                    <td class="data-column-35">Multi-agency Public Protection Arrangements level</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Police force</td>
+                    <td class="data-column-30">Probation area</td>
+                    <td class="data-column-35">Date received</td>
+                </tr>
+
+                <tr>
+                    <td>No Data Held</td>
+                    <td>No Data Held</td>
+                    <td>29 January 2025, 3:29:30 pm</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Gender</td>
+                    <td class="data-column-30">Ethnicity</td>
+                    <td class="data-column-35">Sentence date</td>
+                </tr>
+                <tr>
+                    <td>F</td>
+                    <td>Asian or Asian British - Bangladeshi</td>
+                    <td>No Data Held</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">First names</td>
+                    <td class="data-column-30">Last name</td>
+                    <td class="data-column-35">Date of birth</td>
+                </tr>
+                <tr>
+                    <td>Test</td>
+                    <td>User</td>
+                    <td>29 September 1982</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Criminal records office number</td>
+                    <td class="data-column-30">Prison no</td>
+                    <td class="data-column-35">Legislation released under</td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td>60511A</td>
+                    <td>Life Licence [*]</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-35">Minute</td>
+                    <td class="data-column-30"></td>
+                    <td class="data-column-35"></td>
+                </tr>
+                <tr>
+                    <td>No Data Held</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        
+        
+        <br>
+        <h5>Public Protection Unit Database offender</h5>
+        
+        <br>
+        <h5>Booking momento</h5>
+        
+        
+            <p>No Data Held</p>
+        
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Over 18</td>
+                <td class="data-column-30">Under 18</td>
+                <td class="data-column-35">Multi-agency Public Protection Arrangements level above 1</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Sentence under 12 months</td>
+                <td class="data-column-30">Sentence 12 months or over</td>
+                <td class="data-column-35">Convicted of serious offence</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Last part A download time</td>
+                <td class="data-column-30">Countersign Senior Probation Officer date</td>
+                <td class="data-column-35">Deleted?</td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td>No Data Held</td>
+                <td>No</td>
+            </tr>
+        </table>
+<!-- CounterSign names and emails have been removed from this section so as not to over-reveal staff information -->
+        <table class="data-table">
+            <tr>
+                <td class="data-column-35">Countersign Assistant Chief Officer date</td>
+                <td class="data-column-30"></td>
+                <td class="data-column-35"></td>
+            </tr>
+            <tr>
+                <td>No Data Held</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    
+    
+
