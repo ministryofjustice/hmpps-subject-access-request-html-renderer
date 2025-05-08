@@ -83,6 +83,9 @@ web-client:
     max-retries: 2
     back-off: PT10S
 
+api:
+  timeout: 60s
+
 template-resources:
   directory: /templates
 
