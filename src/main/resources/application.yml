@@ -7,6 +7,9 @@ spring:
     name: hmpps-subject-access-request-html-renderer
   codec:
     max-in-memory-size: 10MB
+    mvc:
+      async:
+        request-timeout: 120000
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
