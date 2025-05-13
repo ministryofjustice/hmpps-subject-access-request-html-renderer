@@ -9,7 +9,7 @@ spring:
     max-in-memory-size: 10MB
     mvc:
       async:
-        request-timeout: 120000
+        request-timeout: 30m
 
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
