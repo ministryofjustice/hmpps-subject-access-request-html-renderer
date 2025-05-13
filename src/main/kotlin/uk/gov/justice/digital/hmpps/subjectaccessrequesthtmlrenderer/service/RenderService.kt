@@ -41,6 +41,8 @@ class RenderService(
       return RenderResult.DATA_ALREADY_EXISTS
     }
 
+    log.info("document for request: $documentKey does not exist getting data from ${renderRequest.serviceName}")
+
     val data = getDataForSubject(renderRequest)
 
     val renderedData = templateService.renderServiceDataHtml(renderRequest, data)
@@ -57,17 +59,30 @@ class RenderService(
   private fun getDataForSubject(renderRequest: RenderRequest): Any? {
     telemetryClient.renderEvent(GET_SERVICE_DATA, renderRequest)
 
-    val response: ResponseEntity<Map<*, *>> = dynamicServicesClient
-      .getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
-      message = "API response data was null",
-      cause = null,
-      subjectAccessRequestId = renderRequest.id,
-      params = mapOf("serviceUrl" to renderRequest.serviceUrl),
-    )
+    try {
+      val response: ResponseEntity<Map<*, *>> = dynamicServicesClient
+        .getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
+        message = "API response data was null",
+        cause = null,
+        subjectAccessRequestId = renderRequest.id,
+        params = mapOf("serviceUrl" to renderRequest.serviceUrl),
+      )
 
-    log.info("get data response status:  ${response.statusCode}")
+      log.info("get data response status:  ${response.statusCode}")
 
-    return extractResponseBody(response, renderRequest)
+      return extractResponseBody(response, renderRequest)
+    } catch (ex: Exception) {
+      if (ex is SubjectAccessRequestException) {
+        throw ex
+      }
+
+      throw SubjectAccessRequestException(
+        message = "get data request failed with exception",
+        cause = ex,
+        subjectAccessRequestId = renderRequest.id,
+        params = mapOf("serviceUrl" to renderRequest.serviceUrl),
+      )
+    }
   }
 
   private fun extractResponseBody(
