@@ -58,6 +58,7 @@ class RenderService(
 
   private fun getDataForSubject(renderRequest: RenderRequest): Any? {
     telemetryClient.renderEvent(GET_SERVICE_DATA, renderRequest)
+    log.info("Retrieved service data for id={}, service={}", renderRequest.id, renderRequest.serviceName)
 
     try {
       val response: ResponseEntity<Map<*, *>> = dynamicServicesClient
@@ -91,7 +92,13 @@ class RenderService(
   ): Any? = when (response.statusCode.value()) {
     HttpStatus.OK.value() -> {
       telemetryClient.renderEvent(SERVICE_DATA_RETURNED, renderRequest)
-      response.body["content"]
+      response.body["content"].also {
+        log.info(
+          "extracted service data from response body, id: {}, service: {}",
+          renderRequest.id,
+          renderRequest.serviceName,
+        )
+      }
     }
 
     HttpStatus.NO_CONTENT.value() -> {
@@ -118,8 +125,12 @@ class RenderService(
 
   private suspend fun storeRenderedHtml(renderRequest: RenderRequest, renderedData: ByteArrayOutputStream?) {
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_STARTED, renderRequest)
+    log.info("stored rendered html document for id={}, service={}", renderRequest.id, renderRequest.serviceName)
+
     documentStore.add(renderRequest, renderedData?.toByteArray())
+
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_COMPLETED, renderRequest)
+    log.info("html document stored successfully for id={}, service={}", renderRequest.id, renderRequest.serviceName)
   }
 
   enum class RenderResult {
