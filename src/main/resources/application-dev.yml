@@ -17,6 +17,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/sar-db?sslmode=prefer
     user: admin
     password: admin_password
+  mvc:
+    async:
+      request-timeout: 30m
 
   security:
     oauth2:
