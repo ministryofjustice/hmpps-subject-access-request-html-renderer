@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 import com.github.jknack.handlebars.Handlebars
 import com.github.mustachejava.DefaultMustacheFactory
 import com.microsoft.applicationinsights.TelemetryClient
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
@@ -21,12 +22,19 @@ class TemplateService(
   private val telemetryClient: TelemetryClient,
 ) {
 
+  private companion object {
+    private val log = LoggerFactory.getLogger(TemplateService::class.java)
+  }
+
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
     telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
+    log.info("starting html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
+
     val renderParameters = getRenderParameters(renderRequest, data)
     val renderedServiceTemplate = renderServiceTemplate(renderParameters)
     return renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
+      log.info("completed html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
     }
   }
 
