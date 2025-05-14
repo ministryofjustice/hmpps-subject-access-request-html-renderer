@@ -69,7 +69,7 @@ jobs:
       app_version: '${{ needs.build.outputs.app_version }}'
 
   manual_approval:
-    name: Manual Approval
+    name: Approve Preprod Deployment
     runs-on: ubuntu-latest
     needs:
       - build
@@ -81,7 +81,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: DaveLlewellynMoJ,indyv-moj,simon-mitchell
+          approvers: DaveLlewellynMoJ,indyv-moj,simon-mitchell,nwilliamsmoj,AlTurner-MOJ,mpbostock,ma226860
           minimum-approvals: 1
           issue-title: "Manual Approval Required For Preprod Deployment"
           issue-body: "Please approve or deny the deployment."
