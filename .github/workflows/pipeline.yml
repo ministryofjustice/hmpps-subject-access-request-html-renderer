@@ -81,9 +81,9 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.TOKEN }}
-          approvers: hmpps-subject-access-requests, DaveLlewellynMoJ
+          approvers: DaveLlewellynMoJ,indyv-moj,simon-mitchell
           minimum-approvals: 1
-          issue-title: "Manual Approval Required For Preprod Deployment "
+          issue-title: "Manual Approval Required For Preprod Deployment"
           issue-body: "Please approve or deny the deployment."
 
   deploy_preprod:
