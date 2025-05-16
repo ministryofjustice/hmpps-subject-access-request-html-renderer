@@ -198,7 +198,7 @@
                 <td class="data-column-35">ODM name</td>
             </tr>
             <tr>
-                <td>{{ optionalValue lastDntrLetterADownloadDateTime }}</td>
+                <td>{{ optionalValue (formatDate lastDntrLetterADownloadDateTime) }}</td>
                 <td>{{ convertBoolean reviewPractitionersConcerns }}</td>
                 <td>{{ optionalValue odmName }}</td>
             </tr>
@@ -256,26 +256,12 @@
                     <td class="data-column-25">Gender</td>
                     <td class="data-column-25">Ethnicity</td>
                     <td class="data-column-25">Date of birth</td>
-                    <td class="data-column-25">Criminal records office number</td>
+                    <td class="data-column-25">Primary language</td>
                 </tr>
                 <tr>
                     <td>{{ optionalValue gender }}</td>
                     <td>{{ optionalValue ethnicity }}</td>
                     <td>{{ optionalValue (formatDate dateOfBirth) }}</td>
-                    <td>{{ optionalValue croNumber }}</td>
-                </tr>
-            </table>
-            <table class="data-table">
-                <tr>
-                    <td class="data-column-25">Most recent prison number</td>
-                    <td class="data-column-25">Prisoner number</td>
-                    <td class="data-column-25">Police National Computer number</td>
-                    <td class="data-column-25">Primary language</td>
-                </tr>
-                <tr>
-                    <td>{{ optionalValue mostRecentPrisonerNumber }}</td>
-                    <td>{{ optionalValue nomsNumber }}</td>
-                    <td>{{ optionalValue pncNumber }}</td>
                     <td>{{ optionalValue primaryLanguage }}</td>
                 </tr>
             </table>
@@ -852,23 +838,15 @@
         <br>
         <h5>Risk of Serious Harm summary</h5>
         {{#roshSummary}}
-            <table class="data-table">
-                <tr>
-                    <td class="data-column-35">Nature of risk</td>
-                    <td class="data-column-30">Who is at risk</td>
-                    <td class="data-column-35">Risk imminence</td>
-                </tr>
-                <tr>
-                    <td>{{ optionalValue natureOfRisk }}</td>
-                    <td>{{ optionalValue whoIsAtRisk }}</td>
-                    <td>{{ optionalValue riskImminence }}</td>
-                </tr>
+            <table class="summary-list">
+                <tr><td>Nature of risk</td><td>{{ optionalValue natureOfRisk }}</td></tr>
+                <tr><td>Who is at risk</td><td>{{ optionalValue whoIsAtRisk }}</td></tr>
+                <tr><td>Risk imminence</td><td>{{ optionalValue riskImminence }}</td></tr>
             </table>
             <table class="data-table">
                 <tr>
-                    <td class="data-column-35">Last updates</td>
-                    <td class="data-column-30">Error</td>
-                    <td class="data-column-35"></td>
+                    <td class="data-column-50">Last updates</td>
+                    <td class="data-column-50">Error</td>
                 </tr>
                 <tr>
                     <td>{{ optionalValue (formatDate lastUpdatedDate) }}</td>
@@ -962,27 +940,17 @@
         <br>
         <table class="data-table">
             <tr>
-                <td class="data-column-35">Countersign Senior Probation Officer telephone</td>
-                <td class="data-column-30">Countersign Senior Probation Officer exposition</td>
-                <td class="data-column-35"></td>
+                <td class="data-column-50">Countersign Senior Probation Officer telephone</td>
+                <td class="data-column-50">Countersign Assistant Chief Officer telephone</td>
             </tr>
             <tr>
                 <td>{{ optionalValue countersignSpoTelephone }}</td>
-                <td>{{ optionalValue countersignSpoExposition }}</td>
-                <td></td>
+                <td>{{ optionalValue countersignAcoTelephone }}</td>
             </tr>
         </table>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Countersign Assistant Chief Officer telephone</td>
-                <td class="data-column-30">Countersign Assistant Chief Officer exposition</td>
-                <td class="data-column-35"></td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue countersignAcoExposition }}</td>
-                <td>{{ optionalValue countersignAcoTelephone }}</td>
-                <td></td>
-            </tr>
+        <table class="summary-list">
+            <tr><td>Countersign Senior Probation Officer exposition</td><td>{{ optionalValue countersignSpoExposition }}</td></tr>
+            <tr><td>Countersign Assistant Chief Officer exposition</td><td>{{ optionalValue countersignAcoExposition }}</td></tr>
         </table>
         <br>
         <h5>Who completed part A</h5>
@@ -1113,6 +1081,7 @@
                 </tr>
             </table>
         {{/prisonOffender}}
+
         {{^prisonOffender}}
             <p>No Data Held</p>
         {{/prisonOffender}}
@@ -1538,27 +1507,15 @@
             <tr>
                 <td class="data-column-35">Last part A download time</td>
                 <td class="data-column-30">Countersign Senior Probation Officer date</td>
-                <td class="data-column-35">Deleted?</td>
+                <td class="data-column-35">Countersign Assistant Chief Officer date</td>
             </tr>
             <tr>
                 <td>{{ optionalValue (formatDate lastPartADownloadDateTime) }}</td>
                 <td>{{ optionalValue (formatDate countersignSpoDateTime) }}</td>
-                <td>{{ convertBoolean deleted }}</td>
+                <td>{{ optionalValue (formatDate countersignAcoDateTime) }}</td>
             </tr>
         </table>
 <!-- CounterSign names and emails have been removed from this section so as not to over-reveal staff information -->
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Countersign Assistant Chief Officer date</td>
-                <td class="data-column-30"></td>
-                <td class="data-column-35"></td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue (formatDate countersignAcoDateTime) }}</td>
-                <td></td>
-                <td></td>
-            </tr>
-        </table>
     {{/recommendations}}
     {{^recommendations}}
         <p>No Data Held</p>
