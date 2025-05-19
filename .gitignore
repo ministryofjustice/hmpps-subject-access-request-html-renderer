@@ -74,3 +74,5 @@ sonar-project.properties
 
 ## Localstack docker volume
 volume/**
+
+gitleaks.json
