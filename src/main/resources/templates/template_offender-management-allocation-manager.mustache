@@ -15,7 +15,7 @@
             <tr>
                 <td>{{ getPrisonName prison }}</td>
                 <td>{{ optionalValue allocatedAtTier }}</td>
-                <td>{{ optionalValue primaryPomName }}</td>
+                <td>{{ optionalValue primaryPomLastName }}</td>
             </tr>
         </table>
         <table class="data-table">
@@ -25,7 +25,7 @@
                 <td class="data-column-35">Event trigger</td>
             </tr>
             <tr>
-                <td>{{ optionalValue secondaryPomName }}</td>
+                <td>{{ optionalValue secondaryPomLastName }}</td>
                 <td>{{ optionalValue event }}</td>
                 <td>{{ optionalValue eventTrigger }}</td>
             </tr>
@@ -39,7 +39,7 @@
             <tr>
                 <td>{{ optionalValue (formatDate primaryPomAllocatedAt) }}</td>
                 <td>{{ optionalValue recommendedPomType }}</td>
-                <td>{{ optionalValue createdBy }}</td>
+                <td>{{ optionalValue createdByName }}</td>
             </tr>
         </table>
         <table class="data-table">
@@ -154,12 +154,12 @@
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Tier</td>
-                <td class="data-column-30">Case Reference Number</td>
+                <td class="data-column-30">Is manual entry</td>
                 <td class="data-column-35">Multi Agency Public Protection Arrangements level</td>
             </tr>
             <tr>
                 <td>{{ optionalValue tier }}</td>
-                <td>{{ optionalValue crn }}</td>
+                <td>{{ convertBoolean manualEntry }}</td>
                 <td>{{ optionalValue mappaLevel }}</td>
             </tr>
         </table>
@@ -184,7 +184,7 @@
             <tr>
                 <td>{{ optionalValue comName }}</td>
                 <td>{{ optionalValue teamName }}</td>
-                <td>{{ optionalValue localDeliveryUnitId}}</td>
+                <td>{{ optionalValue localDeliveryUnit}}</td>
             </tr>
         </table>
         <table class="data-table">
@@ -261,7 +261,7 @@
             </tr>
             <tr>
                 <td>{{ optionalValue communityDecision }}</td>
-                <td>{{ optionalValue prison }}</td>
+                <td>{{ getPrisonName prison }}</td>
                 <td>{{ optionalValue outcome }}</td>
             </tr>
         </table>
@@ -314,7 +314,7 @@
                 <td class="data-column-35">Email</td>
             </tr>
             <tr>
-                <td>{{ optionalValue prison }}</td>
+                <td>{{ getPrisonName prison }}</td>
                 <td>{{ optionalValue name }}</td>
                 <td>{{ optionalValue email }}</td>
             </tr>
