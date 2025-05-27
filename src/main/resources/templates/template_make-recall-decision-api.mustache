@@ -396,21 +396,6 @@
                 <tr><td class="data-column-20">Standard licence conditions</td></tr>
                 <tr><td>{{#standardLicenceConditions.selected}}<li>{{ optionalValue . }}</li>{{/standardLicenceConditions.selected}}{{^standardLicenceConditions.selected}}No Data Held{{/standardLicenceConditions.selected}}</td></tr>
             </table>
-            <table class="data-table">
-                <tr><td class="data-column-100">All options</td></tr>
-                {{#standardLicenceConditions.allOptions}}
-                    <tr>
-                        <td>{{ optionalValue value }}</td>
-                        <td>{{ optionalValue text }}</td>
-                    </tr>
-                {{/standardLicenceConditions.allOptions}}
-                {{^standardLicenceConditions.allOptions}}
-                    <tr>
-                        <td>No Data Held</td>
-                        <td>No Data Held</td>
-                    </tr>
-                {{/standardLicenceConditions.allOptions}}
-            </table>
             <br>
             {{#additionalLicenceConditions}}
                 <table class="data-table">
@@ -649,21 +634,6 @@
                 <tr><td>No Data Held</td></tr>
             {{/selected}}
         </table>
-        <table class="data-table">
-            <tr><td class="data-column-100">All options</td></tr>
-            {{#allOptions}}
-                <tr>
-                    <td>{{ optionalValue value }}</td>
-                    <td>{{ optionalValue text }}</td>
-                </tr>
-            {{/allOptions}}
-            {{^allOptions}}
-                <tr>
-                    <td>No Data Held</td>
-                    <td>No Data Held</td>
-                </tr>
-            {{/allOptions}}
-        </table>
         {{/whyConsideredRecall}}
         <br>
         <h5>Reasons for no recall</h5>
@@ -704,21 +674,6 @@
                     {{^selected}}
                         <tr><td>No Data Held</td></tr>
                     {{/selected}}
-                </table>
-                <table class="data-table">
-                    <tr><td class="data-column-100">All options</td></tr>
-                    {{#allOptions}}
-                        <tr>
-                            <td>{{ optionalValue value }}</td>
-                            <td>{{ optionalValue text }}</td>
-                        </tr>
-                    {{/allOptions}}
-                    {{^allOptions}}
-                        <tr>
-                            <td>No Data Held</td>
-                            <td>No Data Held</td>
-                        </tr>
-                    {{/allOptions}}
                 </table>
             {{/howWillAppointmentHappen}}
             <table class="data-table">
@@ -1068,18 +1023,6 @@
                     <td>{{ optionalValue ethnicity }}</td>
                 </tr>
             </table>
-            <table class="data-table">
-                <tr>
-                    <td class="data-column-35">Criminal records office number</td>
-                    <td class="data-column-30">Police National Computer number</td>
-                    <td class="data-column-35"></td>
-                </tr>
-                <tr>
-                    <td>{{ optionalValue cro }}</td>
-                    <td>{{ optionalValue pnc }}</td>
-                    <td></td>
-                </tr>
-            </table>
         {{/prisonOffender}}
 
         {{^prisonOffender}}
@@ -1250,25 +1193,13 @@
             </table>
             <table class="data-table">
                 <tr>
-                    <td class="data-column-35">Criminal records office number</td>
-                    <td class="data-column-30">Prison no</td>
                     <td class="data-column-35">Legislation released under</td>
-                </tr>
-                <tr>
-                    <td>{{ optionalValue cro }}</td>
-                    <td>{{ optionalValue prisonNumber }}</td>
-                    <td>{{ optionalValue legislationReleasedUnder }}</td>
-                </tr>
-            </table>
-            <table class="data-table">
-                <tr>
                     <td class="data-column-35">Minute</td>
                     <td class="data-column-30"></td>
-                    <td class="data-column-35"></td>
                 </tr>
                 <tr>
+                    <td>{{ optionalValue legislationReleasedUnder }}</td>
                     <td>{{ optionalValue minute }}</td>
-                    <td></td>
                     <td></td>
                 </tr>
             </table>
@@ -1282,60 +1213,48 @@
             <table class="data-table">
                 <tr>
                     <td class="data-column-35">ID</td>
-                    <td class="data-column-30">Criminal records office other number</td>
                     <td class="data-column-35">Date of birth</td>
+                    <td class="data-column-35">Ethnicity</td>
                 </tr>
                 <tr>
                     <td>{{ optionalValue id }}</td>
-                    <td>{{ optionalValue croOtherNumber }}</td>
                     <td>{{ optionalValue (formatDate dateOfBirth) }}</td>
+                    <td>{{ optionalValue ethnicity }}</td>
                 </tr>
             </table>
             <table class="data-table">
                 <tr>
-                    <td class="data-column-35">Ethnicity</td>
                     <td class="data-column-30">Family name</td>
                     <td class="data-column-35">First names</td>
+                    <td class="data-column-35">Gender</td>
                 </tr>
                 <tr>
-                    <td>{{ optionalValue ethnicity }}</td>
                     <td>{{ optionalValue familyName }}</td>
                     <td>{{ optionalValue firstNames }}</td>
+                    <td>{{ optionalValue gender }}</td>
                 </tr>
             </table>
             <table class="data-table">
                 <tr>
-                    <td class="data-column-35">Gender</td>
                     <td class="data-column-30">Immigration status</td>
                     <td class="data-column-35">Prisoner ID</td>
+                    <td class="data-column-35">Prisoner category</td>
                 </tr>
                 <tr>
-                    <td>{{ optionalValue gender }}</td>
                     <td>{{ optionalValue immigrationStatus }}</td>
                     <td>{{ optionalValue nomsId }}</td>
-                </tr>
-            </table>
-            <table class="data-table">
-                <tr>
-                    <td class="data-column-35">Prisoner category</td>
-                    <td class="data-column-30">Prison number</td>
-                    <td class="data-column-35">Status</td>
-                </tr>
-                <tr>
                     <td>{{ optionalValue prisonerCategory }}</td>
-                    <td>{{ optionalValue prisonNumber }}</td>
-                    <td>{{ optionalValue status }}</td>
                 </tr>
             </table>
             <table class="data-table">
                 <tr>
+                    <td class="data-column-35">Status</td>
                     <td class="data-column-35">Young offender</td>
                     <td class="data-column-30"></td>
-                    <td class="data-column-35"></td>
                 </tr>
                 <tr>
+                    <td>{{ optionalValue status }}</td>
                     <td>{{ optionalValue youngOffender }}</td>
-                    <td></td>
                     <td></td>
                 </tr>
             </table>
