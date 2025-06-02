@@ -4,8 +4,8 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.web.reactive.server.WebTestClient
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.DpsService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.SubjectDataHeldRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.BacklogController
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.BacklogController.SubjectDataHeldRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsServiceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsServiceApiExtension.Companion.hmppsService1Mock
 import java.time.LocalDate
@@ -14,10 +14,8 @@ import java.time.LocalDate
 class BacklogControllerIntTest : IntegrationTestBase() {
 
   private val getSummaryRequest = dataHeldSummaryRequest(
-    DpsService(
-      name = "court-case-service",
-      url = "http://localhost:${hmppsService1Mock.port()}",
-    ),
+    serviceName = "court-case-service",
+    serviceUrl = "http://localhost:${hmppsService1Mock.port()}",
   )
 
   @Test
@@ -56,7 +54,7 @@ class BacklogControllerIntTest : IntegrationTestBase() {
   }
 
   fun sendDataHeldSummaryRequest(
-    request: SubjectDataHeldRequest,
+    request: BacklogController.SubjectDataHeldRequest,
   ): WebTestClient.BodyContentSpec = webTestClient.post()
     .uri("/subject-access-request/subject-data-held-summary")
     .headers(setAuthorisation(roles = listOf("ROLE_SAR_DATA_ACCESS")))
@@ -65,12 +63,13 @@ class BacklogControllerIntTest : IntegrationTestBase() {
     .expectStatus().isOk
     .expectBody()
 
-  private fun dataHeldSummaryRequest(service: DpsService) = SubjectDataHeldRequest(
+  private fun dataHeldSummaryRequest(serviceName: String, serviceUrl: String) = SubjectDataHeldRequest(
     nomisId = "some-nomis-id",
     ndeliusId = "some-ndelius-id",
     dateFrom = LocalDate.parse("2021-01-01"),
     dateTo = LocalDate.parse("2022-01-01"),
-    service = service,
+    serviceName = serviceName,
+    serviceUrl = serviceUrl,
   )
 
   private fun SubjectDataHeldRequest.toGetSubjectAccessRequestDataParams() = GetSubjectAccessRequestDataParams(
@@ -91,8 +90,8 @@ class BacklogControllerIntTest : IntegrationTestBase() {
       .withBody(responseBody),
   )
 
-  fun returnNoDataHeldResponse(params: GetSubjectAccessRequestDataParams) =
-    hmppsService1Mock.stubGetSubjectAccessRequestData(
+  fun returnNoDataHeldResponse(params: GetSubjectAccessRequestDataParams) = hmppsService1Mock
+    .stubGetSubjectAccessRequestData(
       params = params,
       responseDefinition = ResponseDefinitionBuilder()
         .withStatus(204)

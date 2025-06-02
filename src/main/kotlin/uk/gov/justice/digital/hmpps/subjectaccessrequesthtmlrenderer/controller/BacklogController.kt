@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -12,10 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.SubjectDataHeldRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.SubjectDataHeldResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.DataHeldService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
+import java.time.LocalDate
 
 @RestController
 @PreAuthorize("hasAnyRole('ROLE_SAR_USER_ACCESS', 'ROLE_SAR_DATA_ACCESS', 'ROLE_SAR_SUPPORT')")
@@ -55,8 +55,28 @@ class BacklogController(
       nomisId = request.nomisId,
       ndeliusId = request.ndeliusId,
       dataHeld = dataHeldService.isSubjectDataHeld(request),
-      serviceName = request.service!!.name,
+      serviceName = request.serviceName,
     ),
     HttpStatus.OK,
+  )
+
+  data class SubjectDataHeldRequest(
+    val nomisId: String? = null,
+    val ndeliusId: String? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    val dateFrom: LocalDate? = null,
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    val dateTo: LocalDate? = null,
+    val serviceName: String? = null,
+    val serviceUrl: String? = null,
+  ) {
+    constructor() : this("", "", null, null, null, serviceUrl = null)
+  }
+
+  data class SubjectDataHeldResponse(
+    val nomisId: String?,
+    val ndeliusId: String?,
+    val dataHeld: Boolean,
+    val serviceName: String?,
   )
 }
