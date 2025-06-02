@@ -2,14 +2,14 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller
 
 import java.time.LocalDate
 
-data class DataHeldSummaryRequest(
+data class SubjectDataHeldRequest(
   val nomisId: String? = null,
   val ndeliusId: String? = null,
   val dateFrom: LocalDate? = null,
   val dateTo: LocalDate? = null,
-  val services: List<DpsService>,
+  val service: DpsService? = null,
 ) {
-  constructor() : this("", "", null, null, emptyList())
+  constructor() : this("", "", null, null, null)
 }
 
 open class DpsService(val name: String, val url: String) {
