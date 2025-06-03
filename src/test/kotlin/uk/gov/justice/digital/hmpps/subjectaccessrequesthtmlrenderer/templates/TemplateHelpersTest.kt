@@ -88,6 +88,12 @@ class TemplateHelpersTest {
       assertThat(response).isEqualTo("01 October 2023")
     }
 
+    @Test
+    fun `formatDate returns formatted date for valid string input 2`() {
+      val response = templateHelpers.formatDate("1805-10-21T16:30:41+0100")
+      assertThat(response).isEqualTo("21 October 1805, 4:30 pm")
+    }
+
     @ParameterizedTest
     @MethodSource("uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateHelpersTest#dateArrayValues")
     fun `formatDate returns formatted date for valid array input`(input: List<*>, expectedValue: String) {
