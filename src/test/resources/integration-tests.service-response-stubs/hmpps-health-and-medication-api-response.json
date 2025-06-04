@@ -178,7 +178,7 @@
           "fieldHistoryId": 360,
           "prisonerNumber": "G5475UO",
           "fieldHistoryType": "Catering Instructions",
-          "fieldHistoryValue": "Prefers farfalle. Hates conchiglie. Tolerates fusilli.",
+          "fieldHistoryValue": ["Prefers farfalle. Hates conchiglie. Tolerates fusilli."],
           "createdAt": "2025-04-03T14:34:41+0100",
           "createdBy": "USER_4",
           "mergedAt": null,

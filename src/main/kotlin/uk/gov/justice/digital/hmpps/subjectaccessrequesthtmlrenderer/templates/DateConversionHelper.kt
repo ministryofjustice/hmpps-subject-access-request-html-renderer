@@ -53,6 +53,14 @@ class DateConversionHelper {
         "yyyy-MM-dd'T'HH:mm",
         "dd MMMM yyyy, h:mm a",
       ),
+
+      // 2025-04-03T14:34:41+0100
+      DateConversion(
+        "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{2}\\d{2}?$".toRegex(),
+        "yyyy-MM-dd'T'HH:mm",
+        "dd MMMM yyyy, h:mm a",
+      ),
+
     )
   }
 
