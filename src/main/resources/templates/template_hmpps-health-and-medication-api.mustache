@@ -12,12 +12,19 @@
     </table>
 
     {{#if (eq fieldHistoryType "Catering Instructions") }}
-        <table class="summary-list">
-            <tr>
-                <td class="data-column-30">Instructions</td>
-                <td class="data-column-70">{{ optionalValue fieldHistoryValue }}</td>
-            </tr>
-        </table>
+        {{#fieldHistoryValue }}
+            <table class="summary-list">
+                <tr>
+                    <td class="data-column-30">Instructions</td>
+                    <td class="data-column-70">{{ optionalValue fieldHistoryValue }}</td>
+                </tr>
+            </table>
+        {{/fieldHistoryValue}}
+        {{^fieldHistoryValue}}
+            <table class="summary-list">
+                <tr><td></td><td>No Data Held</td></tr>
+            </table>
+        {{/fieldHistoryValue}}
     {{/if}}
 
     {{#if (eq fieldHistoryType "Medical Dietary Requirements") }}
@@ -31,6 +38,11 @@
                     <td>Comment</td>
                     <td>{{ optionalValue comment }}</td>
                 </tr>
+            </table>
+        {{/fieldHistoryValue}}
+        {{^fieldHistoryValue}}
+            <table class="summary-list">
+                <tr><td></td><td>No Data Held</td></tr>
             </table>
         {{/fieldHistoryValue}}
     {{/if}}
@@ -48,6 +60,11 @@
                 </tr>
             </table>
         {{/fieldHistoryValue}}
+        {{^fieldHistoryValue}}
+            <table class="summary-list">
+                <tr><td></td><td>No Data Held</td></tr>
+            </table>
+        {{/fieldHistoryValue}}
     {{/if}}
 
     {{#if (eq fieldHistoryType "Food Allergies") }}
@@ -61,6 +78,11 @@
                     <td>Comment</td>
                     <td>{{ optionalValue comment }}</td>
                 </tr>
+            </table>
+        {{/fieldHistoryValue}}
+        {{^fieldHistoryValue}}
+            <table class="summary-list">
+                <tr><td></td><td>No Data Held</td></tr>
             </table>
         {{/fieldHistoryValue}}
     {{/if}}
