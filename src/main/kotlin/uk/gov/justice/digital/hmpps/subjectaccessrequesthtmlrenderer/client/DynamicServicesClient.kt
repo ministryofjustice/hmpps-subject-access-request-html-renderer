@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client
 
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
@@ -41,4 +42,13 @@ class DynamicServicesClient(
         "uri" to renderRequest.serviceUrl,
       ),
     ).block()
+
+  fun getAttachment(
+    url: String,
+    contentType: String,
+  ): ByteArray = dynamicApiWebClient.mutate().baseUrl(url).build()
+    .get()
+    .retrieve()
+    .bodyToMono(ByteArray::class.java)
+    .block()!!
 }

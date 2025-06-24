@@ -49,16 +49,41 @@ class DocumentStore(
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
-        key = renderRequest.documentKey()
+        key = renderRequest.documentHtmlKey()
         body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
       }
 
-      log.info("adding document to document store.... ${renderRequest.documentKey()}")
+      log.info("adding document to document store.... ${renderRequest.documentHtmlKey()}")
     } catch (ex: Exception) {
       throw SubjectAccessRequestDocumentStorageException(
         subjectAccessRequestId = renderRequest.id,
         message = "failed to upload document",
-        params = mapOf("documentKey" to renderRequest.documentKey()),
+        params = mapOf("documentKey" to renderRequest.documentHtmlKey()),
+      )
+    }
+  }
+
+  suspend fun addAttachment(renderRequest: RenderRequest, attachment: Attachment, data: ByteArray?) {
+    try {
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = renderRequest.documentAttachmentKey(attachment.filename)
+        contentType = attachment.contentType
+        contentLength = attachment.filesize
+        metadata = mapOf(
+          "x-amz-meta-filename" to attachment.filename,
+          "x-amz-meta-attachment-ref" to attachment.attachmentRef,
+          "x-amz-meta-name" to attachment.name,
+          )
+        body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
+      }
+
+      log.info("adding attachment to document store.... ${renderRequest.documentHtmlKey()}")
+    } catch (ex: Exception) {
+      throw SubjectAccessRequestDocumentStorageException(
+        subjectAccessRequestId = renderRequest.id,
+        message = "failed to upload attachment",
+        params = mapOf("documentKey" to renderRequest.documentHtmlKey(), "filename" to attachment.filename),
       )
     }
   }

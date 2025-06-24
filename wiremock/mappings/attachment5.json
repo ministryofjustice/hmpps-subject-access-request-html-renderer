@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/download/a3doc.pdf"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "a3doc.pdf",
+    "headers": {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=\"a3doc.pdf\""
+    }
+  }
+}

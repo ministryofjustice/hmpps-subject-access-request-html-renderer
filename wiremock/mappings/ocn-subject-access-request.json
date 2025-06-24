@@ -1,0 +1,13 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/ocn/subject-access-request"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "offender-case-notes.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/download/exclusion-zone.pdf"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "exclusion-zone.pdf",
+    "headers": {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": "attachment; filename=\"exclusion-zone.pdf\""
+    }
+  }
+}

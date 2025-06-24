@@ -364,7 +364,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
   }
 
   private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
-    val uploadedFile = s3TestUtil.getFile(renderRequest.documentKey())
+    val uploadedFile = s3TestUtil.getFile(renderRequest.documentHtmlKey())
     assertThat(uploadedFile).isNotNull()
     assertThat(uploadedFile).isNotEmpty()
 
