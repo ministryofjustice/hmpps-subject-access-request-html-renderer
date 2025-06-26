@@ -125,7 +125,7 @@ abstract class IntegrationTestBase {
     serviceLabel = serviceLabel,
     serviceUrl = "http://localhost:${sarDataSourceApi.port()}",
     nomisId = "nomis1234",
-    ndeliusId = "ndelius1234",
+    ndeliusId = null,
     dateFrom = LocalDate.of(2020, 1, 1),
     dateTo = LocalDate.of(2021, 1, 1),
   )
