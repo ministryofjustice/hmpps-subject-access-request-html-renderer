@@ -34,7 +34,6 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     stubFor(
       get(urlPathEqualTo("/subject-access-request"))
         .withQueryParam("prn", equalTo(params.prn))
-        .withQueryParam("crn", equalTo(params.crn))
         .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
         .withQueryParam("toDate", equalTo(params.dateTo.toString()))
         .willReturn(responseDefinition),
@@ -56,7 +55,6 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     stubFor(
       get(urlPathEqualTo("/subject-access-request"))
         .withQueryParam("prn", equalTo(params.prn))
-        .withQueryParam("crn", equalTo(params.crn))
         .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
         .withQueryParam("toDate", equalTo(params.dateTo.toString()))
         .willReturn(

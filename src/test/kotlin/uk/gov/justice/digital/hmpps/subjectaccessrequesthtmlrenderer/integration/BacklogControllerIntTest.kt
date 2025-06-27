@@ -53,6 +53,23 @@ class BacklogControllerIntTest : IntegrationTestBase() {
     responseBodySpec.jsonPath("$.dataHeld").isEqualTo(false)
   }
 
+  @Test
+  fun `should return data not held response when service returns 209 status code`() {
+    hmppsAuthReturnsValidAuthToken()
+
+    returnUnsupportedIdentifierResponse(
+      params = getSummaryRequest.toGetSubjectAccessRequestDataParams(),
+    )
+
+    val responseBodySpec = sendDataHeldSummaryRequest(getSummaryRequest)
+
+    responseBodySpec.jsonPath("$.nomisId").isEqualTo(getSummaryRequest.nomisId!!)
+    responseBodySpec.jsonPath("$.ndeliusId").isEqualTo(getSummaryRequest.ndeliusId!!)
+    responseBodySpec.jsonPath("$.dataHeld").isEqualTo(false)
+    responseBodySpec.jsonPath("$.serviceName").isEqualTo("court-case-service")
+    responseBodySpec.jsonPath("$.dataHeld").isEqualTo(false)
+  }
+
   fun sendDataHeldSummaryRequest(
     request: BacklogController.SubjectDataHeldRequest,
   ): WebTestClient.BodyContentSpec = webTestClient.post()
@@ -94,7 +111,14 @@ class BacklogControllerIntTest : IntegrationTestBase() {
     .stubGetSubjectAccessRequestData(
       params = params,
       responseDefinition = ResponseDefinitionBuilder()
-        .withStatus(204)
+        .withStatus(204),
+    )
+
+  fun returnUnsupportedIdentifierResponse(params: GetSubjectAccessRequestDataParams) = hmppsService1Mock
+    .stubGetSubjectAccessRequestData(
+      params = params,
+      responseDefinition = ResponseDefinitionBuilder()
+        .withStatus(209)
         .withHeader("Content-Type", "application/json"),
     )
 }

@@ -34,12 +34,14 @@ class WebClientRetriesSpec(
     private val log = LoggerFactory.getLogger(WebClientRetriesSpec::class.java)
   }
 
+  class IsStatus5xxException(message: String) : RuntimeException(message)
+
   fun retry5xxAndClientRequestErrors(
     renderRequest: RenderRequest? = null,
     vararg params: Pair<String, Any>,
   ): RetryBackoffSpec = Retry
     .backoff(maxRetries, backOff)
-    .filter { err -> is5xxOrClientRequestError(err) }
+    .filter { err -> is5xxOrClientRequestError(err) || err is IsStatus5xxException }
     .doBeforeRetry { signal ->
       val properties = listOf(
         *params,

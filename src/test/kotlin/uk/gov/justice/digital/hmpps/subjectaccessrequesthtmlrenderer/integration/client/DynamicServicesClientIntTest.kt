@@ -8,9 +8,14 @@ import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
 import java.time.LocalDate
@@ -119,6 +124,81 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
           .withQueryParam("crn", equalTo(NDELIUS_ID))
           .withQueryParam("fromDate", equalTo(DATE_FROM.sarFormat()))
           .withoutQueryParam("toDate"),
+      )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "500",
+        "501",
+        "502",
+        "503",
+        "504",
+        "505",
+      ],
+    )
+    fun `should retry expected number of times when request fails with 5xx status`(responseStatus: Int) {
+      val request = createRenderRequest(nomisId = null)
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(
+        responseDefinition = ResponseDefinitionBuilder.responseDefinition().withStatus(responseStatus),
+        expectedQueryParams = request.expectedQueryParameters(),
+      )
+
+      val actual = assertThrows<SubjectAccessRequestRetryExhaustedException> {
+        dynamicServicesClient.getSubjectAccessRequestData(request)
+      }
+
+      assertThat(actual.message).startsWith("request failed and max retry attempts (2) exhausted")
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+
+      sarDataSourceApi.verify(
+        3,
+        getRequestedFor(urlPathEqualTo("/subject-access-request"))
+          .withQueryParam("crn", equalTo(NDELIUS_ID))
+          .withQueryParam("fromDate", equalTo(DATE_FROM.sarFormat()))
+          .withQueryParam("toDate", equalTo(DATE_TO.sarFormat()))
+          .withoutQueryParam("prn"),
+      )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "400",
+        "401",
+        "402",
+        "403",
+        "404",
+      ],
+    )
+    fun `should not retry when request fails with 4xx status`(responseStatus: Int) {
+      val request = createRenderRequest(nomisId = null)
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(
+        responseDefinition = ResponseDefinitionBuilder.responseDefinition().withStatus(responseStatus),
+        expectedQueryParams = request.expectedQueryParameters(),
+      )
+
+      val actual = assertThrows<FatalSubjectAccessRequestException> {
+        dynamicServicesClient.getSubjectAccessRequestData(request)
+      }
+
+      assertThat(actual.message)
+        .startsWith("subjectAccessRequest failed with non-retryable error: response status: $responseStatus not retryable")
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+
+      sarDataSourceApi.verify(
+        1,
+        getRequestedFor(urlPathEqualTo("/subject-access-request"))
+          .withQueryParam("crn", equalTo(NDELIUS_ID))
+          .withQueryParam("fromDate", equalTo(DATE_FROM.sarFormat()))
+          .withQueryParam("toDate", equalTo(DATE_TO.sarFormat()))
+          .withoutQueryParam("prn"),
       )
     }
 

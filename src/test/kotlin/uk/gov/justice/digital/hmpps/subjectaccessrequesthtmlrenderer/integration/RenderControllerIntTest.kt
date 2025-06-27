@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.User
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import java.time.format.DateTimeFormatter
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
 const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
@@ -353,9 +354,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
         ExpectedTelemetryEvent(GET_SERVICE_DATA, eventProperties(renderRequest)),
-        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 0)),
-        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 1)),
-        ExpectedTelemetryEvent(REQUEST_ERRORED, requestErroredEventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 0, 500)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 1, 500)),
+        ExpectedTelemetryEvent(REQUEST_ERRORED, requestErroredEventProperties(renderRequest, 500)),
       )
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
@@ -423,23 +424,37 @@ class RenderControllerIntTest : IntegrationTestBase() {
     .bodyValue(objectMapper.writeValueAsString(renderRequest))
     .exchange()
 
-  private fun getDataRetryEventProperties(renderRequest: RenderRequest, attempt: Int) = eventProperties(
+  private fun getDataRetryEventProperties(
+    renderRequest: RenderRequest,
+    attempt: Int,
+    responseStatus: Int,
+  ) = eventProperties(
     renderRequest,
     "uri" to "http://localhost:${sarDataSourceApi.port()}",
-    "error" to "500 Internal Server Error from GET http://localhost:${sarDataSourceApi.port()}/subject-access-request",
+    "error" to "GET ${getSarRequestUrl(renderRequest)}, status: $responseStatus",
     "retryAttempts" to attempt.toString(),
     "backOff" to webClientConfiguration.backOff,
     "maxRetries" to webClientConfiguration.maxRetries.toString(),
   )
 
-  private fun requestErroredEventProperties(renderRequest: RenderRequest) = eventProperties(
+  private fun requestErroredEventProperties(renderRequest: RenderRequest, status: Int) = eventProperties(
     renderRequest,
     "uri" to "http://localhost:${sarDataSourceApi.port()}",
-    "errorMessage" to retryExhaustedErrorMessage(renderRequest),
+    "errorMessage" to retryExhaustedErrorMessage(renderRequest, status),
   )
 
-  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest) = "request failed and max retry attempts " +
-    "(${webClientConfiguration.maxRetries}) exhausted, cause=500 Internal Server Error from GET " +
-    "http://localhost:${sarDataSourceApi.port()}/subject-access-request, id=${renderRequest.id}, " +
-    "serviceName=${renderRequest.serviceName}, uri=${renderRequest.serviceUrl}"
+  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest, status: Int): String = "request failed and max " +
+    "retry attempts (${webClientConfiguration.maxRetries}) exhausted, cause=GET ${getSarRequestUrl(renderRequest)}, " +
+    "status: $status, id=${renderRequest.id}, serviceName=${renderRequest.serviceName}, uri=${renderRequest.serviceUrl}"
+
+  private fun getSarRequestUrl(
+    request: RenderRequest,
+  ): String {
+    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val sb = StringBuilder("http://localhost:${sarDataSourceApi.port()}/subject-access-request")
+    request.nomisId?.let { sb.append("?prn=${request.nomisId}") } ?: sb.append("?crn=${request.ndeliusId}")
+    request.dateFrom?.let { sb.append("&fromDate=${format.format(request.dateFrom)}") }
+    request.dateTo?.let { sb.append("&toDate=${format.format(request.dateTo)}") }
+    return sb.toString()
+  }
 }
