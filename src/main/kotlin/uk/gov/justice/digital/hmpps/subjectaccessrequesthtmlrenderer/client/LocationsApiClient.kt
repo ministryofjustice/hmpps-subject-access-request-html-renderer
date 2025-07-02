@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.client.ClientAuthorizationException
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_LOCATION_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 
 @Service
@@ -34,6 +35,7 @@ class LocationsApiClient(
       .retryWhen(
         webClientRetriesSpec.retry5xxAndClientRequestErrors(
           renderRequest = null,
+          renderEvent = GET_LOCATION_RETRY,
           "dpsLocationId" to dpsLocationId,
         ),
       )

@@ -31,7 +31,18 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
     .responseDefinition()
     .withStatus(200)
     .withHeader("Content-Type", "application/json")
-    .withBody("""{ "content": ["some value"]}""")
+    .withBody(
+      """{ 
+      "content": ["some value"], 
+      "attachments": [{
+        "attachmentNumber": 1,
+        "name": "test doc",
+        "contentType": "application/pdf",
+        "url": "http://localhost/download",
+        "filesize": 12345,
+        "filename": "doc.pdf"
+      }]}""",
+    )
 
   companion object {
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -202,21 +213,6 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       )
     }
 
-    private fun createRenderRequest(
-      nomisId: String? = NOMIS_ID,
-      ndeliusId: String? = NDELIUS_ID,
-      dateFrom: LocalDate? = DATE_FROM,
-      dateTo: LocalDate? = DATE_TO,
-    ) = RenderRequest(
-      id = UUID.randomUUID(),
-      nomisId = nomisId,
-      ndeliusId = ndeliusId,
-      dateFrom = dateFrom,
-      dateTo = dateTo,
-      serviceUrl = "http://localhost:8092",
-      serviceName = "A-Service",
-    )
-
     private fun RenderRequest.expectedQueryParameters(): Map<String, StringValuePattern> {
       val map = mutableMapOf<String, StringValuePattern>()
       this.nomisId?.let { map["prn"] to equalTo(it) }
@@ -226,4 +222,57 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       return map
     }
   }
+
+  @Nested
+  inner class GetAttachmentTest {
+
+    @Test
+    fun `should return attachment bytes when exist`() {
+      val renderRequest = createRenderRequest()
+      val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
+
+      val body = dynamicServicesClient.getAttachment(renderRequest, "http://localhost:8092/attachments/map.jpg", "image/jpeg", 683919)
+      assertThat(body).isEqualTo(attachmentContent)
+
+      sarDataSourceApi.verify(getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
+    }
+
+    @Test
+    fun `should retry get attachment bytes when filesize does not match`() {
+      val renderRequest = createRenderRequest()
+      val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
+
+      assertThrows<SubjectAccessRequestRetryExhaustedException> {
+        dynamicServicesClient.getAttachment(
+          renderRequest,
+          "http://localhost:8092/attachments/map.jpg",
+          "image/jpeg",
+          100,
+        )
+      }
+
+      sarDataSourceApi.verify(3, getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
+    }
+  }
+
+  private fun createRenderRequest(
+    nomisId: String? = NOMIS_ID,
+    ndeliusId: String? = NDELIUS_ID,
+    dateFrom: LocalDate? = DATE_FROM,
+    dateTo: LocalDate? = DATE_TO,
+  ) = RenderRequest(
+    id = UUID.randomUUID(),
+    nomisId = nomisId,
+    ndeliusId = ndeliusId,
+    dateFrom = dateFrom,
+    dateTo = dateTo,
+    serviceUrl = "http://localhost:8092",
+    serviceName = "A-Service",
+  )
 }
