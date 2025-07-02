@@ -30,7 +30,13 @@ data class RenderRequest(
 ) {
 
   @JsonIgnore
-  fun documentKey(): String = "$id/$serviceName.html"
+  fun documentHtmlKey(): String = "$id/$serviceName.html"
+
+  @JsonIgnore
+  fun documentJsonKey(): String = "$id/$serviceName.json"
+
+  @JsonIgnore
+  fun documentAttachmentKey(filename: String): String = "$id/$serviceName/attachments/$filename"
 
   override fun toString(): String = "RenderRequest(id=$id, nomisId=$nomisId, ndeliusId=$ndeliusId, " +
     "dateFrom=$dateFrom, dateTo=$dateTo, sarCaseReferenceNumber=$sarCaseReferenceNumber, serviceName=$serviceName, " +

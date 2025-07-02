@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
+import org.springframework.http.HttpHeaders.CONTENT_TYPE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.GetSubjectAccessRequestDataParams
 
 class SarDataSourceApiMockServer : WireMockServer(8092) {
@@ -65,7 +66,26 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     )
   }
 
-  fun verifyGetSubjectAccessRequestDataCalled(times: Int) = verify(
+  fun stubGetAttachment(contentType: String, content: ByteArray, filename: String) {
+    stubGetAttachment(
+      contentType,
+      filename,
+      aResponse()
+        .withStatus(200)
+        .withHeader(CONTENT_TYPE, contentType)
+        .withBody(content),
+    )
+  }
+
+  fun stubGetAttachment(contentType: String, filename: String, responseDefinition: ResponseDefinitionBuilder) {
+    stubFor(
+      get(urlPathEqualTo("/attachments/$filename"))
+        .withHeader(CONTENT_TYPE, equalTo(contentType))
+        .willReturn(responseDefinition),
+    )
+  }
+
+  fun verifyGetSubjectAccessRequestDataCalled(times: Int = 1) = verify(
     times,
     getRequestedFor(urlPathEqualTo("/subject-access-request")),
   )
@@ -73,6 +93,16 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
   fun verifyGetSubjectAccessRequestDataNeverCalled() = verify(
     0,
     getRequestedFor(urlPathEqualTo("/subject-access-request")),
+  )
+
+  fun verifyGetAttachmentCalled(filename: String, times: Int = 1) = verify(
+    times,
+    getRequestedFor(urlPathEqualTo("/attachments/$filename")),
+  )
+
+  fun verifyGetAttachmentNeverCalled(filename: String) = verify(
+    0,
+    getRequestedFor(urlPathEqualTo("/attachments/$filename")),
   )
 }
 

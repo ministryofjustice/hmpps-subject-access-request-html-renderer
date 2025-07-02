@@ -130,28 +130,40 @@ abstract class IntegrationTestBase {
     dateTo = LocalDate.of(2021, 1, 1),
   )
 
-  protected fun assertServiceDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentKey()))
-      .withFailMessage { "expected file ${request.documentKey()} to not exist" }
+  protected fun assertServiceJsonDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
+      .withFailMessage { "expected file ${request.documentJsonKey()} to not exist" }
       .isFalse()
   }
 
-  protected fun assertServiceDocumentExists(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentKey()))
-      .withFailMessage { "expected file ${request.documentKey()} to exist" }
+  protected fun assertServiceHtmlDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
+      .withFailMessage { "expected file ${request.documentHtmlKey()} to not exist" }
+      .isFalse()
+  }
+
+  protected fun assertServiceAttachmentDoesNotAlreadyExist(request: RenderRequest, filename: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(filename)))
+      .withFailMessage { "expected file ${request.documentAttachmentKey(filename)} to not exist" }
+      .isFalse()
+  }
+
+  protected fun assertServiceJsonDocumentExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
+      .withFailMessage { "expected file ${request.documentJsonKey()} to exist" }
       .isTrue()
   }
 
-  protected fun assertTelemetryEvent(
-    eventIndex: Int,
-    expectedEvent: RenderEvent,
-    expectedProperties: Map<String, String> = emptyMap(),
-  ) {
-    assertThat(eventNameCaptor.allValues).hasSizeGreaterThanOrEqualTo(eventIndex)
-    assertThat(eventNameCaptor.allValues[eventIndex]).isEqualTo(expectedEvent.name)
+  protected fun assertServiceHtmlDocumentExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
+      .withFailMessage { "expected file ${request.documentHtmlKey()} to exist" }
+      .isTrue()
+  }
 
-    assertThat(eventPropertiesCaptor.allValues).hasSizeGreaterThanOrEqualTo(eventIndex)
-    assertThat(eventPropertiesCaptor.allValues[eventIndex]).containsAllEntriesOf(expectedProperties)
+  protected fun assertServiceAttachmentExists(request: RenderRequest, filename: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(filename)))
+      .withFailMessage { "expected file ${request.documentAttachmentKey(filename)} to exist" }
+      .isTrue()
   }
 
   protected fun assertTelemetryEvents(vararg expectedEvents: ExpectedTelemetryEvent) {
@@ -181,22 +193,49 @@ abstract class IntegrationTestBase {
     filepath = "$REFERENCE_HTML_DIR/$filePrefix-expected.html",
   )
 
-  protected fun getResourceAsString(filepath: String): String {
+  protected fun getResourceAsString(filepath: String): String = String(getResourceAsByteArray(filepath))
+
+  protected fun getResourceAsByteArray(filepath: String): ByteArray {
     val jsonBytes = this::class.java.getResourceAsStream(filepath).use { inputStream -> inputStream?.readAllBytes() }
     assertThat(jsonBytes).isNotNull()
-    return String(jsonBytes!!)
+    return jsonBytes!!
   }
 
-  protected fun addServiceDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata {
+  protected fun addServiceHtmlDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata {
     s3TestUtil.addFilesToBucket(
       S3File(
-        key = renderRequest.documentKey(),
+        key = renderRequest.documentHtmlKey(),
         content = getExpectedHtmlString(renderRequest.serviceName ?: ""),
       ),
     )
 
-    assertServiceDocumentExists(renderRequest)
-    return s3TestUtil.getFileMetadata(renderRequest.documentKey())
+    assertServiceHtmlDocumentExists(renderRequest)
+    return s3TestUtil.getFileMetadata(renderRequest.documentHtmlKey())
+  }
+
+  protected fun addServiceJsonDocumentToBucket(renderRequest: RenderRequest, content: String): S3TestUtil.FileMetadata {
+    s3TestUtil.addFilesToBucket(
+      S3File(
+        key = renderRequest.documentJsonKey(),
+        content = content,
+      ),
+    )
+
+    assertServiceJsonDocumentExists(renderRequest)
+    return s3TestUtil.getFileMetadata(renderRequest.documentJsonKey())
+  }
+
+  protected fun addServiceJsonDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata = addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody(renderRequest.serviceName ?: ""))
+
+  protected fun addServiceAttachmentToBucket(renderRequest: RenderRequest, filename: String) {
+    s3TestUtil.addFilesToBucket(
+      S3File(
+        key = renderRequest.documentAttachmentKey(filename),
+        content = getResourceAsString("/attachments/$filename"),
+      ),
+    )
+
+    assertServiceAttachmentExists(renderRequest, filename)
   }
 
   data class S3File(val key: String, val content: String = fileContent)

@@ -13,6 +13,7 @@ import aws.smithy.kotlin.runtime.time.toJvmInstant
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -45,20 +46,63 @@ class DocumentStore(
     }
   }
 
-  suspend fun add(renderRequest: RenderRequest, data: ByteArray?) {
+  suspend fun addJson(renderRequest: RenderRequest, data: ByteArray?) {
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
-        key = renderRequest.documentKey()
+        key = renderRequest.documentJsonKey()
         body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
       }
 
-      log.info("adding document to document store.... ${renderRequest.documentKey()}")
+      log.info("adding json document to document store.... ${renderRequest.documentJsonKey()}")
     } catch (ex: Exception) {
       throw SubjectAccessRequestDocumentStorageException(
         subjectAccessRequestId = renderRequest.id,
-        message = "failed to upload document",
-        params = mapOf("documentKey" to renderRequest.documentKey()),
+        message = "failed to upload json document",
+        params = mapOf("documentKey" to renderRequest.documentJsonKey()),
+      )
+    }
+  }
+
+  suspend fun addHtml(renderRequest: RenderRequest, data: ByteArray?) {
+    try {
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = renderRequest.documentHtmlKey()
+        body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
+      }
+
+      log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
+    } catch (ex: Exception) {
+      throw SubjectAccessRequestDocumentStorageException(
+        subjectAccessRequestId = renderRequest.id,
+        message = "failed to upload html document",
+        params = mapOf("documentKey" to renderRequest.documentHtmlKey()),
+      )
+    }
+  }
+
+  suspend fun addAttachment(renderRequest: RenderRequest, attachment: Attachment, data: ByteArray) {
+    try {
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = renderRequest.documentAttachmentKey(attachment.filename)
+        contentType = attachment.contentType
+        contentLength = attachment.filesize.toLong()
+        metadata = mapOf(
+          "x-amz-meta-filename" to attachment.filename,
+          "x-amz-meta-attachment-number" to attachment.attachmentNumber.toString(),
+          "x-amz-meta-name" to attachment.name,
+        )
+        body = ByteStream.fromBytes(data)
+      }
+
+      log.info("adding attachment to document store.... ${renderRequest.documentHtmlKey()}")
+    } catch (ex: Exception) {
+      throw SubjectAccessRequestDocumentStorageException(
+        subjectAccessRequestId = renderRequest.id,
+        message = "failed to upload attachment",
+        params = mapOf("documentKey" to renderRequest.documentHtmlKey(), "filename" to attachment.filename),
       )
     }
   }

@@ -24,13 +24,17 @@ class S3TestUtil(
   val s3Properties: S3Properties,
 ) {
 
-  fun getFile(documentKey: String): String = runBlocking {
+  fun getFileBytes(documentKey: String): ByteArray = runBlocking {
     s3.getObject(
       GetObjectRequest {
         bucket = s3Properties.bucketName
         key = documentKey
       },
-    ) { it.body?.toByteArray() }?.let { String(it) } ?: ""
+    ) { it.body?.toByteArray() } ?: ByteArray(0)
+  }
+
+  fun getFile(documentKey: String): String = runBlocking {
+    String(getFileBytes(documentKey))
   }
 
   fun clearBucket() = runBlocking {
@@ -74,6 +78,23 @@ class S3TestUtil(
     }
   }
 
+  fun getAttachmentMetadata(key: String): AttachmentMetadata = runBlocking {
+    s3.getObject(
+      GetObjectRequest {
+        this.bucket = s3Properties.bucketName
+        this.key = key
+      },
+    ) {
+      AttachmentMetadata(
+        contentType = it.contentType!!,
+        filesize = it.contentLength!!,
+        filename = it.metadata?.get("x-amz-meta-filename")!!,
+        attachmentNumber = it.metadata?.get("x-amz-meta-attachment-number")!!,
+        name = it.metadata?.get("x-amz-meta-name")!!,
+      )
+    }
+  }
+
   fun getFileMetadata(key: String): FileMetadata = runBlocking {
     s3.getObject(
       GetObjectRequest {
@@ -84,4 +105,12 @@ class S3TestUtil(
   }
 
   data class FileMetadata(val eTag: String?, val lastModified: Instant?)
+
+  data class AttachmentMetadata(
+    val contentType: String,
+    val filesize: Long,
+    val filename: String,
+    val attachmentNumber: String,
+    val name: String,
+  )
 }

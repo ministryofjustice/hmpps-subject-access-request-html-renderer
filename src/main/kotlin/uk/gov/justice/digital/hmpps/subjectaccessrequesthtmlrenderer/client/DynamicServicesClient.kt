@@ -1,14 +1,24 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpHeaders.CONTENT_TYPE
+import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_RETRY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
+import java.net.URI
 import java.util.Optional
 import java.util.UUID
 
@@ -24,7 +34,7 @@ class DynamicServicesClient(
 
   fun getSubjectAccessRequestData(
     renderRequest: RenderRequest,
-  ): ResponseEntity<Map<*, *>>? = dynamicApiWebClient
+  ): ResponseEntity<ServiceData>? = dynamicApiWebClient
     .mutate()
     .baseUrl(renderRequest.serviceUrl!!)
     .build()
@@ -41,6 +51,7 @@ class DynamicServicesClient(
     .retryWhen(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
         renderRequest = renderRequest,
+        renderEvent = GET_SERVICE_DATA_RETRY,
         "serviceName" to renderRequest.serviceName!!,
         "uri" to renderRequest.serviceUrl,
       ),
@@ -57,7 +68,7 @@ class DynamicServicesClient(
       }
 
       response.statusCode().is2xxSuccessful -> {
-        response.toEntity(Map::class.java)
+        response.toEntity(ServiceData::class.java)
       }
 
       response.statusCode().is4xxClientError -> {
@@ -82,4 +93,57 @@ class DynamicServicesClient(
       else -> Mono.error(RuntimeException("unexpected response status error ${response.statusCode().value()}"))
     }
   }
+
+  fun getAttachment(
+    renderRequest: RenderRequest,
+    url: String,
+    contentType: String,
+    expectedSize: Int,
+  ): ByteArray = dynamicApiWebClient.mutate().baseUrl(url).build()
+    .get()
+    .header(CONTENT_TYPE, contentType)
+    .retrieve()
+    .onStatus(
+      webClientRetriesSpec.is4xxStatus(),
+      webClientRetriesSpec.throw4xxStatusFatalError(renderRequest.id!!),
+    )
+    .bodyToMono(ByteArray::class.java)
+    .flatMap { bytes ->
+      if (bytes.size != expectedSize) {
+        Mono.error(
+          WebClientRequestException(
+            IllegalStateException("Attachment GET $url expected filesize $expectedSize does not match retrieved data size ${bytes.size}"),
+            HttpMethod.GET,
+            URI(url),
+            HttpHeaders(),
+          ),
+        )
+      } else {
+        Mono.just(bytes)
+      }
+    }
+    .retryWhen(
+      webClientRetriesSpec.retry5xxAndClientRequestErrors(
+        renderRequest = renderRequest,
+        renderEvent = GET_ATTACHMENT_RETRY,
+        "serviceName" to renderRequest.serviceName!!,
+        "uri" to url,
+      ),
+    ).block()!!
 }
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(NON_NULL)
+data class ServiceData(
+  val content: Any? = null,
+  val attachments: List<Attachment>? = null,
+)
+
+data class Attachment(
+  val attachmentNumber: Int,
+  val name: String,
+  val contentType: String,
+  val url: String,
+  val filesize: Int,
+  val filename: String,
+)

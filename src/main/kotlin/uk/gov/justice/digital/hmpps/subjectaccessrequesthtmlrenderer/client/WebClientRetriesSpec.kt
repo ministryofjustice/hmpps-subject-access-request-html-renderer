@@ -10,7 +10,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import reactor.util.retry.RetryBackoffSpec
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.WebClientConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -38,6 +38,7 @@ class WebClientRetriesSpec(
 
   fun retry5xxAndClientRequestErrors(
     renderRequest: RenderRequest? = null,
+    renderEvent: RenderEvent,
     vararg params: Pair<String, Any>,
   ): RetryBackoffSpec = Retry
     .backoff(maxRetries, backOff)
@@ -51,7 +52,7 @@ class WebClientRetriesSpec(
         "maxRetries" to maxRetries,
       )
       telemetryClient.renderEvent(
-        GET_SERVICE_DATA_RETRY,
+        renderEvent,
         renderRequest,
         *properties.map { Pair(it.first, it.second.toString()) }.toTypedArray(),
       )
