@@ -129,6 +129,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "G1 | G1",
         "G2 | G2",
         "G3 | G3",
+        "wiremock-test-service-api | Wiremock Test Service",
       ],
       delimiterString = "|",
     )
@@ -198,6 +199,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "G1 | G1",
         "G2 | G2",
         "G3 | G3",
+        "wiremock-test-service-api | Wiremock Test Service",
       ],
       delimiterString = "|",
     )
