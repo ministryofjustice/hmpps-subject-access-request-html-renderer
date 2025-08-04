@@ -1,0 +1,161 @@
+<h1>Managing Prisoner Applications</h1>
+    <h2>Apps</h2>
+    {{#apps}}
+        <br/>
+        <h3>App</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-60">Type</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue status }}</td>
+                <td>{{ optionalValue type }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Requested date</td>
+                <td class="data-column-30">Last modified date</td>
+                <td class="data-column-30">Establishment</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue (formatDate requestedDate) }}</td>
+                <td>{{ optionalValue (formatDate lastModifiedDate) }}</td>
+                <td>{{ getPrisonName establishment }}</td>
+            </tr>
+        </table>
+
+        <h4>History</h4>
+        {{#history}}
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Activity</td>
+                    <td class="data-column-30">Date</td>
+                    <td class="data-column-30">Action by</td>
+                </tr>
+                <tr>
+                    <td>{{ optionalValue activity }}</td>
+                    <td>{{ optionalValue (formatDate date) }}</td>
+                    <td>{{ getUserLastName actionBy }}</td>
+                </tr>
+            </table>
+        {{/history}}
+        {{^history}}
+            <p>No data held</p>
+        {{/history}}
+
+        <h4>Form Data</h4>
+
+        {{#if (eq type "PIN_PHONE_EMERGENCY_CREDIT_TOP_UP")}}
+            {{#formData}}
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-50">Amount</td>
+                        <td class="data-column-50">Reason</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue amount }}</td>
+                        <td>{{ optionalValue reason }}</td>
+                    </tr>
+                </table>
+            {{/formData}}
+            {{^formData}}
+                <p>No data held</p>
+            {{/formData}}
+        {{/if}}
+
+        {{#if (eq type "PIN_PHONE_ADD_NEW_SOCIAL_CONTACT")}}
+            {{#formData}}
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-30">First name</td>
+                        <td class="data-column-30">Last name</td>
+                        <td class="data-column-30">Relationship</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue firstName }}</td>
+                        <td>{{ optionalValue lastName }}</td>
+                        <td>{{ optionalValue relationship }}</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-30">Date of birth or age</td>
+                        <td class="data-column-30">Age</td>
+                        <td class="data-column-30">Date of birth</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue dateOfBirthOrAge }}</td>
+                        <td>{{ optionalValue age }}</td>
+                        <td>{{ buildDate dob.year dob.month dob.day }}</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-30">Address line 1</td>
+                        <td class="data-column-30">Address line 2</td>
+                        <td class="data-column-30">Town or city</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue addressLine1 }}</td>
+                        <td>{{ optionalValue addressLine2 }}</td>
+                        <td>{{ optionalValue townOrCity }}</td>
+                    </tr>
+                </table>
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-25">Country</td>
+                        <td class="data-column-25">Postcode</td>
+                        <td class="data-column-25">Telephone 1</td>
+                        <td class="data-column-25">Telephone 2</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue country }}</td>
+                        <td>{{ optionalValue postcode }}</td>
+                        <td>{{ optionalValue telephone1 }}</td>
+                        <td>{{ optionalValue telephone2 }}</td>
+                    </tr>
+                </table>
+            {{/formData}}
+            {{^formData}}
+                <p>No data held</p>
+            {{/formData}}
+        {{/if}}
+
+        {{#if (eq type "PIN_PHONE_CREDIT_SWAP_VISITING_ORDERS")}}
+            {{#formData}}
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-100">Details</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue details }}</td>
+                    </tr>
+                </table>
+            {{/formData}}
+            {{^formData}}
+                <p>No data held</p>
+            {{/formData}}
+        {{/if}}
+
+        {{#if (eq type "PIN_PHONE_SUPPLY_LIST_OF_CONTACTS")}}
+            {{#formData}}
+                <table class="data-table">
+                    <tr>
+                        <td class="data-column-100">Details</td>
+                    </tr>
+                    <tr>
+                        <td>{{ optionalValue details }}</td>
+                    </tr>
+                </table>
+            {{/formData}}
+            {{^formData}}
+                <p>No data held</p>
+            {{/formData}}
+        {{/if}}
+
+    {{/apps}}
+    {{^apps}}
+        <p>No Data Held</p>
+    {{/apps}}
