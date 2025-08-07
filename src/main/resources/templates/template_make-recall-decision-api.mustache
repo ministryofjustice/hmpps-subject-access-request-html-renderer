@@ -396,6 +396,21 @@
                 <tr><td class="data-column-20">Standard licence conditions</td></tr>
                 <tr><td>{{#standardLicenceConditions.selected}}<li>{{ optionalValue . }}</li>{{/standardLicenceConditions.selected}}{{^standardLicenceConditions.selected}}No Data Held{{/standardLicenceConditions.selected}}</td></tr>
             </table>
+            <table class="data-table">
+                <tr><td class="data-column-100">All options</td></tr>
+                {{#standardLicenceConditions.allOptions}}
+                    <tr>
+                        <td>{{ optionalValue value }}</td>
+                        <td>{{ optionalValue text }}</td>
+                    </tr>
+                {{/standardLicenceConditions.allOptions}}
+                {{^standardLicenceConditions.allOptions}}
+                    <tr>
+                        <td>No Data Held</td>
+                        <td>No Data Held</td>
+                    </tr>
+                {{/standardLicenceConditions.allOptions}}
+            </table>
             <br>
             {{#additionalLicenceConditions}}
                 <table class="data-table">
@@ -475,7 +490,7 @@
                     <tr><td class="data-column-100">All options</td></tr>
                     {{#allOptions}}
                         <tr>
-                            <td>{{ optionalValue value }}</td>
+                            <td>{{ optionalValue code }}</td>
                             <td>{{ optionalValue text }}</td>
                         </tr>
                     {{/allOptions}}
@@ -494,7 +509,7 @@
                     <tr><td class="data-column-100">All options</td></tr>
                     {{#allOptions}}
                         <tr>
-                            <td>{{ optionalValue value }}</td>
+                            <td>{{ optionalValue code }}</td>
                             <td>{{ optionalValue text }}</td>
                         </tr>
                     {{/allOptions}}
@@ -516,7 +531,7 @@
                     <tr><td class="data-column-100">All options</td></tr>
                     {{#allOptions}}
                         <tr>
-                            <td>{{ optionalValue value }}</td>
+                            <td>{{ optionalValue code }}</td>
                             <td>{{ optionalValue text }}</td>
                         </tr>
                     {{/allOptions}}
