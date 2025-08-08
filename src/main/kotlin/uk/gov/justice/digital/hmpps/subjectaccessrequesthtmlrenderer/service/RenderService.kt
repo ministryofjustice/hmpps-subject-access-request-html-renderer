@@ -91,7 +91,7 @@ class RenderService(
   }
 
   private suspend fun getAndStoreAttachment(renderRequest: RenderRequest, attachment: Attachment) {
-    val documentAttachmentKey = renderRequest.documentAttachmentKey(attachment.filename)
+    val documentAttachmentKey = renderRequest.documentAttachmentKey(attachment.attachmentNumber, attachment.filename)
     if (documentStore.contains(documentKey = documentAttachmentKey)) {
       telemetryClient.renderEvent(ATTACHMENT_EXISTS, renderRequest)
       log.info("attachment for request: $documentAttachmentKey exists no action required")
