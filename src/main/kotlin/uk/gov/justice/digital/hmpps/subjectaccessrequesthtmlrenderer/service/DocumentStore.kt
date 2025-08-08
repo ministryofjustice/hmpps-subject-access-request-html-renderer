@@ -86,7 +86,7 @@ class DocumentStore(
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
-        key = renderRequest.documentAttachmentKey(attachment.filename)
+        key = renderRequest.documentAttachmentKey(attachment.attachmentNumber, attachment.filename)
         contentType = attachment.contentType
         contentLength = attachment.filesize.toLong()
         metadata = mapOf(

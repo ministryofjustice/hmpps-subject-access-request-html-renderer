@@ -142,9 +142,9 @@ abstract class IntegrationTestBase {
       .isFalse()
   }
 
-  protected fun assertServiceAttachmentDoesNotAlreadyExist(request: RenderRequest, filename: String): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(filename)))
-      .withFailMessage { "expected file ${request.documentAttachmentKey(filename)} to not exist" }
+  protected fun assertServiceAttachmentDoesNotAlreadyExist(request: RenderRequest, attachmentNumber: Int, filename: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(attachmentNumber, filename)))
+      .withFailMessage { "expected file ${request.documentAttachmentKey(attachmentNumber, filename)} to not exist" }
       .isFalse()
   }
 
@@ -160,9 +160,9 @@ abstract class IntegrationTestBase {
       .isTrue()
   }
 
-  protected fun assertServiceAttachmentExists(request: RenderRequest, filename: String): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(filename)))
-      .withFailMessage { "expected file ${request.documentAttachmentKey(filename)} to exist" }
+  protected fun assertServiceAttachmentExists(request: RenderRequest, attachmentNumber: Int, filename: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(attachmentNumber, filename)))
+      .withFailMessage { "expected file ${request.documentAttachmentKey(attachmentNumber, filename)} to exist" }
       .isTrue()
   }
 
@@ -227,15 +227,15 @@ abstract class IntegrationTestBase {
 
   protected fun addServiceJsonDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata = addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody(renderRequest.serviceName ?: ""))
 
-  protected fun addServiceAttachmentToBucket(renderRequest: RenderRequest, filename: String) {
+  protected fun addServiceAttachmentToBucket(renderRequest: RenderRequest, attachmentNumber: Int, filename: String) {
     s3TestUtil.addFilesToBucket(
       S3File(
-        key = renderRequest.documentAttachmentKey(filename),
+        key = renderRequest.documentAttachmentKey(attachmentNumber, filename),
         content = getResourceAsString("/attachments/$filename"),
       ),
     )
 
-    assertServiceAttachmentExists(renderRequest, filename)
+    assertServiceAttachmentExists(renderRequest, attachmentNumber, filename)
   }
 
   data class S3File(val key: String, val content: String = fileContent)
