@@ -1,0 +1,114 @@
+{
+  "content": {
+    "applications": [
+      {
+        "jobTitle": "Project Manager",
+        "employerName": "Staples",
+        "prisonNumber": "G5310GO",
+        "histories": [
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "APPLICATION_MADE",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-11-12T11:45:42.536362Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "APPLICATION_UNSUCCESSFUL",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-11-12T11:49:19.079675Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "SELECTED_FOR_INTERVIEW",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-12-05T14:55:06.323335Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "JOB_OFFER",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-12-18T11:52:12.797325Z"
+          }
+        ],
+        "createdAt": "2024-11-12T11:45:42.536362Z",
+        "lastModifiedAt": "2024-12-18T11:52:12.797325Z"
+      },
+      {
+        "jobTitle": "Developer",
+        "employerName": "Docker",
+        "prisonNumber": "G5310GO",
+        "histories": [
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "APPLICATION_MADE",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-10-31T10:17:44.671799Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "APPLICATION_MADE",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-10-31T10:17:58.449324Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "SELECTED_FOR_INTERVIEW",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-10-31T10:19:13.870051Z"
+          },
+          {
+            "firstName": "TEST",
+            "lastName": "PRISONER",
+            "status": "INTERVIEW_BOOKED",
+            "prisonId": "MDI",
+            "modifiedAt": "2024-10-31T10:22:09.586191Z"
+          }
+        ],
+        "createdAt": "2024-10-31T10:17:44.671799Z",
+        "lastModifiedAt": "2024-10-31T10:22:09.586191Z"
+      }
+    ],
+    "expressionsOfInterest": [
+      {
+        "jobTitle": "Warehouse operator",
+        "employerName": "ASDA- DUPLICATE",
+        "prisonNumber": "G5310GO",
+        "createdAt": "2024-11-06T12:03:04.989505Z"
+      },
+      {
+        "jobTitle": "Software Engineer",
+        "employerName": "Argos",
+        "prisonNumber": "G5310GO",
+        "createdAt": "2024-11-01T14:53:20.515705Z"
+      }
+    ],
+    "archivedJobs": [
+      {
+        "jobTitle": "Content Writer",
+        "employerName": "B&Q",
+        "prisonNumber": "G5310GO",
+        "createdAt": "2024-11-06T16:51:34.908086Z"
+      },
+      {
+        "jobTitle": "Marketing Manager",
+        "employerName": "Morrisons",
+        "prisonNumber": "G5310GO",
+        "createdAt": "2024-11-06T16:51:22.473082Z"
+      },
+      {
+        "jobTitle": "Warehouse operator",
+        "employerName": "ASDA- DUPLICATE",
+        "prisonNumber": "G5310GO",
+        "createdAt": "2024-11-06T12:03:25.967573Z"
+      }
+    ]
+  }
+}
