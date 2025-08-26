@@ -31,6 +31,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.32") {
     exclude(group = "io.swagger.core.v3")
   }
+  testRuntimeOnly ("org.junit.platform:junit-platform-launcher")
 }
 
 kotlin {
