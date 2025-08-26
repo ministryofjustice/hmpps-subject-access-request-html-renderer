@@ -2,7 +2,7 @@ version: "3"
 services:
 
   sar-db-renderer:
-    image: postgres:15
+    image: postgres:17
     networks:
       - hmpps
     container_name: sar-db-renderer
