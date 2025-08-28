@@ -19,7 +19,7 @@ dependencies {
   implementation("aws.sdk.kotlin:s3:1.5.26")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.53.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.52.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.3.232")
