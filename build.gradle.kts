@@ -16,7 +16,7 @@ dependencies {
   implementation("com.github.spullara.mustache.java:compiler:0.9.14")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.5.33")
+  implementation("aws.sdk.kotlin:s3:1.4.125")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.54.0")
