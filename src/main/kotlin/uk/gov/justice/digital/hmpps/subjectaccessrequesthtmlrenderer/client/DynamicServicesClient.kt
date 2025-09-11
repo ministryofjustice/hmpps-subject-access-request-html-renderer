@@ -130,7 +130,40 @@ class DynamicServicesClient(
         "uri" to url,
       ),
     ).block()!!
+
+  fun getServiceTemplate(renderRequest: RenderRequest): TemplateResponse? = dynamicApiWebClient
+    .mutate()
+    .baseUrl(renderRequest.serviceUrl!!)
+    .build()
+    .get()
+    .uri("/subject-access-request/template")
+    .exchangeToMono { response ->
+      log.info("get template request returned status ${response.statusCode().value()}")
+      when {
+        response.statusCode().value() == 400 -> {
+          Mono.justOrEmpty(null)
+        }
+
+        response.statusCode().value() == 200 -> {
+          response.bodyToMono(String::class.java)
+            .map { body ->
+              TemplateResponse(
+                serviceName = renderRequest.serviceName,
+                version = response.headers()
+                  .asHttpHeaders()
+                  .getFirst("X-Content-Version")
+                  ?.toInt(),
+                templateBody = body,
+              )
+            }
+        }
+
+        else -> Mono.error(RuntimeException("unexpected response status error ${response.statusCode().value()}"))
+      }
+    }
+    .block()
 }
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(NON_NULL)
@@ -146,4 +179,10 @@ data class Attachment(
   val url: String,
   val filesize: Int,
   val filename: String,
+)
+
+data class TemplateResponse(
+  var serviceName: String? = null,
+  var version: Int? = null,
+  var templateBody: String? = null,
 )
