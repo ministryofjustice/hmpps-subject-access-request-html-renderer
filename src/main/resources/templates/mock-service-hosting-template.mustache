@@ -1,0 +1,17 @@
+<h1>Example Service: V2</h1>
+{{#.}}
+    <h2>Offender</h2>
+    <table class="summary-list">
+        <tr><td>ID</td><td>{{optionalValue id }}</td></tr>
+        <tr><td>Name</td><td>{{optionalValue name }}</td></tr>
+        <tr><td>Alias</td><td>{{optionalValue alias }}</td></tr>
+        <tr><td>Age</td><td>{{optionalValue age }}</td></tr>
+    </table>
+
+    <h2>Next of kin:</h2>
+    <table class="summary-list">
+    {{#family}}
+        <tr><td>Name</td><td>{{optionalValue name }}</td><td>Age</td><td>{{optionalValue age }}</td><td>Relationship</td><td>{{optionalValue relationshipType }}</td></tr>
+    {{/family}}
+    </table>
+{{/.}}
