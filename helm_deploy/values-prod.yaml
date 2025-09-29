@@ -2,7 +2,7 @@
 # Per environment values which override defaults in hmpps-subject-access-request-html-renderer/values.yaml
 
 generic-service:
-  replicaCount: 2
+  replicaCount: 4
 
   ingress:
     host: subject-access-request-html-renderer.hmpps.service.justice.gov.uk
