@@ -1,5 +1,4 @@
 {
-  "prn": "A1234AA",
   "content": [
     {
       "allocatedAt": "2021-04-21T14:46:59.282213",
@@ -7,10 +6,18 @@
       "prisonCode": "MDI",
       "allocationType": "Automatic",
       "allocationReason": "Automatic",
-      "deallocationReason": "Keyworker status changed",
+      "deallocationReason": "Override",
       "keyworker": {
         "firstName": "ANDY",
-        "lastName": "MARKE"
+        "lastName": "TEST"
+      },
+      "staffMember": {
+        "firstName": "ANDY",
+        "lastName": "TEST"
+      },
+      "policy": {
+        "code": "KEY_WORKER",
+        "description": "Key worker"
       },
       "activeAllocation": false
     },
@@ -20,10 +27,18 @@
       "prisonCode": "MDI",
       "allocationType": "Automatic",
       "allocationReason": "Automatic",
-      "deallocationReason": "Keyworker status changed",
+      "deallocationReason": "Override",
       "keyworker": {
         "firstName": "JAMIE",
-        "lastName": "DRAPER"
+        "lastName": "USER"
+      },
+      "staffMember": {
+        "firstName": "JAMIE",
+        "lastName": "USER"
+      },
+      "policy": {
+        "code": "KEY_WORKER",
+        "description": "Key worker"
       },
       "activeAllocation": false
     },
@@ -33,10 +48,18 @@
       "prisonCode": "MDI",
       "allocationType": "Manual",
       "allocationReason": "Manual",
-      "deallocationReason": "Released",
+      "deallocationReason": "Override",
       "keyworker": {
         "firstName": "JAMIE",
-        "lastName": "DRAPER"
+        "lastName": "USER"
+      },
+      "staffMember": {
+        "firstName": "JAMIE",
+        "lastName": "USER"
+      },
+      "policy": {
+        "code": "KEY_WORKER",
+        "description": "Key worker"
       },
       "activeAllocation": false
     },
@@ -46,10 +69,18 @@
       "prisonCode": "MDI",
       "allocationType": "Manual",
       "allocationReason": "Manual",
-      "deallocationReason": "Overridden",
+      "deallocationReason": "Override",
       "keyworker": {
         "firstName": "JAMIE",
-        "lastName": "DRAPER"
+        "lastName": "USER"
+      },
+      "staffMember": {
+        "firstName": "JAMIE",
+        "lastName": "USER"
+      },
+      "policy": {
+        "code": "KEY_WORKER",
+        "description": "Key worker"
       },
       "activeAllocation": false
     },
@@ -59,12 +90,63 @@
       "prisonCode": "MDI",
       "allocationType": "Automatic",
       "allocationReason": "Automatic",
-      "deallocationReason": "Overridden",
+      "deallocationReason": "Override",
       "keyworker": {
         "firstName": "ANDY",
-        "lastName": "MARKE"
+        "lastName": "TEST"
+      },
+      "staffMember": {
+        "firstName": "ANDY",
+        "lastName": "TEST"
+      },
+      "policy": {
+        "code": "KEY_WORKER",
+        "description": "Key worker"
+      },
+      "activeAllocation": false
+    },
+    {
+      "allocatedAt": "2017-02-09T14:41:57",
+      "allocationExpiredAt": "2023-04-06T15:36:24",
+      "prisonCode": "MDI",
+      "allocationType": "Manual",
+      "allocationReason": "Manual",
+      "deallocationReason": "Transfer",
+      "keyworker": {
+        "firstName": "TEST",
+        "lastName": "USER2"
+      },
+      "staffMember": {
+        "firstName": "TEST",
+        "lastName": "USER2"
+      },
+      "policy": {
+        "code": "PERSONAL_OFFICER",
+        "description": "Personal officer"
+      },
+      "activeAllocation": false
+    },
+    {
+      "allocatedAt": "2016-10-10T14:36:22",
+      "allocationExpiredAt": "2017-02-09T14:41:57",
+      "prisonCode": "MDI",
+      "allocationType": "Manual",
+      "allocationReason": "Manual",
+      "deallocationReason": "Override",
+      "keyworker": {
+        "firstName": "TEST",
+        "lastName": "USER3"
+      },
+      "staffMember": {
+        "firstName": "TEST",
+        "lastName": "USER3"
+      },
+      "policy": {
+        "code": "PERSONAL_OFFICER",
+        "description": "Personal officer"
       },
       "activeAllocation": false
     }
-  ]
+  ],
+  "attachments": null
 }
