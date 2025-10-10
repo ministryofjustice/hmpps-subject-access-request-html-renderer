@@ -6,7 +6,6 @@
         <tr><td>Staff member last name</td><td>{{ optionalValue staffMember.lastName }}</td></tr>
         <tr><td>Prison name</td><td>{{ getPrisonName prisonCode }}</td></tr>
         <tr><td>Policy description</td><td>{{ optionalValue policy.description }}</td></tr>
-        <tr><td>Allocation type</td><td>{{ optionalValue allocationType }}</td></tr>
         <tr><td>Allocation reason</td><td>{{ optionalValue allocationReason }}</td></tr>
         <tr><td>Allocation is active</td><td>{{ convertBoolean activeAllocation }}</td></tr>
         <tr><td>Allocation expired at</td><td>{{ optionalValue (formatDate allocationExpiredAt) }}</td></tr>
