@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.3"
   kotlin("plugin.spring") version "2.2.20"
 }
 
@@ -19,10 +19,10 @@ dependencies {
   implementation("com.github.spullara.mustache.java:compiler:0.9.14")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.5.47")
+  implementation("aws.sdk.kotlin:s3:1.5.64")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.54.1")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.55.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.4.240")
@@ -31,7 +31,7 @@ dependencies {
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.7.0")
   testImplementation("org.wiremock:wiremock-standalone:3.13.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.34") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.35") {
     exclude(group = "io.swagger.core.v3")
   }
 }
