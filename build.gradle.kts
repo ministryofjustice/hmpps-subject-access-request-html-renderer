@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.3"
-  kotlin("plugin.spring") version "2.2.20"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "9.1.4"
+  kotlin("plugin.spring") version "2.2.21"
 }
 
 configurations {
@@ -19,7 +19,7 @@ dependencies {
   implementation("com.github.spullara.mustache.java:compiler:0.9.14")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.5.64")
+  implementation("aws.sdk.kotlin:s3:1.5.68")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.55.0")
