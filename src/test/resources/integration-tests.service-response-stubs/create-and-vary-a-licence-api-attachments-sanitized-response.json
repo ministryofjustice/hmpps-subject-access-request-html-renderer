@@ -1361,12 +1361,12 @@
       "name": "Test PDF attachment",
       "contentType": "application/pdf",
       "url": "http://localhost:8092/attachments/doc.pdf",
-      "filename": "doc.pdf\u0001\u0002\u0003",
+      "filename": "doc.pdf",
       "filesize": 273289
     },
     {
       "attachmentNumber": 2,
-      "name": "Test Image attachment",
+      "name": "Test Image attachment",
       "contentType": "image/jpeg",
       "url": "http://localhost:8092/attachments/map.jpg",
       "filename": "map.jpg",
