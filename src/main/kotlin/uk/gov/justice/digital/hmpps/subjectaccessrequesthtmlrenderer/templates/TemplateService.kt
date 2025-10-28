@@ -1,10 +1,11 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 
-import com.github.jknack.handlebars.Handlebars
 import com.github.mustachejava.DefaultMustacheFactory
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.RenderParameters
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets
 
 @Service
 class TemplateService(
-  private val templateHelpers: TemplateHelpers,
+  private val templateRenderService: TemplateRenderService,
   private val templateResources: TemplateResources,
   private val telemetryClient: TelemetryClient,
 ) {
@@ -31,7 +32,7 @@ class TemplateService(
     log.info("starting html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
 
     val renderParameters = getRenderParameters(renderRequest, data)
-    val renderedServiceTemplate = renderServiceTemplate(renderParameters)
+    val renderedServiceTemplate = templateRenderService.renderServiceTemplate(renderParameters)
     return renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
       log.info("completed html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
@@ -45,14 +46,6 @@ class TemplateService(
     RenderParameters(templateResources.getServiceTemplate(renderRequest), data)
   } else {
     RenderParameters(templateResources.getNoDataTemplate(renderRequest), renderRequest.serviceNameMap())
-  }
-
-  private fun renderServiceTemplate(params: RenderParameters): String {
-    val handlebars = Handlebars()
-    handlebars.registerHelpers(templateHelpers)
-    val compiledServiceTemplate = handlebars.compileInline(params.template)
-    val renderedServiceTemplate = compiledServiceTemplate.apply(params.data)
-    return renderedServiceTemplate.toString()
   }
 
   private fun renderStyleTemplate(renderedServiceTemplate: String): ByteArrayOutputStream {
@@ -69,8 +62,6 @@ class TemplateService(
     }
     return out
   }
-
-  data class RenderParameters(val template: String, val data: Any?)
 
   fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to (this.serviceLabel ?: "UNKNOWN"))
 }
