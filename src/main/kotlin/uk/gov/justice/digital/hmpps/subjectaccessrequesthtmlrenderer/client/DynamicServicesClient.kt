@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
+import org.apache.commons.text.StringEscapeUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpHeaders
@@ -19,8 +20,10 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import java.net.URI
+import java.text.Normalizer
 import java.util.Optional
 import java.util.UUID
+import kotlin.Int
 
 @Service
 class DynamicServicesClient(
@@ -137,7 +140,21 @@ class DynamicServicesClient(
 data class ServiceData(
   val content: Any? = null,
   val attachments: List<Attachment>? = null,
-)
+) {
+  fun sanitize(): ServiceData = ServiceData(
+    content = content,
+    attachments = attachments?.map {
+      Attachment(
+        attachmentNumber = it.attachmentNumber,
+        name = sanitizeText(it.name),
+        contentType = it.contentType,
+        url = it.url,
+        filesize = it.filesize,
+        filename = sanitizeText(it.filename),
+      )
+    },
+  )
+}
 
 data class Attachment(
   val attachmentNumber: Int,
@@ -147,3 +164,10 @@ data class Attachment(
   val filesize: Int,
   val filename: String,
 )
+
+private fun sanitizeText(input: String): String {
+  var text = StringEscapeUtils.unescapeHtml4(input) // Decode HTML entities
+  text = Normalizer.normalize(text, Normalizer.Form.NFKC) // Normalize Unicode
+  text = text.replace("\\p{Zs}+".toRegex(), " ") // Replace Unicode space separators with a normal space
+  return text.replace("\\p{Cntrl}".toRegex(), "") // Remove control characters
+}

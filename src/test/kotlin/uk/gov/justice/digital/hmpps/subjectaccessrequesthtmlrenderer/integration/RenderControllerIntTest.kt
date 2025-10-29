@@ -292,7 +292,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetAttachmentCalled("doc.pdf")
       sarDataSourceApi.verifyGetAttachmentCalled("map.jpg")
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
       assertUploadedAttachmentMatchesExpected(
         renderRequest,
@@ -345,7 +345,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       val serviceName = "create-and-vary-a-licence-api"
       val serviceLabel = "Create and Vary a Licence"
       val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
-      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 2, "map.jpg")
@@ -412,7 +412,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       val serviceName = "create-and-vary-a-licence-api"
       val serviceLabel = "Create and Vary a Licence"
       val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
-      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       addServiceHtmlDocumentToBucket(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 2, "map.jpg")
@@ -475,7 +475,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       val serviceName = "create-and-vary-a-licence-api"
       val serviceLabel = "Create and Vary a Licence"
       val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
-      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       addServiceHtmlDocumentToBucket(renderRequest)
       addServiceAttachmentToBucket(renderRequest, 1, "doc.pdf")
       addServiceAttachmentToBucket(renderRequest, 2, "map.jpg")
@@ -763,7 +763,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequest = renderRequest)
         .expectStatus().isEqualTo(500)
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
 
       assertTelemetryEvents(
@@ -810,7 +810,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequest = renderRequest)
         .expectStatus().isEqualTo(500)
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments"))
+      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
 
       val retryErrorMessage =

@@ -118,7 +118,7 @@ class RenderService(
       )
 
       log.info("get data response status:  ${response.statusCode}")
-      return extractResponseBody(response, renderRequest)
+      return extractResponseBody(response, renderRequest).sanitize()
     } catch (ex: Exception) {
       if (ex is SubjectAccessRequestException) {
         throw ex
