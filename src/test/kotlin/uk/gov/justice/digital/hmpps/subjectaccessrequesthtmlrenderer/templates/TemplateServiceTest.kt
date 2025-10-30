@@ -8,6 +8,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
@@ -26,9 +28,11 @@ class TemplateServiceTest {
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
 
-  private val templateHelpers = TemplateHelpers(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
+  private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
+  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
+  private val templateRenderService = TemplateRenderService(templateHelpers)
   private val templateService = TemplateService(
-    templateHelpers,
+    templateRenderService,
     TemplateResources(templatesDirectory = "/templates"),
     telemetryClient,
   )
