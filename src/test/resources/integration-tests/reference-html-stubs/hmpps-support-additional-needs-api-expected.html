@@ -1,0 +1,1978 @@
+<style>
+    * {
+        font-family: "HelveticaNeue", "Helvetica Neue", "Arial", "Helvetica", sans-serif;
+        font-size: 12pt;
+        color: #0b0c0c;
+    }
+    /* --- HEADINGS --- */
+
+    h1, h2, h3 {
+        color: #0b0c0c;
+        font-weight: 700;
+        display: block;
+        margin-top: 0;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    h1 {
+        font-size: 18pt;
+        line-height: 1.09375;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        margin-block-start: 0.67em;
+        margin-block-end: 0.67em;
+    }
+
+    h2 {
+        font-size: 17pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h3 {
+        font-size: 16pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h4 {
+        font-size: 15pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    h5 {
+        font-size: 14pt;
+        line-height: 1.0416666667;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+    }
+
+    /* --- SUMMARY LIST --- */
+
+    table.summary-list {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.summary-list tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.summary-list tr td {
+        border-bottom: 1px solid #b1b4b6;
+        /*margin-bottom: 5px;*/
+        overflow-wrap: break-word;
+        display: table-cell;
+        /*padding-top: 2px;*/
+        /*padding-bottom: 2px;*/
+        /*padding-right: 0;*/
+        margin-inline-start: 40px;
+        width: 70%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: normal;
+        vertical-align: top;
+    }
+
+    table.summary-list tr td:first-child {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        vertical-align: top;
+    }
+
+    /* --- DATA TABLE --- */
+
+    table.data-table {
+        display: table;
+        width: 700px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        margin: 0 0 5px;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0;
+        margin-inline-end: 0;
+    }
+
+    table.data-table tr {
+        display: table-row;
+        margin: 0 0 20px;
+    }
+
+    table.data-table tr td {
+        border-bottom: 1px solid #b1b4b6;
+        margin-bottom: 5px;
+        overflow-wrap: break-word;
+        display: table-cell;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        padding-right: 0;
+        margin-inline-start: 40px;
+        table-layout: fixed;
+        border-collapse: collapse;
+        line-height: 1.25;
+        font-weight: 400;
+        white-space: pre-wrap;
+        vertical-align: top;
+    }
+
+    table.data-table tr:first-child td {
+        font-size: 12pt;
+        width: 30%;
+        font-weight: 700;
+        padding-right: 20px;
+        border-bottom: none;
+        vertical-align: top;
+    }
+
+    table.data-table tr td.data-column-5 { width: 5% }
+    table.data-table tr td.data-column-10 { width: 10% }
+    table.data-table tr td.data-column-15 { width: 15% }
+    table.data-table tr td.data-column-20 { width: 20% }
+    table.data-table tr td.data-column-25 { width: 25% }
+    table.data-table tr td.data-column-30 { width: 30% }
+    table.data-table tr td.data-column-35 { width: 35% }
+    table.data-table tr td.data-column-40 { width: 40% }
+    table.data-table tr td.data-column-45 { width: 45% }
+    table.data-table tr td.data-column-50 { width: 50% }
+    table.data-table tr td.data-column-55 { width: 55% }
+    table.data-table tr td.data-column-60 { width: 60% }
+    table.data-table tr td.data-column-65 { width: 65% }
+    table.data-table tr td.data-column-70 { width: 70% }
+    table.data-table tr td.data-column-75 { width: 75% }
+    table.data-table tr td.data-column-80 { width: 80% }
+    table.data-table tr td.data-column-85 { width: 85% }
+    table.data-table tr td.data-column-90 { width: 90% }
+    table.data-table tr td.data-column-95 { width: 95% }
+
+    table tr td.data-column-5 { width: 5% }
+    table tr td.data-column-10 { width: 10% }
+    table tr td.data-column-15 { width: 15% }
+    table tr td.data-column-20 { width: 20% }
+    table tr td.data-column-25 { width: 25% }
+    table tr td.data-column-30 { width: 30% }
+    table tr td.data-column-35 { width: 35% }
+    table tr td.data-column-40 { width: 40% }
+    table tr td.data-column-45 { width: 45% }
+    table tr td.data-column-50 { width: 50% }
+    table tr td.data-column-55 { width: 55% }
+    table tr td.data-column-60 { width: 60% }
+    table tr td.data-column-65 { width: 65% }
+    table tr td.data-column-70 { width: 70% }
+    table tr td.data-column-75 { width: 75% }
+    table tr td.data-column-80 { width: 80% }
+    table tr td.data-column-85 { width: 85% }
+    table tr td.data-column-90 { width: 90% }
+    table tr td.data-column-95 { width: 95% }
+
+    table.summary-list tr td.data-column-5 { width: 5% }
+    table.summary-list tr td.data-column-10 { width: 10% }
+    table.summary-list tr td.data-column-15 { width: 15% }
+    table.summary-list tr td.data-column-20 { width: 20% }
+    table.summary-list tr td.data-column-25 { width: 25% }
+    table.summary-list tr td.data-column-30 { width: 30% }
+    table.summary-list tr td.data-column-35 { width: 35% }
+    table.summary-list tr td.data-column-40 { width: 40% }
+    table.summary-list tr td.data-column-45 { width: 45% }
+    table.summary-list tr td.data-column-50 { width: 50% }
+    table.summary-list tr td.data-column-55 { width: 55% }
+    table.summary-list tr td.data-column-60 { width: 60% }
+    table.summary-list tr td.data-column-65 { width: 65% }
+    table.summary-list tr td.data-column-70 { width: 70% }
+    table.summary-list tr td.data-column-75 { width: 75% }
+    table.summary-list tr td.data-column-80 { width: 80% }
+    table.summary-list tr td.data-column-85 { width: 85% }
+    table.summary-list tr td.data-column-90 { width: 90% }
+    table.summary-list tr td.data-column-95 { width: 95% }
+
+    ul {
+        padding: 0 0 0 10px;
+    }
+
+</style>
+
+<h1>Support for Additional Needs</h1>
+
+    <h2>Education Support Plans</h2>
+    
+        <h3>Plan</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-40">Has education health case plan</td>
+                <td class="data-column-60">Learning needs support practitioner support hours</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>5</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Individual support</td><td>TestOffender feels his main challenges are with his concentration and sensory difficulties. He feels these are the areas he needs most support with to enable him to make progress in education.</td></tr>
+            <tr><td>Teaching adjustments</td><td>Needs instructions broken down into short manageable steps, and presented verbally and in writing - e.g., using a to-do list or checklist
+Give TestOffender more time to process information and complete tasks
+If possible, seat TestOffender at the front of the room and away from the door
+Provide access to a quiet area for tasks requiring more focus or allow TestOffender to use their ear defenders
+Build in movement breaks to the session</td></tr>
+            <tr><td>Specific teaching skills</td><td>some</td></tr>
+            <tr><td>Exam access arrangements</td><td>Prompter
+Rest Breaks</td></tr>
+            <tr><td>Learning needs support practitioner support</td><td>Peer Mentor support when undertaking tasks that involve extended periods of focus and concentration - need them to act as a prompter when off task and support if a sensory or movement break is needed</td></tr>
+            <tr><td>Detail</td><td>more details here</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Plan</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-40">Has education health case plan</td>
+                <td class="data-column-60">Learning needs support practitioner support hours</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>5</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Individual support</td><td>TestOffender feels his main challenges are with his concentration and sensory difficulties. He feels these are the areas he needs most support with to enable him to make progress in education.</td></tr>
+            <tr><td>Teaching adjustments</td><td>Needs instructions broken down into short manageable steps, and presented verbally and in writing - e.g., using a to-do list or checklist
+Give TestOffender more time to process information and complete tasks
+If possible, seat TestOffender at the front of the room and away from the door
+Provide access to a quiet area for tasks requiring more focus or allow TestOffender to use their ear defenders - TestOffender is still working to use these things independently and may need prompting to use his ear defenders 
+Build in movement breaks to the session</td></tr>
+            <tr><td>Specific teaching skills</td><td>No Data Held</td></tr>
+            <tr><td>Exam access arrangements</td><td>Prompter
+Rest Breaks</td></tr>
+            <tr><td>Learning needs support practitioner support</td><td>Peer Mentor support when undertaking tasks that involve extended periods of focus and concentration - need them to act as a prompter when off task and support if a sensory or movement break is needed</td></tr>
+            <tr><td>Detail</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Plan</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-40">Has education health case plan</td>
+                <td class="data-column-60">Learning needs support practitioner support hours</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>5</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Individual support</td><td>TestOffender feels his main challenges are with his concentration and sensory difficulties. He feels these are the areas he needs most support with to enable him to make progress in education.</td></tr>
+            <tr><td>Teaching adjustments</td><td>Needs instructions broken down into short manageable steps, and presented verbally and in writing - e.g., using a to-do list or checklist
+Give TestOffender more time to process information and complete tasks
+If possible, seat TestOffender at the front of the room and away from the door
+Provide access to a quiet area for tasks requiring more focus or allow TestOffender to use their ear defenders - prompting him to consider using his ear defenders as needed
+Build in movement breaks to the session</td></tr>
+            <tr><td>Specific teaching skills</td><td>No Data Held</td></tr>
+            <tr><td>Exam access arrangements</td><td>Prompter
+Rest Breaks</td></tr>
+            <tr><td>Learning needs support practitioner support</td><td>Peer Mentor support when undertaking tasks that involve extended periods of focus and concentration - need them to act as a prompter when off task and support if a sensory or movement break is needed</td></tr>
+            <tr><td>Detail</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Plan</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-40">Has education health case plan</td>
+                <td class="data-column-60">Learning needs support practitioner support hours</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>5</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Individual support</td><td>TestOffender feels his main challenges are with his concentration and sensory difficulties. He feels these are the areas he needs most support with to enable him to make progress in education.</td></tr>
+            <tr><td>Teaching adjustments</td><td>Needs instructions broken down into short manageable steps, and presented verbally and in writing - e.g., using a to-do list or checklist
+Give TestOffender more time to process information and complete tasks
+If possible, seat TestOffender at the front of the room and away from the door
+Provide access to a quiet area for tasks requiring more focus or allow TestOffender to use their ear defenders - prompting him to consider using his ear defenders as needed</td></tr>
+            <tr><td>Specific teaching skills</td><td>No Data Held</td></tr>
+            <tr><td>Exam access arrangements</td><td>Prompter
+Rest Breaks</td></tr>
+            <tr><td>Learning needs support practitioner support</td><td>Peer Mentor support when undertaking tasks that involve extended periods of focus and concentration - need them to act as a prompter when off task and support if a sensory or movement break is needed</td></tr>
+            <tr><td>Detail</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Reviews</h2>
+    
+        <h3>Review</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-50">Prisoner declined feedback</td>
+                <td class="data-column-50">Review created by job role</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>Role 123</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Prisoner feedback</td><td>TestOffender feels he is making good progress in English and feels the support he is currently getting is helping him. Although he did say he is struggling to remember to use his ear defenders without being prompted by the teacher or a peer mentor.</td></tr>
+            <tr><td>Reviewer feedback</td><td>TestOffender is making really great progress in English. He is sometimes finding it challenging to take breaks or use his ear defenders before he becomes overwhelmed. This is something TestOffender is currently working on so he can independently identify when he needs to use them.</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Review</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-50">Prisoner declined feedback</td>
+                <td class="data-column-50">Review created by job role</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Prisoner feedback</td><td>TestOffender feels he is making good progress in English and feels the support he is currently getting is helping him. Although he did say he is struggling to remember to use his ear defenders without being prompted by the teacher or a peer mentor.</td></tr>
+            <tr><td>Reviewer feedback</td><td>TestOffender is making really great progress in English. He is sometimes finding it challenging to take breaks or use his ear defenders before he becomes overwhelmed. This is something TestOffender is currently working on so he can independently identify when he needs to use them.</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Review</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-50">Prisoner declined feedback</td>
+                <td class="data-column-50">Review created by job role</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Prisoner feedback</td><td>Happy with progress</td></tr>
+            <tr><td>Reviewer feedback</td><td>Happy with progress</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Challenges</h2>
+    
+        <h3>Challenge</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>10 October 2025</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Challenge type</td><td>Attention, Organising &amp; Time Management</td></tr>
+            <tr><td>Symptoms</td><td>He can find it difficult to stay focused and may easily become distracted or lose track of what he’s doing. This can lead to challenges with getting ready and being on time, especially when his routine is disrupted or when he needs to manage several steps at once.</td></tr>
+            <tr><td>How identified</td><td>other</td></tr>
+            <tr><td>How identified other</td><td>Some other way</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:25:42 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 4:51:33 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Challenge</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Challenge type</td><td>Sensory</td></tr>
+            <tr><td>Symptoms</td><td>TestOffender is sensitive to lots of noise, especially in environments that are loud or busy with lots of overlapping sounds. These situations can make him feel anxious or overwhelmed. When this happens, he may become withdrawn or show signs of agitation.</td></tr>
+            <tr><td>How identified</td><td>education skills work, self disclosure, other screening tool</td></tr>
+            <tr><td>How identified other</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:26:23 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 4:08:58 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Challenge</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Challenge type</td><td>Attention, Organising &amp; Time Management</td></tr>
+            <tr><td>Symptoms</td><td>Test challenge created by Nathan</td></tr>
+            <tr><td>How identified</td><td>colleague info</td></tr>
+            <tr><td>How identified other</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 4:50:05 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 4:50:05 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Strengths</h2>
+    
+        <h3>Strength</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>11 October 2025</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Strength type</td><td>Sensory</td></tr>
+            <tr><td>Symptoms</td><td>TestOffender is a creative thinker and is good at understanding and remembering information when it’s presented visually. He is good at finding new and practical ways to solve problems and often comes up with ideas that others might not think of.</td></tr>
+            <tr><td>How identified</td><td>education skills work, conversations</td></tr>
+            <tr><td>How identified other</td><td>some other way</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:27:00 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:27:00 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Strength</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>No</td>
+                <td>No Data Held</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Strength type</td><td>Physical Skills &amp; coordination</td></tr>
+            <tr><td>Symptoms</td><td>TestOffender is really quick to pick up new skills when they are practical and hands on</td></tr>
+            <tr><td>How identified</td><td>education skills work</td></tr>
+            <tr><td>How identified other</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:28:02 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:28:02 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Conditions</h2>
+    
+        <h3>Condition</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-60">Condition type</td>
+                <td class="data-column-30">Source</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>Acquired Brain Injury</td>
+                <td>confirmed diagnosis</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:30:29 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:30:29 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Condition</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-60">Condition type</td>
+                <td class="data-column-30">Source</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>Attention Deficit Hyperactivity Disorder (ADHD / ADD)</td>
+                <td>self declared</td>
+                <td>Yes</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:30:29 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:30:29 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Plan Creation Schedules</h2>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>23 September 2025</td>
+                <td>scheduled</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>REASON 123</td></tr>
+            <tr><td>Exemption detail</td><td>Some reason detail</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>16 September 2025, 4:06:30 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>16 September 2025, 4:06:30 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>23 September 2025</td>
+                <td>completed</td>
+                <td>1</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+            <tr><td>Exemption detail</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>16 September 2025, 4:06:30 pm</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Review Schedules</h2>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>19 December 2025</td>
+                <td>scheduled</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>Some exception reason given</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>19 December 2025</td>
+                <td>completed</td>
+                <td>1</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:34:22 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>22 December 2025</td>
+                <td>scheduled</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:52 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:52 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>22 December 2025</td>
+                <td>completed</td>
+                <td>1</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:42:52 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>22 December 2025</td>
+                <td>scheduled</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>22 December 2025</td>
+                <td>completed</td>
+                <td>1</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:44:51 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>26 December 2025</td>
+                <td>scheduled</td>
+                <td>0</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>No Data Held</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>31 October 2025, 10:34:20 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+    
+    
+
+    <h2>Additional Learning Needs Screeners</h2>
+    
+        <h3>Screener</h3>
+        <table class="summary-list">
+            <tr><td>Screening date</td><td>06 October 2025</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:22:12 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>Homer Simpson</td>
+                <td>27 October 2025, 11:22:12 am</td>
+                <td>HMPPS Mordor</td>
+            </tr>
+        </table>
+
+        <h4>Additional Learning Needs Challenges</h4>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Focusing</td></tr>
+                <tr><td>Symptoms</td><td>Symptom 123</td></tr>
+                <tr><td>How identified</td><td>testing</td></tr>
+                <tr><td>How identified other</td><td>more testing</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Task initiation</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Time allocation/prioritisation</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Self-organised (routine)</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Task switching</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Short term memory</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Impulse control</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Emotional control</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Auditory Discrimination</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>Sensory processing</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+        
+
+        <h4>Additional Learning Needs Strengths</h4>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>Long term memory</td></tr>
+                <tr><td>Symptoms</td><td>Symptom abc</td></tr>
+                <tr><td>How identified</td><td>some testing</td></tr>
+                <tr><td>How identified other</td><td>even more testing</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>Speaking</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>People person</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>Sporting ball skills</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>Spatial awareness</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>Yes</td>
+                    <td>06 October 2025</td>
+                    <td>Yes</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>Creativity</td></tr>
+                <tr><td>Symptoms</td><td>No Data Held</td></tr>
+                <tr><td>How identified</td><td>No Data Held</td></tr>
+                <tr><td>How identified other</td><td>No Data Held</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>Homer Simpson</td>
+                    <td>27 October 2025, 11:22:12 am</td>
+                    <td>HMPPS Mordor</td>
+                </tr>
+            </table>
+        
+        
+
+    
+    
+
+
+

@@ -1,0 +1,477 @@
+<h1>Support for Additional Needs</h1>
+{{#.}}
+    <h2>Education Support Plans</h2>
+    {{#educationSupportPlans}}
+        <h3>Plan</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-40">Has education health case plan</td>
+                <td class="data-column-60">Learning needs support practitioner support hours</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue hasCurrentEhcp }}</td>
+                <td>{{ optionalValue lnspSupportHours }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Individual support</td><td>{{ optionalValue individualSupport }}</td></tr>
+            <tr><td>Teaching adjustments</td><td>{{ optionalValue teachingAdjustments }}</td></tr>
+            <tr><td>Specific teaching skills</td><td>{{ optionalValue specificTeachingSkills }}</td></tr>
+            <tr><td>Exam access arrangements</td><td>{{ optionalValue examAccessArrangements }}</td></tr>
+            <tr><td>Learning needs support practitioner support</td><td>{{ optionalValue lnspSupport }}</td></tr>
+            <tr><td>Detail</td><td>{{ optionalValue detail }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/educationSupportPlans}}
+    {{^educationSupportPlans}}
+        <p>No Data Held</p>
+    {{/educationSupportPlans}}
+
+    <h2>Reviews</h2>
+    {{#reviews}}
+        <h3>Review</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-50">Prisoner declined feedback</td>
+                <td class="data-column-50">Review created by job role</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue prisonerDeclinedFeedback }}</td>
+                <td>{{ optionalValue reviewCreatedByJobRole }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Prisoner feedback</td><td>{{ optionalValue prisonerFeedback }}</td></tr>
+            <tr><td>Reviewer feedback</td><td>{{ optionalValue reviewerFeedback }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/reviews}}
+    {{^reviews}}
+        <p>No Data Held</p>
+    {{/reviews}}
+
+    <h2>Challenges</h2>
+    {{#challenges}}
+        <h3>Challenge</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue fromALNScreener }}</td>
+                <td>{{ optionalValue (formatDate alnScreenerDate) }}</td>
+                <td>{{ optionalValue active }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Challenge type</td><td>{{ optionalValue challengeType }}</td></tr>
+            <tr><td>Symptoms</td><td>{{ optionalValue symptoms }}</td></tr>
+            <tr><td>How identified</td><td>{{ optionalValue howIdentified }}</td></tr>
+            <tr><td>How identified other</td><td>{{ optionalValue howIdentifiedOther }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/challenges}}
+    {{^challenges}}
+        <p>No Data Held</p>
+    {{/challenges}}
+
+    <h2>Strengths</h2>
+    {{#strengths}}
+        <h3>Strength</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-45">From additional learning needs screener</td>
+                <td class="data-column-45">Additional learning needs screener date</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue fromALNScreener }}</td>
+                <td>{{ optionalValue (formatDate alnScreenerDate) }}</td>
+                <td>{{ optionalValue active }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Strength type</td><td>{{ optionalValue strengthType }}</td></tr>
+            <tr><td>Symptoms</td><td>{{ optionalValue symptoms }}</td></tr>
+            <tr><td>How identified</td><td>{{ optionalValue howIdentified }}</td></tr>
+            <tr><td>How identified other</td><td>{{ optionalValue howIdentifiedOther }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/strengths}}
+    {{^strengths}}
+        <p>No Data Held</p>
+    {{/strengths}}
+
+    <h2>Conditions</h2>
+    {{#conditions}}
+        <h3>Condition</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-60">Condition type</td>
+                <td class="data-column-30">Source</td>
+                <td class="data-column-10">Active</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue conditionType }}</td>
+                <td>{{ optionalValue source }}</td>
+                <td>{{ optionalValue active }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/conditions}}
+    {{^conditions}}
+        <p>No Data Held</p>
+    {{/conditions}}
+
+    <h2>Plan Creation Schedules</h2>
+    {{#planCreationSchedules}}
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue (formatDate deadlineDate) }}</td>
+                <td>{{ optionalValue status }}</td>
+                <td>{{ optionalValue version }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>{{ optionalValue exemptionReason }}</td></tr>
+            <tr><td>Exemption detail</td><td>{{ optionalValue exemptionDetail }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/planCreationSchedules}}
+    {{^planCreationSchedules}}
+        <p>No Data Held</p>
+    {{/planCreationSchedules}}
+
+    <h2>Review Schedules</h2>
+    {{#reviewSchedules}}
+        <h3>Schedule</h3>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Deadline date</td>
+                <td class="data-column-30">Status</td>
+                <td class="data-column-30">Version</td>
+            </tr>
+            <tr>
+                <td>{{ optionalValue (formatDate deadlineDate) }}</td>
+                <td>{{ optionalValue status }}</td>
+                <td>{{ optionalValue version }}</td>
+            </tr>
+        </table>
+        <table class="summary-list">
+            <tr><td>Exemption reason</td><td>{{ optionalValue exemptionReason }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+    {{/reviewSchedules}}
+    {{^reviewSchedules}}
+        <p>No Data Held</p>
+    {{/reviewSchedules}}
+
+    <h2>Additional Learning Needs Screeners</h2>
+    {{#alnScreeners}}
+        <h3>Screener</h3>
+        <table class="summary-list">
+            <tr><td>Screening date</td><td>{{ optionalValue (formatDate screeningDate) }}</td></tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Created by</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Created at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName createdBy }}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ getPrisonName createdAtPrison }}</td>
+            </tr>
+        </table>
+        <table class="data-table">
+            <tr>
+                <td class="data-column-30">Updated by</td>
+                <td class="data-column-35">Updated at</td>
+                <td class="data-column-30">Updated at prison</td>
+            </tr>
+            <tr>
+                <td>{{ getUserLastName updatedBy }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ getPrisonName updatedAtPrison }}</td>
+            </tr>
+        </table>
+
+        <h4>Additional Learning Needs Challenges</h4>
+        {{#alnChallenges}}
+            <h5>Challenge</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>{{ optionalValue fromALNScreener }}</td>
+                    <td>{{ optionalValue (formatDate alnScreenerDate) }}</td>
+                    <td>{{ optionalValue active }}</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Challenge type</td><td>{{ optionalValue challengeType }}</td></tr>
+                <tr><td>Symptoms</td><td>{{ optionalValue symptoms }}</td></tr>
+                <tr><td>How identified</td><td>{{ optionalValue howIdentified }}</td></tr>
+                <tr><td>How identified other</td><td>{{ optionalValue howIdentifiedOther }}</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>{{ getUserLastName createdBy }}</td>
+                    <td>{{ optionalValue (formatDate createdAt) }}</td>
+                    <td>{{ getPrisonName createdAtPrison }}</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>{{ getUserLastName updatedBy }}</td>
+                    <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                    <td>{{ getPrisonName updatedAtPrison }}</td>
+                </tr>
+            </table>
+        {{/alnChallenges}}
+        {{^alnChallenges}}
+            <p>No Data Held</p>
+        {{/alnChallenges}}
+
+        <h4>Additional Learning Needs Strengths</h4>
+        {{#alnStrengths}}
+            <h5>Strength</h5>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-45">From additional learning needs screener</td>
+                    <td class="data-column-45">Additional learning needs screener date</td>
+                    <td class="data-column-10">Active</td>
+                </tr>
+                <tr>
+                    <td>{{ optionalValue fromALNScreener }}</td>
+                    <td>{{ optionalValue (formatDate alnScreenerDate) }}</td>
+                    <td>{{ optionalValue active }}</td>
+                </tr>
+            </table>
+            <table class="summary-list">
+                <tr><td>Strength type</td><td>{{ optionalValue strengthType }}</td></tr>
+                <tr><td>Symptoms</td><td>{{ optionalValue symptoms }}</td></tr>
+                <tr><td>How identified</td><td>{{ optionalValue howIdentified }}</td></tr>
+                <tr><td>How identified other</td><td>{{ optionalValue howIdentifiedOther }}</td></tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Created by</td>
+                    <td class="data-column-35">Created at</td>
+                    <td class="data-column-30">Created at prison</td>
+                </tr>
+                <tr>
+                    <td>{{ getUserLastName createdBy }}</td>
+                    <td>{{ optionalValue (formatDate createdAt) }}</td>
+                    <td>{{ getPrisonName createdAtPrison }}</td>
+                </tr>
+            </table>
+            <table class="data-table">
+                <tr>
+                    <td class="data-column-30">Updated by</td>
+                    <td class="data-column-35">Updated at</td>
+                    <td class="data-column-30">Updated at prison</td>
+                </tr>
+                <tr>
+                    <td>{{ getUserLastName updatedBy }}</td>
+                    <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                    <td>{{ getPrisonName updatedAtPrison }}</td>
+                </tr>
+            </table>
+        {{/alnStrengths}}
+        {{^alnStrengths}}
+            <p>No Data Held</p>
+        {{/alnStrengths}}
+
+    {{/alnScreeners}}
+    {{^alnScreeners}}
+        <p>No Data Held</p>
+    {{/alnScreeners}}
+
+{{/.}}
+{{^.}}
+    <p>No Data Held</p>
+{{/.}}
