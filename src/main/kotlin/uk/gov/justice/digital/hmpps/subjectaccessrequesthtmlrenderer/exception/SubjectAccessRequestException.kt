@@ -120,3 +120,16 @@ class SubjectAccessRequestRetryExhaustedException(
     private const val RETRY_EXHAUSTED_ERROR_MESSAGE_PREFIX = "request failed and max retry attempts (%s) exhausted"
   }
 }
+
+class SubjectAccessRequestServiceConfigurationNotFoundException(
+  serviceConfigurationId: UUID,
+  subjectAccessRequestId: UUID,
+) : SubjectAccessRequestException(
+  message = "Subject access request service configuration Id: $serviceConfigurationId not found",
+  subjectAccessRequestId = subjectAccessRequestId,
+)
+
+class SubjectAccessRequestResourceNotFoundException(resource: String) :
+  RuntimeException(
+    "Subject access request resource $resource not found",
+  )

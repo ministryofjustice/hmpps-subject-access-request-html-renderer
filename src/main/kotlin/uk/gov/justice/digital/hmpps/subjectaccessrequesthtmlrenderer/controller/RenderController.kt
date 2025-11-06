@@ -18,12 +18,15 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_CACHED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.CREATED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.DATA_ALREADY_EXISTS
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestController
@@ -32,6 +35,7 @@ import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 class RenderController(
   private val renderService: RenderService,
   private val telemetryClient: TelemetryClient,
+  private val serviceConfigurationService: ServiceConfigurationService,
 ) {
 
   companion object {
@@ -62,7 +66,7 @@ class RenderController(
       ),
     ],
   )
-  suspend fun renderTemplate(@RequestBody renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
+  suspend fun renderTemplate(@RequestBody renderRequest: RenderRequestEntity): ResponseEntity<RenderResponse> {
     try {
       return handleRenderRequest(renderRequest)
     } catch (sarEx: SubjectAccessRequestException) {
@@ -73,13 +77,19 @@ class RenderController(
         message = "render request threw unexpected exception",
         cause = ex,
         subjectAccessRequestId = renderRequest.id,
-        params = mapOf("serviceName" to renderRequest.serviceName),
+        params = mapOf("serviceConfigurationId" to renderRequest.serviceConfigurationId),
       )
     }
   }
 
-  private suspend fun handleRenderRequest(renderRequest: RenderRequest): ResponseEntity<RenderResponse> {
-    log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, renderRequest.serviceName)
+  private suspend fun handleRenderRequest(entity: RenderRequestEntity): ResponseEntity<RenderResponse> {
+    // TODO validate request
+    val serviceConfiguration = serviceConfigurationService.findByIdOrNull(entity.serviceConfigurationId!!)
+      ?: throw SubjectAccessRequestServiceConfigurationNotFoundException(entity.serviceConfigurationId, entity.id!!)
+
+    val renderRequest = RenderRequest(entity, serviceConfiguration)
+
+    log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
     val response = when (renderService.renderServiceDataHtml(renderRequest)) {
@@ -98,7 +108,7 @@ class RenderController(
   private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
     RenderResponse(
       renderRequest.id!!,
-      renderRequest.serviceName!!,
+      renderRequest.serviceConfiguration.serviceName,
     ),
     HttpStatus.CREATED,
   )

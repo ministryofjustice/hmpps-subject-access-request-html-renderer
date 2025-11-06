@@ -6,8 +6,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 
 class TemplateResourcesTest {
 
@@ -41,7 +42,16 @@ class TemplateResourcesTest {
     delimiterString = "|",
   )
   fun `should return expected service template`(serviceName: String, expectedTitle: String) {
-    val renderRequest = RenderRequest(serviceName = serviceName)
+    val renderRequest = RenderRequest(
+      serviceConfiguration = ServiceConfiguration(
+        serviceName = serviceName,
+        label = "",
+        order = 1,
+        enabled = true,
+        templateMigrated = false,
+        url = "https://example.com",
+      ),
+    )
     val testTemplate = templateResources.getServiceTemplate(renderRequest)
     assertThat(testTemplate).isNotNull()
     assertThat(testTemplate).contains(expectedTitle)
@@ -69,7 +79,18 @@ class TemplateResourcesTest {
     description: String,
   ) {
     val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-      templateResources.getServiceTemplate(RenderRequest(serviceName = serviceName))
+      templateResources.getServiceTemplate(
+        RenderRequest(
+          serviceConfiguration = ServiceConfiguration(
+            serviceName = serviceName ?: "",
+            label = "",
+            order = 1,
+            enabled = true,
+            templateMigrated = false,
+            url = "https://example.com",
+          ),
+        ),
+      )
     }
 
     assertThat(actual.message).startsWith("unable to load service template: service name was null or empty")
@@ -83,7 +104,18 @@ class TemplateResourcesTest {
     @Test
     fun `should throw expected exception if requested template does not exist`() {
       val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-        templateResources.getServiceTemplate(RenderRequest(serviceName = "no-exist-service"))
+        templateResources.getServiceTemplate(
+          RenderRequest(
+            serviceConfiguration = ServiceConfiguration(
+              serviceName = "no-exist-service",
+              label = "",
+              order = 1,
+              enabled = true,
+              templateMigrated = false,
+              url = "https://example.com",
+            ),
+          ),
+        )
       }
 
       assertThat(actual.message).startsWith("template resource not found")

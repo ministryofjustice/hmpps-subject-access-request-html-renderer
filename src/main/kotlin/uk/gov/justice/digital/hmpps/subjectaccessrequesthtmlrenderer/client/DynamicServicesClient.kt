@@ -17,18 +17,19 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.net.URI
 import java.text.Normalizer
 import java.util.Optional
 import java.util.UUID
-import kotlin.Int
 
 @Service
 class DynamicServicesClient(
   @Qualifier("dynamicWebClient") private val dynamicApiWebClient: WebClient,
   private val webClientRetriesSpec: WebClientRetriesSpec,
+  private val serviceConfigurationService: ServiceConfigurationService,
 ) {
 
   private companion object {
@@ -39,7 +40,7 @@ class DynamicServicesClient(
     renderRequest: RenderRequest,
   ): ResponseEntity<ServiceData>? = dynamicApiWebClient
     .mutate()
-    .baseUrl(renderRequest.serviceUrl!!)
+    .baseUrl(serviceConfigurationService.resolveUrlPlaceHolder(renderRequest.serviceConfiguration))
     .build()
     .get()
     .uri {
@@ -50,13 +51,13 @@ class DynamicServicesClient(
         .queryParamIfPresent("toDate", Optional.ofNullable(renderRequest.dateTo))
         .build()
     }
-    .exchangeToMono(processResponse(renderRequest.id, renderRequest.serviceName))
+    .exchangeToMono(processResponse(renderRequest.id, renderRequest.serviceConfiguration.serviceName))
     .retryWhen(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
         renderRequest = renderRequest,
         renderEvent = GET_SERVICE_DATA_RETRY,
-        "serviceName" to renderRequest.serviceName!!,
-        "uri" to renderRequest.serviceUrl,
+        "serviceName" to renderRequest.serviceConfiguration.serviceName,
+        "uri" to renderRequest.serviceConfiguration.url,
       ),
     ).block()
 
@@ -129,7 +130,7 @@ class DynamicServicesClient(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
         renderRequest = renderRequest,
         renderEvent = GET_ATTACHMENT_RETRY,
-        "serviceName" to renderRequest.serviceName!!,
+        "serviceName" to renderRequest.serviceConfiguration.serviceName,
         "uri" to url,
       ),
     ).block()!!

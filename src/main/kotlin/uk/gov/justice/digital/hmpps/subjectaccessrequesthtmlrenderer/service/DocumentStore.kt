@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileInfo
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestDocumentStorageException
 import java.util.UUID
 

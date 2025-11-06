@@ -38,7 +38,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_RENDERED_HTML_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_SERVICE_DATA_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_SERVICE_DATA_STARTED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
@@ -48,6 +48,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.User
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import java.time.format.DateTimeFormatter
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
@@ -123,7 +124,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -140,14 +141,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -195,7 +199,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -212,14 +216,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -243,8 +250,11 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should not store html and return status 204 when service data and html exist in cache and no attachments`() {
       // Given
       val serviceName = "hmpps-book-secure-move-api"
-      val serviceLabel = "Book a Secure Move"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest)
       addServiceHtmlDocumentToBucket(renderRequest)
 
@@ -252,7 +262,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponseNoContent(response)
@@ -274,7 +284,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
       val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
@@ -285,7 +298,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsAttachmentForRequest("map.jpg", "image/jpeg")
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -345,8 +358,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should download and store attachments and return status 201 when service data is cached and html and attachments not cached`() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
-      val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
@@ -356,7 +371,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsAttachmentForRequest("map.jpg", "image/jpeg")
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -412,8 +427,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should download and store attachments and return status 204 when service data and html is cached and attachments not cached`() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
-      val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       addServiceHtmlDocumentToBucket(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
@@ -423,7 +440,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsAttachmentForRequest("map.jpg", "image/jpeg")
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponseNoContent(response)
@@ -475,8 +492,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should not store html or attachments and return status 204 when service data, html and attachments exist in cache`() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
-      val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
       addServiceHtmlDocumentToBucket(renderRequest)
       addServiceAttachmentToBucket(renderRequest, 1, "doc.pdf")
@@ -486,7 +505,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponseNoContent(response)
@@ -533,7 +552,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -549,14 +568,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsNoDataForRequest(renderRequest)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -592,7 +614,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -608,14 +630,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       addServiceJsonDocumentToBucket(renderRequest, "{}")
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsNoDataForRequest(renderRequest)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -650,7 +675,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -666,14 +691,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsIdentifierNotSupportedForRequest(renderRequest)
 
       // When
-      val response = sendRenderTemplateRequest(renderRequest = renderRequest)
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
       // Then
       assertRenderTemplateSuccessResponse(response, renderRequest)
@@ -713,7 +741,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-interventions-service | Refer and Monitor an Intervention",
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
-        "hmpps-education-employment-api | Education Employment",
+        "hmpps-education-employment-api | Work Readiness",
         "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
@@ -728,14 +756,17 @@ class RenderControllerIntTest : IntegrationTestBase() {
       serviceLabel: String,
     ) {
       // Given
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsErrorForRequest(renderRequest, HttpStatus.INTERNAL_SERVER_ERROR)
 
       // When
-      sendRenderTemplateRequest(renderRequest = renderRequest)
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
 
       assertTelemetryEvents(
@@ -754,8 +785,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should return internal server error when download attachment unavailable after retries maxed`() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
-      val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
@@ -765,7 +798,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsServiceReturnsErrorForAttachmentRequest("doc.pdf", "application/pdf", HttpStatus.INTERNAL_SERVER_ERROR)
 
       // When
-      sendRenderTemplateRequest(renderRequest = renderRequest)
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
 
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
@@ -797,8 +830,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should return internal server error when download attachment incorrect size after retries maxed`() {
       // Given
       val serviceName = "create-and-vary-a-licence-api"
-      val serviceLabel = "Create and Vary a Licence"
-      val renderRequest = newRenderRequestFor(serviceName, serviceLabel)
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceAttachmentDoesNotAlreadyExist(renderRequest, 1, "doc.pdf")
@@ -812,7 +847,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       )
 
       // When
-      sendRenderTemplateRequest(renderRequest = renderRequest)
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
 
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody("$serviceName-attachments-sanitized"))
@@ -877,8 +912,18 @@ class RenderControllerIntTest : IntegrationTestBase() {
     expectedAttachmentBytes: ByteArray,
     expectedMetadata: AttachmentMetadata,
   ) {
-    val uploadedFile = s3TestUtil.getFileBytes(renderRequest.documentAttachmentKey(Integer.parseInt(expectedMetadata.attachmentNumber), expectedMetadata.filename))
-    val metadata = s3TestUtil.getAttachmentMetadata(renderRequest.documentAttachmentKey(Integer.parseInt(expectedMetadata.attachmentNumber), expectedMetadata.filename))
+    val uploadedFile = s3TestUtil.getFileBytes(
+      renderRequest.documentAttachmentKey(
+        Integer.parseInt(expectedMetadata.attachmentNumber),
+        expectedMetadata.filename,
+      ),
+    )
+    val metadata = s3TestUtil.getAttachmentMetadata(
+      renderRequest.documentAttachmentKey(
+        Integer.parseInt(expectedMetadata.attachmentNumber),
+        expectedMetadata.filename,
+      ),
+    )
     assertThat(uploadedFile).isNotNull().isNotEmpty().isEqualTo(expectedAttachmentBytes)
     assertThat(metadata).isEqualTo(expectedMetadata)
   }
@@ -912,16 +957,31 @@ class RenderControllerIntTest : IntegrationTestBase() {
   private fun hmppsServiceReturnsIdentifierNotSupportedForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestIdentifierNotSupported(request.toGetSubjectAccessRequestDataParams())
 
-  private fun hmppsServiceReturnsAttachmentForRequest(filename: String, contentType: String) = hmppsServiceReturnsAttachmentForRequest(filename, contentType, getResourceAsByteArray("/attachments/$filename"))
+  private fun hmppsServiceReturnsAttachmentForRequest(
+    filename: String,
+    contentType: String,
+  ) = hmppsServiceReturnsAttachmentForRequest(
+    filename,
+    contentType,
+    getResourceAsByteArray("/attachments/$filename"),
+  )
 
-  private fun hmppsServiceReturnsAttachmentForRequest(filename: String, contentType: String, content: ByteArray) = sarDataSourceApi
+  private fun hmppsServiceReturnsAttachmentForRequest(
+    filename: String,
+    contentType: String,
+    content: ByteArray,
+  ) = sarDataSourceApi
     .stubGetAttachment(
       contentType = contentType,
       content = content,
       filename = filename,
     )
 
-  private fun hmppsServiceReturnsErrorForAttachmentRequest(filename: String, contentType: String, status: HttpStatus) = sarDataSourceApi
+  private fun hmppsServiceReturnsErrorForAttachmentRequest(
+    filename: String,
+    contentType: String,
+    status: HttpStatus,
+  ) = sarDataSourceApi
     .stubGetAttachment(
       contentType = contentType,
       filename = filename,
@@ -937,7 +997,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
   ) = response.expectStatus()
     .isEqualTo(HttpStatus.CREATED)
     .expectBody()
-    .jsonPath("documentKey").isEqualTo("${renderRequest.id}/${renderRequest.serviceName}.html")
+    .jsonPath("documentKey").isEqualTo("${renderRequest.id}/${renderRequest.serviceConfiguration.serviceName}.html")
 
   private fun assertRenderTemplateSuccessResponseNoContent(response: WebTestClient.ResponseSpec) = response
     .expectStatus()
@@ -945,13 +1005,13 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   private fun sendRenderTemplateRequest(
     role: String = "ROLE_SAR_DATA_ACCESS",
-    renderRequest: RenderRequest,
+    renderRequestEntity: RenderRequestEntity,
   ): WebTestClient.ResponseSpec = webTestClient
     .post()
     .uri("/subject-access-request/render")
     .header("Content-Type", "application/json")
     .headers(setAuthorisation(roles = listOf(role)))
-    .bodyValue(objectMapper.writeValueAsString(renderRequest))
+    .bodyValue(objectMapper.writeValueAsString(renderRequestEntity))
     .exchange()
 
   private fun getDataRetryEventProperties(
@@ -960,14 +1020,18 @@ class RenderControllerIntTest : IntegrationTestBase() {
     responseStatus: Int,
   ) = eventProperties(
     renderRequest,
-    "uri" to "http://localhost:${sarDataSourceApi.port()}",
+    "uri" to renderRequest.serviceConfiguration.url,
     "error" to "GET ${getSarRequestUrl(renderRequest)}, status: $responseStatus",
     "retryAttempts" to attempt.toString(),
     "backOff" to webClientConfiguration.backOff,
     "maxRetries" to webClientConfiguration.maxRetries.toString(),
   )
 
-  private fun getAttachmentRetryEventProperties(renderRequest: RenderRequest, filename: String, attempt: Int) = getAttachmentRetryEventProperties(
+  private fun getAttachmentRetryEventProperties(
+    renderRequest: RenderRequest,
+    filename: String,
+    attempt: Int,
+  ) = getAttachmentRetryEventProperties(
     renderRequest,
     filename,
     "500 Internal Server Error from GET http://localhost:${sarDataSourceApi.port()}/attachments/$filename",
@@ -990,7 +1054,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   private fun dataRequestErroredEventProperties(renderRequest: RenderRequest, status: Int) = eventProperties(
     renderRequest,
-    "uri" to "http://localhost:${sarDataSourceApi.port()}",
+    "uri" to renderRequest.serviceConfiguration.url,
     "errorMessage" to retryExhaustedErrorMessage(renderRequest, status),
   )
 
@@ -1003,20 +1067,34 @@ class RenderControllerIntTest : IntegrationTestBase() {
     ),
   )
 
-  private fun requestErroredEventProperties(renderRequest: RenderRequest, uri: String, causeMessage: String) = eventProperties(
+  private fun requestErroredEventProperties(
+    renderRequest: RenderRequest,
+    uri: String,
+    causeMessage: String,
+  ) = eventProperties(
     renderRequest,
     "uri" to uri,
     "errorMessage" to retryExhaustedErrorMessage(renderRequest, causeMessage, uri),
   )
 
-  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest, causeMessage: String, uri: String) = "request failed and max retry attempts " +
-    "(${webClientConfiguration.maxRetries}) exhausted, cause=$causeMessage, id=${renderRequest.id}, serviceName=${renderRequest.serviceName}, uri=$uri"
+  private fun retryExhaustedErrorMessage(
+    renderRequest: RenderRequest,
+    causeMessage: String,
+    uri: String,
+  ) = "request failed and max retry attempts (${webClientConfiguration.maxRetries}) exhausted, cause=$causeMessage, " +
+    "id=${renderRequest.id}, serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=$uri"
 
-  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest, uri: String) = retryExhaustedErrorMessage(renderRequest, "500 Internal Server Error from GET $uri", uri)
+  private fun retryExhaustedErrorMessage(
+    renderRequest: RenderRequest,
+    uri: String,
+  ) = retryExhaustedErrorMessage(renderRequest, "500 Internal Server Error from GET $uri", uri)
 
-  private fun retryExhaustedErrorMessage(renderRequest: RenderRequest, status: Int): String = "request failed and max " +
-    "retry attempts (${webClientConfiguration.maxRetries}) exhausted, cause=GET ${getSarRequestUrl(renderRequest)}, " +
-    "status: $status, id=${renderRequest.id}, serviceName=${renderRequest.serviceName}, uri=${renderRequest.serviceUrl}"
+  private fun retryExhaustedErrorMessage(
+    renderRequest: RenderRequest,
+    status: Int,
+  ): String = "request failed and max retry attempts (${webClientConfiguration.maxRetries}) exhausted, " +
+    "cause=GET ${getSarRequestUrl(renderRequest)}, status: $status, id=${renderRequest.id}, " +
+    "serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=${renderRequest.serviceConfiguration.url}"
 
   private fun getSarRequestUrl(
     request: RenderRequest,

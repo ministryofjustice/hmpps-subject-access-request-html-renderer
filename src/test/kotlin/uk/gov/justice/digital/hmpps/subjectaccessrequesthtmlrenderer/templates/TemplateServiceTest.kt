@@ -12,13 +12,14 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpe
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 
 class TemplateServiceTest {
   private val prisonDetailsRepository: PrisonDetailsRepository = mock()
@@ -38,7 +39,19 @@ class TemplateServiceTest {
   )
 
   private fun renderServiceDataHtml(serviceName: String, data: Any?): String {
-    val actual = templateService.renderServiceDataHtml(RenderRequest(serviceName = serviceName), data)
+    val actual = templateService.renderServiceDataHtml(
+      RenderRequest(
+        serviceConfiguration = ServiceConfiguration(
+          serviceName = serviceName,
+          label = serviceName,
+          url = "",
+          order = 1,
+          enabled = true,
+          templateMigrated = true,
+        ),
+      ),
+      data,
+    )
     assertThat(actual).isNotNull()
     return String(actual!!.toByteArray())
   }
@@ -251,7 +264,19 @@ class TemplateServiceTest {
   @Test
   fun `renderTemplate throws exception when the specified service template does not exist`() {
     val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-      templateService.renderServiceDataHtml(RenderRequest(serviceName = "THIS_IS_MADE_UP"), testServiceTemplateData)
+      templateService.renderServiceDataHtml(
+        RenderRequest(
+          serviceConfiguration = ServiceConfiguration(
+            serviceName = "THIS_IS_MADE_UP",
+            label = "",
+            url = "",
+            order = 1,
+            enabled = true,
+            templateMigrated = true,
+          ),
+        ),
+        testServiceTemplateData,
+      )
     }
 
     assertThat(actual.message).startsWith("template resource not found")

@@ -6,4 +6,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import java.util.UUID
 
 @Repository
-interface ServiceConfigurationRepository : JpaRepository<ServiceConfiguration, UUID>
+interface ServiceConfigurationRepository : JpaRepository<ServiceConfiguration, UUID> {
+  fun findByServiceName(serviceName: String): ServiceConfiguration?
+}

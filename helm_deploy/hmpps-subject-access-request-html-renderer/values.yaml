@@ -44,6 +44,11 @@ generic-service:
     hmpps-subject-access-request-s3:
       HMPPS_S3_SUBJECT_ACCESS_REQUEST_BUCKET: "bucket_name"
 
+    service-urls:
+      G1_API_URL: "G1_API_URL"
+      G2_API_URL: "G2_API_URL"
+      G3_API_URL: "G3_API_URL"
+
   allowlist:
     groups:
       - internal

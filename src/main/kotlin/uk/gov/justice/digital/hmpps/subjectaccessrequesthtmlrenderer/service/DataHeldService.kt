@@ -5,12 +5,12 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.BacklogController.SubjectDataHeldRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import java.util.UUID
 
 @Service
 class DataHeldService(
   private val dynamicServicesClient: DynamicServicesClient,
+  private val serviceConfigurationService: ServiceConfigurationService,
 ) {
 
   private companion object {
@@ -20,15 +20,17 @@ class DataHeldService(
   fun isSubjectDataHeld(request: SubjectDataHeldRequest): Boolean {
     log.info("executing subject data held summary request for: subject: {}", request.nomisId ?: request.ndeliusId)
 
+    val serviceConfiguration = serviceConfigurationService.findByServiceNameOrNull(request.serviceName!!)
+      ?: throw RuntimeException("Service not found") // TODO
+
     val response = dynamicServicesClient.getSubjectAccessRequestData(
       RenderRequest(
         id = UUID.randomUUID(),
-        serviceUrl = request.serviceUrl,
-        serviceName = request.serviceName,
         nomisId = request.nomisId,
         ndeliusId = request.ndeliusId,
         dateFrom = request.dateFrom,
         dateTo = request.dateTo,
+        serviceConfiguration = serviceConfiguration,
       ),
     )
 

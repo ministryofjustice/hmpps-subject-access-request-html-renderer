@@ -8,7 +8,8 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateResources
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates.TemplateService
 import java.io.ByteArrayOutputStream
@@ -54,7 +55,16 @@ class TemplateGeneratorUtil {
     log("Rendering templates for $serviceName")
 
     try {
-      val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceName = serviceName, serviceLabel = getServiceLabel(serviceName))
+      val serviceConfiguration = ServiceConfiguration(
+        id = UUID.randomUUID(),
+        serviceName = serviceName,
+        label = getServiceLabel(serviceName),
+        enabled = true,
+        templateMigrated = true,
+        order = 1,
+        url = "https://example.com",
+      )
+      val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceConfiguration = serviceConfiguration)
       val output = renderHtml(renderRequest, isNullData).use { os -> writeToFile(serviceName, os) }
 
       println()
@@ -73,10 +83,10 @@ class TemplateGeneratorUtil {
   }
 
   private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
-    val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceName!!)
+    val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
 
     return templateService.renderServiceDataHtml(renderRequest = renderRequest, data = data)
-      ?: throw renderedTemplateNullException(renderRequest.serviceName!!)
+      ?: throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
   }
 
   private fun getServiceResponseStubData(serviceName: String): Any? {

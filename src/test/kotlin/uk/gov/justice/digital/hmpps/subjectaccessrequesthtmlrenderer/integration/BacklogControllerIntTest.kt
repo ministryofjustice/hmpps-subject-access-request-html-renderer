@@ -2,20 +2,17 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integratio
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.BacklogController
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.BacklogController.SubjectDataHeldRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsServiceApiExtension
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsServiceApiExtension.Companion.hmppsService1Mock
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
 import java.time.LocalDate
 
-@ExtendWith(HmppsServiceApiExtension::class)
 class BacklogControllerIntTest : IntegrationTestBase() {
 
   private val getSummaryRequest = dataHeldSummaryRequest(
     serviceName = "court-case-service",
-    serviceUrl = "http://localhost:${hmppsService1Mock.port()}",
+    serviceUrl = "http://localhost:${sarDataSourceApi.port()}",
   )
 
   @Test
@@ -99,7 +96,7 @@ class BacklogControllerIntTest : IntegrationTestBase() {
   fun returnDataHeldResponse(
     params: GetSubjectAccessRequestDataParams,
     responseBody: String,
-  ) = hmppsService1Mock.stubGetSubjectAccessRequestData(
+  ) = sarDataSourceApi.stubGetSubjectAccessRequestData(
     params = params,
     responseDefinition = ResponseDefinitionBuilder()
       .withStatus(200)
@@ -107,14 +104,14 @@ class BacklogControllerIntTest : IntegrationTestBase() {
       .withBody(responseBody),
   )
 
-  fun returnNoDataHeldResponse(params: GetSubjectAccessRequestDataParams) = hmppsService1Mock
+  fun returnNoDataHeldResponse(params: GetSubjectAccessRequestDataParams) = sarDataSourceApi
     .stubGetSubjectAccessRequestData(
       params = params,
       responseDefinition = ResponseDefinitionBuilder()
         .withStatus(204),
     )
 
-  fun returnUnsupportedIdentifierResponse(params: GetSubjectAccessRequestDataParams) = hmppsService1Mock
+  fun returnUnsupportedIdentifierResponse(params: GetSubjectAccessRequestDataParams) = sarDataSourceApi
     .stubGetSubjectAccessRequestData(
       params = params,
       responseDefinition = ResponseDefinitionBuilder()
