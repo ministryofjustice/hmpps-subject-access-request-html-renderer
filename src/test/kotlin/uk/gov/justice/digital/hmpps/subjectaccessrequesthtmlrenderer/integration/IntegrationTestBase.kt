@@ -131,6 +131,7 @@ abstract class IntegrationTestBase {
     dateFrom = LocalDate.of(2020, 1, 1),
     dateTo = LocalDate.of(2021, 1, 1),
     serviceConfigurationId = serviceConfiguration.id,
+    sarCaseReferenceNumber = "AAA",
   )
 
   protected fun documentJsonKey(serviceConfiguration: ServiceConfiguration): String = ""
@@ -163,10 +164,22 @@ abstract class IntegrationTestBase {
       .isTrue()
   }
 
+  protected fun assertServiceJsonDocumentDoesNoExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
+      .withFailMessage { "expected file ${request.documentJsonKey()} to not exist" }
+      .isFalse()
+  }
+
   protected fun assertServiceHtmlDocumentExists(request: RenderRequest): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
       .withFailMessage { "expected file ${request.documentHtmlKey()} to exist" }
       .isTrue()
+  }
+
+  protected fun assertServiceHtmlDocumentDoesNotExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
+      .withFailMessage { "expected file ${request.documentHtmlKey()} to not exist" }
+      .isFalse()
   }
 
   protected fun assertServiceAttachmentExists(

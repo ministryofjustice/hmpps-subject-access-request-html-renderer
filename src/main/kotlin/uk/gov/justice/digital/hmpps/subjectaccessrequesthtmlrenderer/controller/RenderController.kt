@@ -20,8 +20,10 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.CREATED
@@ -83,10 +85,8 @@ class RenderController(
   }
 
   private suspend fun handleRenderRequest(entity: RenderRequestEntity): ResponseEntity<RenderResponse> {
-    // TODO validate request
-    val serviceConfiguration = serviceConfigurationService.findByIdOrNull(entity.serviceConfigurationId!!)
-      ?: throw SubjectAccessRequestServiceConfigurationNotFoundException(entity.serviceConfigurationId, entity.id!!)
-
+    validateRequest(entity)
+    val serviceConfiguration = getServiceConfiguration(entity)
     val renderRequest = RenderRequest(entity, serviceConfiguration)
 
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
@@ -104,6 +104,38 @@ class RenderController(
 
     return response
   }
+
+  private fun validateRequest(request: RenderRequestEntity) {
+    if (request.id == null) {
+      throw SubjectAccessRequestBadRequestException("request.id was null")
+    }
+    if (request.serviceConfigurationId == null) {
+      throw SubjectAccessRequestBadRequestException("request.serviceConfigurationId was null", request.id)
+    }
+    if (request.nomisId.isNullOrEmpty() && request.ndeliusId.isNullOrEmpty()) {
+      throw SubjectAccessRequestBadRequestException(
+        "request.nomisId and request.ndeliusId was null or empty",
+        request.id,
+      )
+    }
+    if (request.dateFrom == null) {
+      throw SubjectAccessRequestBadRequestException("request.dateFrom was null", request.id)
+    }
+    if (request.dateTo == null) {
+      throw SubjectAccessRequestBadRequestException("request.dateTo was null", request.id)
+    }
+    if (request.dateTo!!.isBefore(request.dateFrom)) {
+      throw SubjectAccessRequestBadRequestException("request.dateTo is before request.dateFrom", request.id)
+    }
+    if (request.sarCaseReferenceNumber.isNullOrEmpty()) {
+      throw SubjectAccessRequestBadRequestException("request.sarCaseReferenceNumber was null or empty", request.id)
+    }
+  }
+
+  private fun getServiceConfiguration(
+    request: RenderRequestEntity,
+  ): ServiceConfiguration = serviceConfigurationService.findByIdOrNull(request.serviceConfigurationId!!)
+    ?: throw SubjectAccessRequestServiceConfigurationNotFoundException(request.serviceConfigurationId, request.id!!)
 
   private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
     RenderResponse(

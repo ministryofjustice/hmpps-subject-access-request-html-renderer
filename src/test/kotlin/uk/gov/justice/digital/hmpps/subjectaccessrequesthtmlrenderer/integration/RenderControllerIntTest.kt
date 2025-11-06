@@ -49,7 +49,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
 const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
@@ -888,6 +890,139 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetAttachmentCalled("doc.pdf", 3)
       sarDataSourceApi.verifyGetAttachmentNeverCalled("map.jpg")
+    }
+  }
+
+  @Nested
+  inner class ValidationErrors {
+
+    @Test
+    fun `should return status 400 error when id is null`() {
+      assertBadRequestWithExpectedMessage(
+        request = RenderRequestEntity(id = null),
+        expectedMessage = "request.id was null, id=null",
+      )
+    }
+
+    @Test
+    fun `should return status 400 error when serviceConfigurationId is null`() {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = null,
+      )
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.serviceConfigurationId was null, id=${request.id}",
+      )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        " | ",
+        " '' | '' ",
+      ],
+      delimiterString = "|",
+    )
+    fun `should return status 400 error when nomisId and ndeliusId null or empty`(
+      nomisId: String?,
+      ndeliusId: String?,
+    ) {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = UUID.randomUUID(),
+        nomisId = nomisId,
+        ndeliusId = ndeliusId,
+      )
+
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.nomisId and request.ndeliusId was null or empty, id=${request.id}",
+      )
+    }
+
+    @Test
+    fun `should return status 400 error when dateFrom is null`() {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = UUID.randomUUID(),
+        nomisId = "A",
+      )
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.dateFrom was null, id=${request.id}",
+      )
+    }
+
+    @Test
+    fun `should return status 400 error when dateTo is null`() {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = UUID.randomUUID(),
+        nomisId = "A",
+        dateFrom = LocalDate.now(),
+      )
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.dateTo was null, id=${request.id}",
+      )
+    }
+
+    @Test
+    fun `should return status 400 error when dateTo is before dateFrom`() {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = UUID.randomUUID(),
+        nomisId = "A",
+        dateFrom = LocalDate.now(),
+        dateTo = LocalDate.now().minusDays(10),
+      )
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.dateTo is before request.dateFrom, id=${request.id}",
+      )
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        " | ",
+        " '' | '' ",
+      ],
+      delimiterString = "|",
+    )
+    fun `should return status 400 error when sarCaseReferenceNumber is null or empty`() {
+      val request = RenderRequestEntity(
+        id = UUID.randomUUID(),
+        serviceConfigurationId = UUID.randomUUID(),
+        nomisId = "A",
+        dateFrom = LocalDate.now().minusDays(10),
+        dateTo = LocalDate.now(),
+      )
+      assertBadRequestWithExpectedMessage(
+        request = request,
+        expectedMessage = "request.sarCaseReferenceNumber was null or empty, id=${request.id}",
+      )
+    }
+
+    @Test
+    fun `should return status 400 when a service configuration is not found for the provided Id`() {
+      val serviceConfiguration = serviceConfiguration(serviceName = "no-existy", serviceLabel = "not a service")
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+        .expectStatus().isEqualTo(404)
+
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+    }
+
+    private fun assertBadRequestWithExpectedMessage(request: RenderRequestEntity, expectedMessage: String) {
+      sendRenderTemplateRequest(renderRequestEntity = request)
+        .expectStatus().isEqualTo(400)
+        .expectBody()
+        .jsonPath("$.developerMessage").isEqualTo(expectedMessage)
+
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
     }
   }
 
