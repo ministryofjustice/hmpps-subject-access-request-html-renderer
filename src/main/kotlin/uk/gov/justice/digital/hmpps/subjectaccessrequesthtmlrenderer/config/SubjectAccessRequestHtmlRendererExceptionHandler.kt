@@ -13,8 +13,10 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestResourceNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice
@@ -91,6 +93,38 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     ).also {
       telemetryClient.trackRenderException(e, NOT_FOUND)
       log.error("Subject access request resource not found exception", e)
+    }
+
+  @ExceptionHandler
+  fun handleSubjectAccessRequestServiceConfigurationNotFoundException(
+    e: SubjectAccessRequestServiceConfigurationNotFoundException,
+  ): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(NOT_FOUND)
+    .body(
+      ErrorResponse(
+        status = NOT_FOUND,
+        userMessage = "service configuration ID: ${e.serviceConfigurationId} not found",
+        developerMessage = e.message,
+      ),
+    ).also {
+      telemetryClient.trackRenderException(e, NOT_FOUND)
+      log.error("service configuration ID: ${e.serviceConfigurationId} not found", e)
+    }
+
+  @ExceptionHandler
+  fun handleSubjectAccessRequestBadRequestException(
+    e: SubjectAccessRequestBadRequestException,
+  ): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(BAD_REQUEST)
+    .body(
+      ErrorResponse(
+        status = BAD_REQUEST,
+        userMessage = "bad request: ${e.message}",
+        developerMessage = e.message,
+      ),
+    ).also {
+      telemetryClient.trackRenderException(e, BAD_REQUEST)
+      log.error("bad request: ${e.message}", e)
     }
 
   private companion object {

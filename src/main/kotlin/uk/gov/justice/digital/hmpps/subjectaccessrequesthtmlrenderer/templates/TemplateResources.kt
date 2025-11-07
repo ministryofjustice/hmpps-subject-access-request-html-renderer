@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
 import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 
 @Service
 class TemplateResources(
@@ -28,10 +28,10 @@ class TemplateResources(
   ).readText()
 
   private fun validateServiceName(renderRequest: RenderRequest): String {
-    if (StringUtils.isEmpty(renderRequest.serviceName)) {
+    if (StringUtils.isEmpty(renderRequest.serviceConfiguration.serviceName)) {
       throw missingServiceNameException(renderRequest)
     }
-    return renderRequest.serviceName!!
+    return renderRequest.serviceConfiguration.serviceName
   }
 
   private fun getTemplateResourceOrNull(path: String) = this::class.java.getResource(path)?.readText()

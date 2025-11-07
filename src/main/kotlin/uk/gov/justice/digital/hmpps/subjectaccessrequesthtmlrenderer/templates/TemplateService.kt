@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRende
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
@@ -29,13 +29,13 @@ class TemplateService(
 
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
     telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
-    log.info("starting html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
+    log.info("starting html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceConfiguration.serviceName)
 
     val renderParameters = getRenderParameters(renderRequest, data)
     val renderedServiceTemplate = templateRenderService.renderServiceTemplate(renderParameters)
     return renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
-      log.info("completed html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceName)
+      log.info("completed html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceConfiguration.serviceName)
     }
   }
 
@@ -63,5 +63,5 @@ class TemplateService(
     return out
   }
 
-  fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to (this.serviceLabel ?: "UNKNOWN"))
+  fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to this.serviceConfiguration.label)
 }

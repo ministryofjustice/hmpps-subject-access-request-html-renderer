@@ -25,7 +25,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.S3TestUtil
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.WebClientConfiguration
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.LocationsApiExtension
@@ -34,6 +34,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.NomisMappingsApiExtension.Companion.nomisMappingsApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 import java.time.LocalDate
 import java.util.UUID
@@ -72,6 +75,9 @@ abstract class IntegrationTestBase {
 
   @Autowired
   protected lateinit var webClientConfiguration: WebClientConfiguration
+
+  @Autowired
+  protected lateinit var serviceConfigurationRepository: ServiceConfigurationRepository
 
   @MockitoBean
   protected lateinit var telemetryClient: TelemetryClient
@@ -116,19 +122,19 @@ abstract class IntegrationTestBase {
   )
 
   protected fun newRenderRequestFor(
-    serviceName: String,
-    serviceLabel: String,
+    serviceConfiguration: ServiceConfiguration,
     id: UUID? = UUID.randomUUID(),
-  ): RenderRequest = RenderRequest(
+  ): RenderRequestEntity = RenderRequestEntity(
     id = id,
-    serviceName = serviceName,
-    serviceLabel = serviceLabel,
-    serviceUrl = "http://localhost:${sarDataSourceApi.port()}",
     nomisId = "nomis1234",
     ndeliusId = null,
     dateFrom = LocalDate.of(2020, 1, 1),
     dateTo = LocalDate.of(2021, 1, 1),
+    serviceConfigurationId = serviceConfiguration.id,
+    sarCaseReferenceNumber = "AAA",
   )
+
+  protected fun documentJsonKey(serviceConfiguration: ServiceConfiguration): String = ""
 
   protected fun assertServiceJsonDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
@@ -142,7 +148,11 @@ abstract class IntegrationTestBase {
       .isFalse()
   }
 
-  protected fun assertServiceAttachmentDoesNotAlreadyExist(request: RenderRequest, attachmentNumber: Int, filename: String): Unit = runBlocking {
+  protected fun assertServiceAttachmentDoesNotAlreadyExist(
+    request: RenderRequest,
+    attachmentNumber: Int,
+    filename: String,
+  ): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(attachmentNumber, filename)))
       .withFailMessage { "expected file ${request.documentAttachmentKey(attachmentNumber, filename)} to not exist" }
       .isFalse()
@@ -154,13 +164,29 @@ abstract class IntegrationTestBase {
       .isTrue()
   }
 
+  protected fun assertServiceJsonDocumentDoesNoExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
+      .withFailMessage { "expected file ${request.documentJsonKey()} to not exist" }
+      .isFalse()
+  }
+
   protected fun assertServiceHtmlDocumentExists(request: RenderRequest): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
       .withFailMessage { "expected file ${request.documentHtmlKey()} to exist" }
       .isTrue()
   }
 
-  protected fun assertServiceAttachmentExists(request: RenderRequest, attachmentNumber: Int, filename: String): Unit = runBlocking {
+  protected fun assertServiceHtmlDocumentDoesNotExists(request: RenderRequest): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
+      .withFailMessage { "expected file ${request.documentHtmlKey()} to not exist" }
+      .isFalse()
+  }
+
+  protected fun assertServiceAttachmentExists(
+    request: RenderRequest,
+    attachmentNumber: Int,
+    filename: String,
+  ): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentAttachmentKey(attachmentNumber, filename)))
       .withFailMessage { "expected file ${request.documentAttachmentKey(attachmentNumber, filename)} to exist" }
       .isTrue()
@@ -181,7 +207,7 @@ abstract class IntegrationTestBase {
 
   protected fun eventProperties(request: RenderRequest, vararg kvPairs: Pair<String, String>) = mapOf(
     "id" to request.id.toString(),
-    "serviceName" to (request.serviceName ?: ""),
+    "serviceName" to request.serviceConfiguration.serviceName,
     *kvPairs,
   )
 
@@ -205,7 +231,7 @@ abstract class IntegrationTestBase {
     s3TestUtil.addFilesToBucket(
       S3File(
         key = renderRequest.documentHtmlKey(),
-        content = getExpectedHtmlString(renderRequest.serviceName ?: ""),
+        content = getExpectedHtmlString(renderRequest.serviceConfiguration.serviceName),
       ),
     )
 
@@ -225,7 +251,12 @@ abstract class IntegrationTestBase {
     return s3TestUtil.getFileMetadata(renderRequest.documentJsonKey())
   }
 
-  protected fun addServiceJsonDocumentToBucket(renderRequest: RenderRequest): S3TestUtil.FileMetadata = addServiceJsonDocumentToBucket(renderRequest, getServiceResponseBody(renderRequest.serviceName ?: ""))
+  protected fun addServiceJsonDocumentToBucket(
+    renderRequest: RenderRequest,
+  ): S3TestUtil.FileMetadata = addServiceJsonDocumentToBucket(
+    renderRequest,
+    getServiceResponseBody(renderRequest.serviceConfiguration.serviceName),
+  )
 
   protected fun addServiceAttachmentToBucket(renderRequest: RenderRequest, attachmentNumber: Int, filename: String) {
     s3TestUtil.addFilesToBucket(
@@ -236,6 +267,29 @@ abstract class IntegrationTestBase {
     )
 
     assertServiceAttachmentExists(renderRequest, attachmentNumber, filename)
+  }
+
+  protected fun serviceConfiguration(
+    serviceName: String,
+    serviceLabel: String,
+    url: String = "http://localhost:${sarDataSourceApi.port()}",
+    enabled: Boolean = true,
+    order: Int = 1,
+    templateMigrated: Boolean = true,
+  ) = ServiceConfiguration(
+    id = UUID.randomUUID(),
+    serviceName = serviceName,
+    label = serviceLabel,
+    url = url,
+    enabled = enabled,
+    order = order,
+    templateMigrated = templateMigrated,
+  )
+
+  protected fun getServiceConfiguration(serviceName: String): ServiceConfiguration {
+    val serviceConfig = serviceConfigurationRepository.findByServiceName(serviceName)
+    assertThat(serviceConfig).withFailMessage("service configuration $serviceName not found").isNotNull
+    return serviceConfig!!
   }
 
   data class S3File(val key: String, val content: String = fileContent)

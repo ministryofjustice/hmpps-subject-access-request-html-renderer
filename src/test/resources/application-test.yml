@@ -23,7 +23,7 @@ spring:
     username: sa
     password:
   flyway:
-    locations: classpath:db/sar,db/sar_{vendor},db/dev/data/sar
+    locations: classpath:db/sar,db/sar_{vendor},db/test/data/sar
     enabled: true
   mvc:
     async:
@@ -48,3 +48,10 @@ s3:
 
 developer-endpoint:
   enabled: false
+
+G1-api:
+  url: http://localhost:8092
+G2-api:
+  url: http://localhost:8092
+G3-api:
+  url: http://localhost:8092
