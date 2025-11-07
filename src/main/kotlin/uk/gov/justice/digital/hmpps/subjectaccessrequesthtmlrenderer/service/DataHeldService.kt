@@ -21,7 +21,7 @@ class DataHeldService(
     log.info("executing subject data held summary request for: subject: {}", request.nomisId ?: request.ndeliusId)
 
     val serviceConfiguration = serviceConfigurationService.findByServiceNameOrNull(request.serviceName!!)
-      ?: throw RuntimeException("Service not found") // TODO
+      ?: throw RuntimeException("Service configuration for ${request.serviceName} not found")
 
     val response = dynamicServicesClient.getSubjectAccessRequestData(
       RenderRequest(
