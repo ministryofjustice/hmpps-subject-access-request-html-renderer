@@ -260,7 +260,104 @@
             "allOptions": []
           }
         },
-        "cvlLicenceConditionsBreached": null,
+        "cvlLicenceConditionsBreached": {
+          "standardLicenceConditions": {
+            "selected": [
+              "Be of good behaviour and not behave in a way which undermines the purpose of the licence period.",
+              "Not commit any offence."
+            ],
+            "allOptions": [
+              {
+                "code": "9ce9d594-e346-4785-9642-c87e764bee37",
+                "text": "Be of good behaviour and not behave in a way which undermines the purpose of the licence period."
+              },
+              {
+                "code": "3b19fdb0-4ca3-4615-9fdd-61fabc1587af",
+                "text": "Not commit any offence."
+              },
+              {
+                "code": "3361683a-504a-4357-ae22-6aa01b370b4a",
+                "text": "Keep in touch with the supervising officer in accordance with instructions given by the supervising officer."
+              },
+              {
+                "code": "9fc04065-df29-4bda-9b1d-bced8335c356",
+                "text": "Receive visits from the supervising officer in accordance with any instructions given by the supervising officer."
+              },
+              {
+                "code": "e670ac69-eda2-4b04-a0a1-a3c8492fe1e6",
+                "text": "Reside permanently at an address approved by the supervising officer and obtain the prior permission of the supervising officer for any stay of one or more nights at a different address."
+              },
+              {
+                "code": "78A5F860-4791-48F2-B707-D6D4413850EE",
+                "text": "Tell the supervising officer if you use a name which is different to the name or names which appear on your licence."
+              },
+              {
+                "code": "6FA6E492-F0AB-4E76-B868-63813DB44696",
+                "text": "Tell the supervising officer if you change or add any contact details, including phone number or email."
+              },
+              {
+                "code": "88069445-08cb-4f16-915f-5a162d085c26",
+                "text": "Not undertake work, or a particular type of work, unless it is approved by the supervising officer and notify the supervising officer in advance of any proposal to undertake work or a particular type of work."
+              },
+              {
+                "code": "7d416906-0e94-4fde-ae86-8339d339ccb7",
+                "text": "Not travel outside the United Kingdom, the Channel Islands or the Isle of Man except with the prior permission of the supervising officer or for the purposes of immigration deportation or removal."
+              }
+            ]
+          },
+          "additionalLicenceConditions": {
+            "selected": [
+              "Not to own or possess a [SPECIFIED ITEM] without the prior approval of your supervising officer.",
+              "Confine yourself to an address approved by your supervising officer between the hours of [TIME] and [TIME] daily unless otherwise authorised by your supervising officer. This condition will be reviewed by your supervising officer on a [WEEKLY / MONTHLY / ETC] basis and may be amended or removed if it is felt that the level of risk that you present has reduced appropriately."
+            ],
+            "allOptions": [
+              {
+                "code": "4858cd8b-bca6-4f11-b6ee-439e27216d7d",
+                "text": "Not to seek to approach or communicate with [INSERT NAME OF VICTIM AND / OR FAMILY MEMBERS] without the prior approval of your supervising officer and / or [INSERT NAME OF APPROPRIATE SOCIAL SERVICES DEPARTMENT]."
+              },
+              {
+                "code": "355700a9-6184-40c0-9759-0dfed1994e1e",
+                "text": "Not to contact or associate with [NAMED OFFENDER(S) / NAMED INDIVIDUAL(S)] without the prior approval of your supervising officer."
+              },
+              {
+                "code": "cc80d02b-0b62-4940-bac6-0bcd374c725e",
+                "text": "Not to contact directly or indirectly any person who is a serving or remand prisoner or detained in State custody, without the prior approval of your supervising officer."
+              },
+              {
+                "code": "89e656ec-77e8-4832-acc4-6ec05d3e9a98",
+                "text": "To comply with any requirements specified by your supervising officer for the purpose of ensuring that you address your alcohol / drug / sexual / violent / gambling / solvent abuse / anger / debt / prolific / offending behaviour problems."
+              },
+              {
+                "code": "8e52e16e-1abf-4251-baca-2fabfcb243d0",
+                "text": "Not to own or possess more than one mobile phone or SIM card without the prior approval of your supervising officer and to provide your supervising officer with details of that mobile telephone or one you have regular use of, including the IMEI number and the SIM card that you possess."
+              },
+              {
+                "code": "3932e5c9-4d21-4251-a747-ce6dc52dc9c0",
+                "text": "Not to own or possess a [SPECIFIED ITEM] without the prior approval of your supervising officer."
+              },
+              {
+                "code": "db2d7e24-b130-4c7e-a1bf-6bb5f3036c02",
+                "text": "Notify your supervising officer of any developing relationships, including the ending of any relationships."
+              },
+              {
+                "code": "c5e91330-748d-46f3-93f6-bbe5ea8324ce",
+                "text": "Notify your supervising officer of any developing personal relationships, whether intimate or not, with any person you know or believe to be resident in a household containing children under the age of 18. This includes persons known to you prior to your time in custody with whom you are renewing or developing a personal relationship with."
+              },
+              {
+                "code": "0a370862-5426-49c1-b6d4-3d074d78a81a",
+                "text": "Confine yourself to an address approved by your supervising officer between the hours of [TIME] and [TIME] daily unless otherwise authorised by your supervising officer. This condition will be reviewed by your supervising officer on a [WEEKLY / MONTHLY / ETC] basis and may be amended or removed if it is felt that the level of risk that you present has reduced appropriately."
+              },
+              {
+                "code": "2F8A5418-C6E4-4F32-9E58-64B23550E504",
+                "text": "You will need to wear an electronic tag all the time until [END DATE] so we can check how much alcohol you are drinking, and if you are drinking alcohol when you have been told you must not. To help you drink less alcohol you must take part in any activities, like treatment programmes, your probation officer asks you to."
+              }
+            ]
+          },
+          "bespokeLicenceConditions": {
+            "selected": [],
+            "allOptions": []
+          }
+        },
         "additionalLicenceConditionsText": "",
         "vulnerabilities": {
           "selected": [
