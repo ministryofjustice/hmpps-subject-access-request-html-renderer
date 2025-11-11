@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
@@ -16,10 +16,10 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.S
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
 
 class TemplateRenderingServiceTest {
   private val prisonDetailsRepository: PrisonDetailsRepository = mock()
@@ -29,7 +29,13 @@ class TemplateRenderingServiceTest {
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
 
-  private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
+  private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
+    prisonDetailsRepository,
+    userDetailsRepository,
+    locationDetailsRepository,
+    locationsApiClient,
+    nomisMappingApiClient,
+  )
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
   private val templateRenderService = TemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
@@ -47,7 +53,7 @@ class TemplateRenderingServiceTest {
           url = "",
           order = 1,
           enabled = true,
-          templateMigrated = true,
+          templateMigrated = false,
         ),
       ),
       data,
@@ -178,7 +184,8 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a prepare someone for release template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-resettlement-passport-api", testResettlementPassportServiceData)
+    val renderedStyleTemplate =
+      renderServiceDataHtml("hmpps-resettlement-passport-api", testResettlementPassportServiceData)
 
     assertThat(renderedStyleTemplate).isNotNull()
     assertThat(renderedStyleTemplate).contains("<style>")
@@ -210,7 +217,8 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a accredited programme service template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-accredited-programmes-api", testAccreditedProgrammesServiceData)
+    val renderedStyleTemplate =
+      renderServiceDataHtml("hmpps-accredited-programmes-api", testAccreditedProgrammesServiceData)
 
     assertThat(renderedStyleTemplate).isNotNull()
     assertThat(renderedStyleTemplate).contains("<style>")
@@ -250,7 +258,8 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a Categorisation Service template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-offender-categorisation-api", testCategorisationServiceData)
+    val renderedStyleTemplate =
+      renderServiceDataHtml("hmpps-offender-categorisation-api", testCategorisationServiceData)
 
     assertThat(renderedStyleTemplate).isNotNull()
     assertThat(renderedStyleTemplate).contains("<style>")
@@ -272,7 +281,7 @@ class TemplateRenderingServiceTest {
             url = "",
             order = 1,
             enabled = true,
-            templateMigrated = true,
+            templateMigrated = false,
           ),
         ),
         testServiceTemplateData,

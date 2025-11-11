@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested

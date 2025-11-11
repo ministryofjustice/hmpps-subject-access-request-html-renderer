@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config
 import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.util.UUID
 
 @Configuration
@@ -71,5 +71,5 @@ enum class RenderEvent {
   ATTACHMENT_EXISTS,
   GET_LOCATION_RETRY,
   GET_NOMIS_MAPPING_RETRY,
-  GET_SERVICE_TEMPLATE_RETRY
+  GET_SERVICE_TEMPLATE_RETRY,
 }

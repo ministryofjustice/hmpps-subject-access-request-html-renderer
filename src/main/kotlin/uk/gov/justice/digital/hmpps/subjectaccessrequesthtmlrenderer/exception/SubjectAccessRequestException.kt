@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception
 
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.util.UUID
 
 /**
@@ -125,8 +125,9 @@ class SubjectAccessRequestRetryExhaustedException(
 class SubjectAccessRequestServiceConfigurationNotFoundException(
   val serviceConfigurationId: UUID,
   subjectAccessRequestId: UUID,
+  message: String = "Subject access request service configuration Id: $serviceConfigurationId not found",
 ) : SubjectAccessRequestException(
-  message = "Subject access request service configuration Id: $serviceConfigurationId not found",
+  message = message,
   subjectAccessRequestId = subjectAccessRequestId,
 )
 
@@ -140,10 +141,11 @@ class SubjectAccessRequestBadRequestException(
   subjectAccessRequestId: UUID? = null,
 ) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
 
+// TODO refactor this into more generic exception for template errors
 class SubjectAccessRequestGetTemplateException(
   message: String = "GET service template request returned unexpected error",
   renderRequest: RenderRequest,
-  val status: Int,
+  val status: Int = 0,
 ) : SubjectAccessRequestException(
   message = message,
   subjectAccessRequestId = renderRequest.id,
@@ -151,3 +153,15 @@ class SubjectAccessRequestGetTemplateException(
   val serviceName: String = renderRequest.serviceConfiguration.serviceName
   val url: String = renderRequest.serviceConfiguration.url
 }
+
+class SubjectAccessRequestServiceTemplateException(
+  subjectAccessRequestId: UUID? = null,
+  message: String,
+  params: Map<String, *>? = null,
+  cause: Throwable? = null,
+) : SubjectAccessRequestException(
+  subjectAccessRequestId = subjectAccessRequestId,
+  message = message,
+  params = params,
+  cause = cause,
+)

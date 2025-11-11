@@ -1,10 +1,10 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
 @Service
 class TemplateResourcesService(
@@ -45,12 +45,14 @@ class TemplateResourcesService(
   private fun getTemplateResource(renderRequest: RenderRequest, resourcePath: String) = this::class.java
     .getResource(resourcePath) ?: throw templateResourceNotFoundException(renderRequest, resourcePath)
 
-  private fun templateResourceNotFoundException(renderRequest: RenderRequest, resourcePath: String) =
-    SubjectAccessRequestTemplatingException(
-      subjectAccessRequestId = renderRequest.id,
-      message = "template resource not found",
-      params = mapOf(
-        "resource" to resourcePath,
-      ),
-    )
+  private fun templateResourceNotFoundException(
+    renderRequest: RenderRequest,
+    resourcePath: String,
+  ) = SubjectAccessRequestTemplatingException(
+    subjectAccessRequestId = renderRequest.id,
+    message = "template resource not found",
+    params = mapOf(
+      "resource" to resourcePath,
+    ),
+  )
 }
