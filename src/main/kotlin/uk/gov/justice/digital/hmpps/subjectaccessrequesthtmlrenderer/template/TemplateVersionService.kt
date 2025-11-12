@@ -28,14 +28,12 @@ class TemplateVersionService(
   fun verifyTemplateHash(renderRequest: RenderRequest, serviceTemplate: String) {
     assertServiceTemplateIsNotEmpty(renderRequest, serviceTemplate)
 
-    val serviceConfig = getServiceConfiguration(renderRequest)
+    val serviceConfiguration = getServiceConfiguration(renderRequest)
     val serviceTemplateHash = getSha256HashValue(serviceTemplate)
 
-    getPublishedTemplateVersionOrNull(serviceConfig, serviceTemplateHash)
-      ?: getPendingTemplateVersionOrNull(serviceConfig, serviceTemplateHash)
-        ?.let {
-          publishPendingTemplateVersion(renderRequest, serviceConfig, it)
-        }
+    getTemplateVersionMatching(serviceConfiguration, serviceTemplateHash, TemplateVersionStatus.PUBLISHED)
+      ?: getTemplateVersionMatching(serviceConfiguration, serviceTemplateHash, TemplateVersionStatus.PENDING)
+        ?.let { publishPendingTemplateVersion(renderRequest, serviceConfiguration, it) }
       ?: throw templateHashMatchFailureException(
         renderRequest = renderRequest,
         serviceTemplateHash = serviceTemplateHash,
@@ -53,23 +51,26 @@ class TemplateVersionService(
     return bytes.joinToString("") { "%02x".format(it) }
   }
 
-  private fun getPublishedTemplateVersionOrNull(
-    serviceConfig: ServiceConfiguration,
-    serviceTemplateHash: String,
-  ): TemplateVersion? = templateVersionRepository.findLatestByServiceConfigurationIdAndStatusAndFileHash(
-    serviceConfigurationId = serviceConfig.id,
-    status = TemplateVersionStatus.PUBLISHED,
-    fileHash = serviceTemplateHash,
-  )
 
-  private fun getPendingTemplateVersionOrNull(
-    serviceConfig: ServiceConfiguration,
+  private fun getTemplateVersionMatching(
+    serviceConfiguration: ServiceConfiguration,
     serviceTemplateHash: String,
+    status: TemplateVersionStatus,
   ): TemplateVersion? = templateVersionRepository.findLatestByServiceConfigurationIdAndStatusAndFileHash(
-    serviceConfigurationId = serviceConfig.id,
-    status = TemplateVersionStatus.PENDING,
+    serviceConfigurationId = serviceConfiguration.id,
+    status = status,
     fileHash = serviceTemplateHash,
-  )
+  ).also {
+    it?.let {
+      log.info(
+        "service template hash matched template version: id={}, version={}, status={}, serviceName={}",
+        it.id,
+        it.version,
+        status,
+        serviceConfiguration.serviceName,
+      )
+    }
+  }
 
   private fun publishPendingTemplateVersion(
     renderRequest: RenderRequest,
@@ -105,14 +106,14 @@ class TemplateVersionService(
   private fun templateHashMatchFailureException(
     renderRequest: RenderRequest,
     serviceTemplateHash: String,
-  ) = SubjectAccessRequestServiceTemplateException(
+  ): SubjectAccessRequestServiceTemplateException = SubjectAccessRequestServiceTemplateException(
     subjectAccessRequestId = renderRequest.id!!,
     message = "service template file hash does not match registered template versions",
     params = mapOf(
       "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
       "serviceTemplateHash" to serviceTemplateHash,
     ),
-  )
+  ).also { log.error("service template file hash does not match registered template versions") }
 
   private fun incorrectTemplateUpdateCountException(
     renderRequest: RenderRequest,
