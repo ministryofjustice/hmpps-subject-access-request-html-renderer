@@ -19,13 +19,11 @@ interface TemplateVersionRepository : JpaRepository<TemplateVersion, UUID> {
     "SELECT tv FROM TemplateVersion tv " +
       "WHERE tv.serviceConfiguration.id = :serviceConfigId " +
       "AND tv.fileHash = :fileHash " +
-      "AND tv.status = :status " +
-      "ORDER BY tv.publishedAt DESC " +
+      "ORDER BY tv.createdAt DESC " +
       "LIMIT 1",
   )
-  fun findLatestByServiceConfigurationIdAndStatusAndFileHash(
+  fun findLatestByServiceConfigurationIdAndFileHash(
     @Param("serviceConfigId") serviceConfigurationId: UUID,
-    @Param("status") status: TemplateVersionStatus,
     @Param("fileHash") fileHash: String,
   ): TemplateVersion?
 
@@ -33,17 +31,17 @@ interface TemplateVersionRepository : JpaRepository<TemplateVersion, UUID> {
   @Modifying
   @Query(
     "UPDATE TemplateVersion " +
-      "SET status = :newStatus, " +
+      "SET status = :status, " +
       "publishedAt = :publishedAt " +
       "WHERE id = :id " +
       "AND version = :version " +
-      "AND status = :oldStatus",
+      "AND fileHash = :fileHash",
   )
-  fun updateStatusAndPublishedAtByIdAndVersion(
+  fun publishPendingTemplateVersionByIdAndVersionAndFileHash(
     @Param("id") id: UUID,
     @Param("version") version: Int,
-    @Param("newStatus") newStatus: TemplateVersionStatus,
-    @Param("oldStatus") oldStatus: TemplateVersionStatus,
+    @Param("status") status: TemplateVersionStatus = TemplateVersionStatus.PUBLISHED,
+    @Param("fileHash") fileHash: String,
     @Param("publishedAt") publishedAt: LocalDateTime = LocalDateTime.now(),
   ): Int
 }

@@ -31,13 +31,16 @@ class TemplateVersionService(
     val serviceConfiguration = getServiceConfiguration(renderRequest)
     val serviceTemplateHash = getSha256HashValue(serviceTemplate)
 
-    getTemplateVersionMatching(serviceConfiguration, serviceTemplateHash, TemplateVersionStatus.PUBLISHED)
-      ?: getTemplateVersionMatching(serviceConfiguration, serviceTemplateHash, TemplateVersionStatus.PENDING)
-        ?.let { publishPendingTemplateVersion(renderRequest, serviceConfiguration, it) }
-      ?: throw templateHashMatchFailureException(
-        renderRequest = renderRequest,
-        serviceTemplateHash = serviceTemplateHash,
-      )
+    findTemplateVersionForServiceConfigIdAndFileHash(serviceConfiguration, serviceTemplateHash)
+      ?.let { matchedTemplateVersion ->
+        matchedTemplateVersion.takeIf { it.status == TemplateVersionStatus.PENDING }?.let {
+          publishPendingTemplateVersion(it, renderRequest, serviceConfiguration, serviceTemplateHash)
+        }
+        matchedTemplateVersion
+      } ?: throw templateHashMatchFailureException(
+      renderRequest = renderRequest,
+      serviceTemplateHash = serviceTemplateHash,
+    )
   }
 
   private fun assertServiceTemplateIsNotEmpty(renderRequest: RenderRequest, serviceTemplate: String) {
@@ -51,14 +54,11 @@ class TemplateVersionService(
     return bytes.joinToString("") { "%02x".format(it) }
   }
 
-
-  private fun getTemplateVersionMatching(
+  private fun findTemplateVersionForServiceConfigIdAndFileHash(
     serviceConfiguration: ServiceConfiguration,
     serviceTemplateHash: String,
-    status: TemplateVersionStatus,
-  ): TemplateVersion? = templateVersionRepository.findLatestByServiceConfigurationIdAndStatusAndFileHash(
+  ): TemplateVersion? = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
     serviceConfigurationId = serviceConfiguration.id,
-    status = status,
     fileHash = serviceTemplateHash,
   ).also {
     it?.let {
@@ -66,31 +66,38 @@ class TemplateVersionService(
         "service template hash matched template version: id={}, version={}, status={}, serviceName={}",
         it.id,
         it.version,
-        status,
+        it.status,
         serviceConfiguration.serviceName,
       )
     }
   }
 
   private fun publishPendingTemplateVersion(
+    templateVersion: TemplateVersion,
     renderRequest: RenderRequest,
     serviceConfig: ServiceConfiguration,
-    pendingTemplateVersion: TemplateVersion,
+    serviceTemplateHash: String,
   ) {
-    log.info("updating template version status from PENDING to PUBLISHED, service: {}", serviceConfig.serviceName)
+    log.info(
+      "publishing {} template version: id={}, version={}",
+      serviceConfig.serviceName,
+      templateVersion.id,
+      templateVersion.version,
+    )
 
-    val updated = templateVersionRepository.updateStatusAndPublishedAtByIdAndVersion(
-      id = pendingTemplateVersion.id,
-      version = pendingTemplateVersion.version,
-      newStatus = TemplateVersionStatus.PUBLISHED,
-      oldStatus = TemplateVersionStatus.PENDING,
+    val updateCount = templateVersionRepository.publishPendingTemplateVersionByIdAndVersionAndFileHash(
+      id = templateVersion.id,
+      version = templateVersion.version,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = serviceTemplateHash,
       publishedAt = LocalDateTime.now(),
     )
-    if (updated != 1) {
+
+    if (updateCount != 1) {
       throw incorrectTemplateUpdateCountException(
         renderRequest = renderRequest,
-        templateVersionId = pendingTemplateVersion.id,
-        updatedCount = updated,
+        templateVersionId = templateVersion.id,
+        updatedCount = updateCount,
       )
     }
   }

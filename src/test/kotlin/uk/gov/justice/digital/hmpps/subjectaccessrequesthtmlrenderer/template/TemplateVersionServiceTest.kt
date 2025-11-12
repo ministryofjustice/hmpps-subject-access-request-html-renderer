@@ -31,11 +31,11 @@ class TemplateVersionServiceTest {
   private val serviceConfigurationService: ServiceConfigurationService = mock()
   private val templateVersionRepository: TemplateVersionRepository = mock()
 
-  private val serviceTemplateBodyV1 = "<h1>HMPPS Test Service</h1>"
-  private val expectedServiceTemplateV1Hash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
+  private val publishedTemplateBody = "<h1>HMPPS Test Service</h1>"
+  private val publishedTemplateHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
 
-  private val serviceTemplateBodyV2 = "<h1>HMPPS Test Service V2</h1>"
-  private val expectedServiceTemplateV2Hash = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
+  private val pendingTemplateBody = "<h1>HMPPS Test Service V2</h1>"
+  private val pendingTemplateHash = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
 
   private val serviceConfig = ServiceConfiguration(
     id = UUID.randomUUID(),
@@ -54,7 +54,7 @@ class TemplateVersionServiceTest {
     version = 1,
     createdAt = LocalDateTime.of(2025, 10, 11, 0, 0, 0),
     publishedAt = LocalDateTime.of(2025, 10, 11, 10, 0, 0),
-    fileHash = expectedServiceTemplateV1Hash,
+    fileHash = publishedTemplateHash,
   )
 
   private val pendingTemplateVersion = TemplateVersion(
@@ -64,7 +64,7 @@ class TemplateVersionServiceTest {
     version = 2,
     createdAt = LocalDateTime.of(2025, 11, 11, 0, 0, 0),
     publishedAt = LocalDateTime.of(2025, 11, 11, 10, 0, 0),
-    fileHash = expectedServiceTemplateV2Hash,
+    fileHash = pendingTemplateHash,
   )
 
   private val renderRequest = RenderRequest(
@@ -104,7 +104,7 @@ class TemplateVersionServiceTest {
       )
 
       val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
-        templateVersionService.verifyTemplateHash(renderRequest, serviceTemplateBodyV1)
+        templateVersionService.verifyTemplateHash(renderRequest, publishedTemplateBody)
       }
 
       assertThat(actual).isNotNull()
@@ -126,28 +126,22 @@ class TemplateVersionServiceTest {
     }
 
     @Test
-    fun `should throw exception when update template version with status PENDING does not return updated count = 1`() {
+    fun `should throw exception when publish template version update does not return updated count = 1`() {
       mockGetConfigurationById(
         serviceConfigurationId = serviceConfig.id,
         returnValue = serviceConfig,
       )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV1Hash,
-        returnValue = null,
-      )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV2Hash,
+      mockFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = pendingTemplateHash,
         returnValue = pendingTemplateVersion,
       )
-      mockUpdateStatusAndPublishedAtByIdAndVersion(
+      mockPublishPendingTemplateVersionByIdAndVersionAndFileHash(
         templateVersion = pendingTemplateVersion,
         returnValue = 0,
       )
 
       val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
-        templateVersionService.verifyTemplateHash(renderRequest, serviceTemplateBodyV2)
+        templateVersionService.verifyTemplateHash(renderRequest, pendingTemplateBody)
       }
 
       assertThat(actual).isNotNull()
@@ -165,19 +159,14 @@ class TemplateVersionServiceTest {
       verifyFindByIdAndEnabledAndTemplateMigratedCalled(
         times = 1,
       )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV2Hash,
-        times = 1,
-      )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV2Hash,
+      verifyFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = pendingTemplateHash,
         times = 1,
       )
       verifyUpdateStatusAndPublishedAtByIdAndVersionCalled(
         id = pendingTemplateVersion.id,
         version = pendingTemplateVersion.version,
+        fileHash = pendingTemplateHash,
         times = 1,
       )
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)
@@ -189,19 +178,13 @@ class TemplateVersionServiceTest {
         serviceConfigurationId = serviceConfig.id,
         returnValue = serviceConfig,
       )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV1Hash,
-        returnValue = null,
-      )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV1Hash,
+      mockFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = publishedTemplateHash,
         returnValue = null,
       )
 
       val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
-        templateVersionService.verifyTemplateHash(renderRequest, serviceTemplateBodyV1)
+        templateVersionService.verifyTemplateHash(renderRequest, publishedTemplateBody)
       }
 
       assertThat(actual).isNotNull()
@@ -210,21 +193,15 @@ class TemplateVersionServiceTest {
       assertThat(actual.params).containsAllEntriesOf(
         mapOf(
           "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
-          "serviceTemplateHash" to expectedServiceTemplateV1Hash,
+          "serviceTemplateHash" to publishedTemplateHash,
         ),
       )
 
       verifyFindByIdAndEnabledAndTemplateMigratedCalled(
         times = 1,
       )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV1Hash,
-        times = 1,
-      )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV1Hash,
+      verifyFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = publishedTemplateHash,
         times = 1,
       )
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)
@@ -240,20 +217,18 @@ class TemplateVersionServiceTest {
         serviceConfigurationId = serviceConfig.id,
         returnValue = serviceConfig,
       )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV1Hash,
+      mockFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = publishedTemplateHash,
         returnValue = publishedTemplateVersion,
       )
 
-      templateVersionService.verifyTemplateHash(renderRequest, serviceTemplateBodyV1)
+      templateVersionService.verifyTemplateHash(renderRequest, publishedTemplateBody)
 
       verifyFindByIdAndEnabledAndTemplateMigratedCalled(
         times = 1,
       )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV1Hash,
+      verifyFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = publishedTemplateHash,
         times = 1,
       )
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)
@@ -265,39 +240,28 @@ class TemplateVersionServiceTest {
         serviceConfigurationId = serviceConfig.id,
         returnValue = serviceConfig,
       )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV2Hash,
-        returnValue = null,
-      )
-      mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV2Hash,
+      mockFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = pendingTemplateHash,
         returnValue = pendingTemplateVersion,
       )
-      mockUpdateStatusAndPublishedAtByIdAndVersion(
+      mockPublishPendingTemplateVersionByIdAndVersionAndFileHash(
         templateVersion = pendingTemplateVersion,
         returnValue = 1,
       )
 
-      templateVersionService.verifyTemplateHash(renderRequest, serviceTemplateBodyV2)
+      templateVersionService.verifyTemplateHash(renderRequest, pendingTemplateBody)
 
       verifyFindByIdAndEnabledAndTemplateMigratedCalled(
         times = 1,
       )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PUBLISHED,
-        fileHash = expectedServiceTemplateV2Hash,
-        times = 1,
-      )
-      verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-        status = TemplateVersionStatus.PENDING,
-        fileHash = expectedServiceTemplateV2Hash,
+      verifyFindLatestByServiceConfigurationIdAndFileHash(
+        fileHash = pendingTemplateHash,
         times = 1,
       )
       verifyUpdateStatusAndPublishedAtByIdAndVersionCalled(
         id = pendingTemplateVersion.id,
         version = pendingTemplateVersion.version,
+        fileHash = pendingTemplateHash,
         times = 1,
       )
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)
@@ -317,30 +281,28 @@ class TemplateVersionServiceTest {
     ).thenReturn(returnValue)
   }
 
-  private fun mockFindLatestByServiceConfigurationIdAndStatusAndFileHash(
-    status: TemplateVersionStatus,
+  private fun mockFindLatestByServiceConfigurationIdAndFileHash(
     fileHash: String,
     returnValue: TemplateVersion?,
   ) {
     whenever(
-      templateVersionRepository.findLatestByServiceConfigurationIdAndStatusAndFileHash(
+      templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
         serviceConfigurationId = serviceConfig.id,
-        status = status,
         fileHash = fileHash,
       ),
     ).thenReturn(returnValue)
   }
 
-  private fun mockUpdateStatusAndPublishedAtByIdAndVersion(
+  private fun mockPublishPendingTemplateVersionByIdAndVersionAndFileHash(
     templateVersion: TemplateVersion,
     returnValue: Int,
   ) {
     whenever(
-      templateVersionRepository.updateStatusAndPublishedAtByIdAndVersion(
+      templateVersionRepository.publishPendingTemplateVersionByIdAndVersionAndFileHash(
         id = eq(templateVersion.id),
         version = eq(templateVersion.version),
-        newStatus = eq(TemplateVersionStatus.PUBLISHED),
-        oldStatus = eq(TemplateVersionStatus.PENDING),
+        status = eq(TemplateVersionStatus.PUBLISHED),
+        fileHash = eq(templateVersion.fileHash!!),
         publishedAt = any(),
       ),
     ).thenReturn(returnValue)
@@ -356,14 +318,12 @@ class TemplateVersionServiceTest {
     )
   }
 
-  private fun verifyFindLatestByServiceConfigurationIdAndStatusAndFileHashCalled(
-    status: TemplateVersionStatus,
+  private fun verifyFindLatestByServiceConfigurationIdAndFileHash(
     fileHash: String,
     times: Int,
   ) {
-    verify(templateVersionRepository, times(times)).findLatestByServiceConfigurationIdAndStatusAndFileHash(
+    verify(templateVersionRepository, times(times)).findLatestByServiceConfigurationIdAndFileHash(
       serviceConfigurationId = serviceConfig.id,
-      status = status,
       fileHash = fileHash,
     )
   }
@@ -371,13 +331,14 @@ class TemplateVersionServiceTest {
   private fun verifyUpdateStatusAndPublishedAtByIdAndVersionCalled(
     id: UUID,
     version: Int,
+    fileHash: String,
     times: Int,
   ) {
-    verify(templateVersionRepository, times(times)).updateStatusAndPublishedAtByIdAndVersion(
+    verify(templateVersionRepository, times(times)).publishPendingTemplateVersionByIdAndVersionAndFileHash(
       eq(id),
       eq(version),
       eq(TemplateVersionStatus.PUBLISHED),
-      eq(TemplateVersionStatus.PENDING),
+      eq(fileHash),
       any(),
     )
   }
@@ -387,8 +348,8 @@ class TemplateVersionServiceTest {
 
     @Test
     fun `should return expected SHA-256 value`() {
-      assertThat(templateVersionService.getSha256HashValue(serviceTemplateBodyV1))
-        .isEqualTo(expectedServiceTemplateV1Hash)
+      assertThat(templateVersionService.getSha256HashValue(publishedTemplateBody))
+        .isEqualTo(publishedTemplateHash)
     }
   }
 }
