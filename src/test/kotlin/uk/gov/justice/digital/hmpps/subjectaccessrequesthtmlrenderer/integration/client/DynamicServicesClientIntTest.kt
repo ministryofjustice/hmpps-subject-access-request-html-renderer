@@ -14,7 +14,8 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestGetTemplateException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
@@ -277,14 +278,18 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       hmppsAuth.stubGrantToken()
       sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(404).withBody("Not found"))
 
-      val actual = assertThrows<SubjectAccessRequestGetTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestNotFoundException> {
         dynamicServicesClient.getServiceTemplate(request)
       }
 
-      assertThat(actual.message).startsWith("Get Service template request return not found")
+      assertThat(actual.message).startsWith("Get Service template request returned status not found")
       assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
-      assertThat(actual.serviceName).isEqualTo(request.serviceConfiguration.serviceName)
-      assertThat(actual.url).isEqualTo(request.serviceConfiguration.url)
+      assertThat(actual.params).containsAllEntriesOf(
+        mapOf(
+          "service" to request.serviceConfiguration.serviceName,
+          "status" to 404,
+        ),
+      )
 
       sarDataSourceApi.verifyGetTemplateCall(times = 1)
     }
@@ -298,21 +303,25 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       ],
       delimiterString = "|",
     )
-    fun `should throw exception when endpoint returns status 401`(errorStatus: Int, errorBody: String) {
+    fun `should throw exception when endpoint returns status 4xx`(errorStatus: Int, errorBody: String) {
       val request = createRenderRequest()
 
       hmppsAuth.stubGrantToken()
       sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(errorStatus).withBody(errorBody))
 
-      val actual = assertThrows<SubjectAccessRequestGetTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         dynamicServicesClient.getServiceTemplate(request)
       }
 
-      assertThat(actual.message).startsWith("GET service template request returned unexpected error")
+      assertThat(actual.message).startsWith("Get Service template request returned error status")
       assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
-      assertThat(actual.serviceName).isEqualTo(request.serviceConfiguration.serviceName)
-      assertThat(actual.url).isEqualTo(request.serviceConfiguration.url)
-      assertThat(actual.status).isEqualTo(errorStatus)
+      assertThat(actual.params).containsAllEntriesOf(
+        mapOf(
+          "service" to request.serviceConfiguration.serviceName,
+          "url" to "${request.serviceConfiguration.url}/subject-access-request/template" ,
+          "status" to errorStatus,
+        ),
+      )
 
       sarDataSourceApi.verifyGetTemplateCall(times = 1)
     }

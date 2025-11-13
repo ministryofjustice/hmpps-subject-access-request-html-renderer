@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception
 
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.util.UUID
 
 /**
@@ -35,6 +34,29 @@ open class SubjectAccessRequestException(
     "${entry.key}=${entry.value}"
   }
 }
+
+/**
+ * Exception type for Bad Request scenarios.
+ */
+class SubjectAccessRequestBadRequestException(
+  message: String,
+  subjectAccessRequestId: UUID? = null,
+) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
+
+/**
+ * Exception type for Resource Not Found scenarios.
+ */
+class SubjectAccessRequestNotFoundException(
+  subjectAccessRequestId: UUID? = null,
+  message: String = "resource not found",
+  params: Map<String, *>? = null,
+  cause: Throwable? = null,
+) : SubjectAccessRequestException(
+  subjectAccessRequestId = subjectAccessRequestId,
+  message = message,
+  params = params,
+  cause = cause,
+)
 
 /**
  * Exception type for fatal/non retryable errors.
@@ -131,29 +153,9 @@ class SubjectAccessRequestServiceConfigurationNotFoundException(
   subjectAccessRequestId = subjectAccessRequestId,
 )
 
-class SubjectAccessRequestResourceNotFoundException(resource: String) :
-  RuntimeException(
-    "Subject access request resource $resource not found",
-  )
-
-class SubjectAccessRequestBadRequestException(
-  message: String,
-  subjectAccessRequestId: UUID? = null,
-) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
-
-// TODO refactor this into more generic exception for template errors
-class SubjectAccessRequestGetTemplateException(
-  message: String = "GET service template request returned unexpected error",
-  renderRequest: RenderRequest,
-  val status: Int = 0,
-) : SubjectAccessRequestException(
-  message = message,
-  subjectAccessRequestId = renderRequest.id,
-) {
-  val serviceName: String = renderRequest.serviceConfiguration.serviceName
-  val url: String = renderRequest.serviceConfiguration.url
-}
-
+/**
+ * Exception type for Service Template errors.
+ */
 class SubjectAccessRequestServiceTemplateException(
   subjectAccessRequestId: UUID? = null,
   message: String,

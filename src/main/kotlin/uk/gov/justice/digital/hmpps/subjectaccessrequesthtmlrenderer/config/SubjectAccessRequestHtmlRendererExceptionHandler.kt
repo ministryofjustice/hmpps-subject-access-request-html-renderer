@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestResourceNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
@@ -80,14 +80,14 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     }
 
   @ExceptionHandler
-  fun handleSubjectAccessRequestResourceNotFoundException(
-    e: SubjectAccessRequestResourceNotFoundException,
+  fun handleSubjectAccessRequestNotFoundException(
+    e: SubjectAccessRequestNotFoundException,
   ): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(NOT_FOUND)
     .body(
       ErrorResponse(
         status = NOT_FOUND,
-        userMessage = "resource not found: ${e.message}",
+        userMessage = e.message,
         developerMessage = e.message,
       ),
     ).also {

@@ -21,7 +21,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_TEMPLATE_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestGetTemplateException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.net.URI
@@ -181,10 +182,13 @@ class DynamicServicesClient(
       response.statusCode().value() == HttpStatus.NOT_FOUND.value() -> {
         log.logGetTemplateError(renderRequest, response)
         Mono.error(
-          SubjectAccessRequestGetTemplateException(
-            message = "Get Service template request return not found",
-            renderRequest = renderRequest,
-            status = response.statusCode().value(),
+          SubjectAccessRequestNotFoundException(
+            subjectAccessRequestId = renderRequest.id,
+            message = "Get Service template request returned status not found",
+            params = mapOf(
+              "service" to renderRequest.serviceConfiguration.serviceName,
+              "status" to response.statusCode().value(),
+            ),
           ),
         )
       }
@@ -201,9 +205,14 @@ class DynamicServicesClient(
       else -> {
         log.logGetTemplateError(renderRequest, response)
         Mono.error(
-          SubjectAccessRequestGetTemplateException(
-            renderRequest = renderRequest,
-            status = response.statusCode().value(),
+          SubjectAccessRequestException(
+            subjectAccessRequestId = renderRequest.id,
+            message = "Get Service template request returned error status",
+            params = mapOf(
+              "service" to renderRequest.serviceConfiguration.serviceName,
+              "status" to response.statusCode().value(),
+              "url" to response.request().uri.toString(),
+            ),
           ),
         )
       }
