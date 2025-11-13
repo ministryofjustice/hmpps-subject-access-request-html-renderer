@@ -144,15 +144,6 @@ class SubjectAccessRequestRetryExhaustedException(
   }
 }
 
-class SubjectAccessRequestServiceConfigurationNotFoundException(
-  val serviceConfigurationId: UUID,
-  subjectAccessRequestId: UUID,
-  message: String = "Subject access request service configuration Id: $serviceConfigurationId not found",
-) : SubjectAccessRequestException(
-  message = message,
-  subjectAccessRequestId = subjectAccessRequestId,
-)
-
 /**
  * Exception type for Service Template errors.
  */
