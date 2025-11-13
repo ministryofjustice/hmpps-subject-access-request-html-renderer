@@ -12,7 +12,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.security.MessageDigest
 import java.time.LocalDateTime
-import java.util.UUID
 
 @Service
 class TemplateVersionService(
@@ -34,7 +33,7 @@ class TemplateVersionService(
     findTemplateVersionForServiceConfigIdAndFileHash(serviceConfiguration, serviceTemplateHash)
       ?.let { matchedTemplateVersion ->
         matchedTemplateVersion.takeIf { it.status == TemplateVersionStatus.PENDING }?.let {
-          publishPendingTemplateVersion(it, renderRequest, serviceConfiguration, serviceTemplateHash)
+          publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
         }
         matchedTemplateVersion
       } ?: throw templateHashMatchFailureException(
@@ -75,30 +74,28 @@ class TemplateVersionService(
   private fun publishPendingTemplateVersion(
     templateVersion: TemplateVersion,
     renderRequest: RenderRequest,
-    serviceConfig: ServiceConfiguration,
     serviceTemplateHash: String,
   ) {
     log.info(
       "publishing {} template version: id={}, version={}",
-      serviceConfig.serviceName,
+      renderRequest.serviceConfiguration.serviceName,
       templateVersion.id,
       templateVersion.version,
     )
 
-    val updateCount = templateVersionRepository.publishPendingTemplateVersionByIdAndVersionAndFileHash(
+    templateVersionRepository.findFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
       id = templateVersion.id,
       version = templateVersion.version,
-      status = TemplateVersionStatus.PUBLISHED,
+      status = TemplateVersionStatus.PENDING,
       fileHash = serviceTemplateHash,
-      publishedAt = LocalDateTime.now(),
-    )
-
-    if (updateCount != 1) {
-      throw incorrectTemplateUpdateCountException(
-        renderRequest = renderRequest,
-        templateVersionId = templateVersion.id,
-        updatedCount = updateCount,
-      )
+    )?.let { pending ->
+      pending.status = TemplateVersionStatus.PUBLISHED
+      pending.publishedAt = LocalDateTime.now()
+      try {
+        templateVersionRepository.saveAndFlush(pending)
+      } catch (ex: Exception) {
+        throw publishTemplateException(renderRequest, pending, ex)
+      }
     }
   }
 
@@ -122,21 +119,6 @@ class TemplateVersionService(
     ),
   ).also { log.error("service template file hash does not match registered template versions") }
 
-  private fun incorrectTemplateUpdateCountException(
-    renderRequest: RenderRequest,
-    templateVersionId: UUID,
-    updatedCount: Int,
-  ) = SubjectAccessRequestServiceTemplateException(
-    subjectAccessRequestId = renderRequest.id!!,
-    message = "update template version status to PUBLISHED did not return expected result",
-    params = mapOf(
-      "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
-      "templateVersionId" to templateVersionId,
-      "updated" to updatedCount,
-      "expectedUpdates" to 1,
-    ),
-  )
-
   private fun serviceTemplateBlankException(
     renderRequest: RenderRequest,
   ) = SubjectAccessRequestServiceTemplateException(
@@ -151,5 +133,20 @@ class TemplateVersionService(
     subjectAccessRequestId = renderRequest.id!!,
     message = "service configuration not found matching id, templateMigrated=true, and enabled=true",
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
+  )
+
+  private fun publishTemplateException(
+    renderRequest: RenderRequest,
+    templateVersion: TemplateVersion,
+    cause: Exception,
+  ) = SubjectAccessRequestServiceTemplateException(
+    subjectAccessRequestId = renderRequest.id,
+    "unexpected error whilst attempting to publish template version",
+    cause = cause,
+    params = mapOf(
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+      "version" to templateVersion.version,
+      "templateVersionId" to templateVersion.id,
+    ),
   )
 }

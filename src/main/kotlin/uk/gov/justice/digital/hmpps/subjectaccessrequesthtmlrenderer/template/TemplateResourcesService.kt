@@ -25,14 +25,10 @@ class TemplateResourcesService(
       renderRequest.serviceConfiguration.serviceName,
       renderRequest.serviceConfiguration.templateMigrated,
     )
-    return if (renderRequest.serviceConfiguration.templateMigrated) {
-      "" // TODO
-    } else {
-      getTemplateResource(
-        renderRequest = renderRequest,
-        resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
-      ).readText()
-    }
+    return getTemplateResource(
+      renderRequest = renderRequest,
+      resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
+    ).readText()
   }
 
   fun getNoDataTemplate(renderRequest: RenderRequest): String = getTemplateResource(
