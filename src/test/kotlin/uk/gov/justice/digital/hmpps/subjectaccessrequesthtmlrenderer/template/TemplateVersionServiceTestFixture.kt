@@ -1,10 +1,17 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.http.ResponseEntity
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
@@ -19,6 +26,7 @@ abstract class TemplateVersionServiceTestFixture {
 
   protected val serviceConfigurationService: ServiceConfigurationService = mock()
   protected val templateVersionRepository: TemplateVersionRepository = mock()
+  protected val dynamicServicesClient: DynamicServicesClient = mock()
 
   protected val publishedTemplateBody = "<h1>HMPPS Test Service</h1>"
   protected val publishedTemplateHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
@@ -64,14 +72,15 @@ abstract class TemplateVersionServiceTestFixture {
   protected val templateVersionService = TemplateVersionService(
     serviceConfigurationService = serviceConfigurationService,
     templateVersionRepository = templateVersionRepository,
+    dynamicServicesClient = dynamicServicesClient,
   )
 
-  protected fun mockGetConfigurationById(
-    serviceConfigurationId: UUID,
+  protected fun ServiceConfigurationService.mockGetConfigurationById(
+    serviceConfigurationId: UUID = serviceConfig.id,
     returnValue: ServiceConfiguration?,
   ) {
     whenever(
-      serviceConfigurationService.findByIdAndEnabledAndTemplateMigrated(
+      this.findByIdAndEnabledAndTemplateMigrated(
         id = serviceConfigurationId,
         enabled = true,
         templateMigrated = true,
@@ -79,19 +88,43 @@ abstract class TemplateVersionServiceTestFixture {
     ).thenReturn(returnValue)
   }
 
-  protected fun mockFindLatestByServiceConfigurationIdAndFileHash(
+  protected fun ServiceConfigurationService.verifyGetServiceConfigurationIsCalled(
+    times: Int = 1,
+    serviceConfigurationId: UUID = serviceConfig.id,
+    enabled: Boolean = true,
+    templateMigrated: Boolean = true,
+  ) {
+    verify(this, times(times)).findByIdAndEnabledAndTemplateMigrated(
+      id = serviceConfigurationId,
+      enabled = enabled,
+      templateMigrated = templateMigrated,
+    )
+  }
+
+  protected fun TemplateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
     fileHash: String,
     returnValue: TemplateVersion?,
   ) {
     whenever(
-      templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
+      this.findLatestByServiceConfigurationIdAndFileHash(
         serviceConfigurationId = serviceConfig.id,
         fileHash = fileHash,
       ),
     ).thenReturn(returnValue)
   }
 
-  protected fun mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
+  protected fun TemplateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
+    times: Int = 1,
+    serviceConfigurationId: UUID = serviceConfig.id,
+    fileHash: String,
+  ) {
+    verify(this, times(times)).findLatestByServiceConfigurationIdAndFileHash(
+      serviceConfigurationId = serviceConfigurationId,
+      fileHash = fileHash,
+    )
+  }
+
+  protected fun TemplateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
     id: UUID,
     version: Int,
     fileHash: String,
@@ -99,7 +132,7 @@ abstract class TemplateVersionServiceTestFixture {
     returnValue: TemplateVersion? = null,
   ) {
     whenever(
-      templateVersionRepository.findFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
+      this.findFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
         id = id,
         version = version,
         fileHash = fileHash,
@@ -108,8 +141,70 @@ abstract class TemplateVersionServiceTestFixture {
     ).thenReturn(returnValue)
   }
 
-  protected fun mockSaveAllThrowsException() {
-    whenever(templateVersionRepository.saveAndFlush(any()))
+  protected fun TemplateVersionRepository.verifyFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDescIsCalled(
+    times: Int = 1,
+    templateVersionId: UUID,
+    version: Int,
+    status: TemplateVersionStatus,
+    fileHash: String,
+  ) {
+    verify(this, times(times))
+      .findFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
+        id = templateVersionId,
+        version = version,
+        status = status,
+        fileHash = fileHash,
+      )
+  }
+
+  protected fun TemplateVersionRepository.mockSaveAndFlushException() {
+    whenever(this.saveAndFlush(any()))
       .thenThrow(RuntimeException::class.java)
+  }
+
+  protected fun TemplateVersionRepository.verifySaveAndFlushIsCalled(
+    times: Int = 1,
+    templateVersionId: UUID,
+    version: Int,
+    status: TemplateVersionStatus,
+    fileHash: String,
+    captor: KArgumentCaptor<TemplateVersion>,
+  ) {
+    verify(this, times(times)).saveAndFlush(captor.capture())
+
+    assertThat(captor.firstValue.id).isEqualTo(templateVersionId)
+    assertThat(captor.firstValue.version).isEqualTo(version)
+    assertThat(captor.firstValue.status).isEqualTo(status)
+    assertThat(captor.firstValue.fileHash).isEqualTo(fileHash)
+  }
+
+  protected fun DynamicServicesClient.mockGetServiceTemplate(
+    expectedRequest: RenderRequest = renderRequest,
+    returnValue: ResponseEntity<String>?,
+  ) {
+    whenever(this.getServiceTemplate(expectedRequest)).thenReturn(returnValue)
+  }
+
+  protected fun <T : SubjectAccessRequestException> assertIsExpectedException(
+    actual: T,
+    subjectAccessRequestId: UUID? = renderRequest.id!!,
+    message: String,
+    params: Map<String, *>? = null,
+  ) {
+    assertThat(actual).isNotNull()
+    assertThat(actual.subjectAccessRequestId).isEqualTo(subjectAccessRequestId)
+    assertThat(actual.message).startsWith(message)
+    if (params == null) {
+      assertThat(actual.params).isNull()
+    } else {
+      assertThat(actual.params).containsAllEntriesOf(params)
+    }
+  }
+
+  protected fun DynamicServicesClient.verifyGetServiceTemplateIsCalled(
+    times: Int = 1,
+    expectedRequest: RenderRequest = renderRequest,
+  ) {
+    verify(this, times(times)).getServiceTemplate(expectedRequest)
   }
 }
