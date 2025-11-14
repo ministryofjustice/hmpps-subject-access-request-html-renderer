@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceTemplateException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -17,14 +18,29 @@ import java.time.LocalDateTime
 class TemplateVersionService(
   val serviceConfigurationService: ServiceConfigurationService,
   val templateVersionRepository: TemplateVersionRepository,
+  val dynamicServicesClient: DynamicServicesClient,
 ) {
 
   companion object {
     private val log = LoggerFactory.getLogger(TemplateVersionService::class.java)
   }
 
+  /**
+   * Get the SAR template from the HMPPS Service and verify the file hash against the expected template version.
+   */
   @Transactional
-  fun verifyTemplateHash(renderRequest: RenderRequest, serviceTemplate: String) {
+  fun getTemplate(renderRequest: RenderRequest): String {
+    val serviceTemplate: String = getServiceTemplate(renderRequest)
+
+    verifyTemplateHash(
+      renderRequest = renderRequest,
+      serviceTemplate = serviceTemplate,
+    )
+
+    return serviceTemplate
+  }
+
+  private fun verifyTemplateHash(renderRequest: RenderRequest, serviceTemplate: String) {
     assertServiceTemplateIsNotEmpty(renderRequest, serviceTemplate)
 
     val serviceConfiguration = getServiceConfiguration(renderRequest)
@@ -41,6 +57,11 @@ class TemplateVersionService(
       serviceTemplateHash = serviceTemplateHash,
     )
   }
+
+  private fun getServiceTemplate(
+    renderRequest: RenderRequest,
+  ): String = dynamicServicesClient.getServiceTemplate(renderRequest)?.body?.takeIf { it.isNotBlank() }
+    ?: throw serviceTemplateBlankException(renderRequest = renderRequest)
 
   private fun assertServiceTemplateIsNotEmpty(renderRequest: RenderRequest, serviceTemplate: String) {
     if (serviceTemplate.isEmpty() || serviceTemplate.isBlank()) {
@@ -123,7 +144,7 @@ class TemplateVersionService(
     renderRequest: RenderRequest,
   ) = SubjectAccessRequestServiceTemplateException(
     subjectAccessRequestId = renderRequest.id,
-    message = "verify template hash error: service template was empty",
+    message = "service template hash error: service template was empty",
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
   )
 
