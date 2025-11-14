@@ -14,10 +14,12 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -234,7 +236,12 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       hmppsAuth.stubGrantToken()
       sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
 
-      val body = dynamicServicesClient.getAttachment(renderRequest, "http://localhost:8092/attachments/map.jpg", "image/jpeg", 683919)
+      val body = dynamicServicesClient.getAttachment(
+        renderRequest,
+        "http://localhost:8092/attachments/map.jpg",
+        "image/jpeg",
+        683919,
+      )
       assertThat(body).isEqualTo(attachmentContent)
 
       sarDataSourceApi.verify(getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
@@ -258,6 +265,110 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       }
 
       sarDataSourceApi.verify(3, getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
+    }
+  }
+
+  @Nested
+  inner class GetServiceTemplateTest {
+
+    @Test
+    fun `should throw exception when endpoint returns status 404`() {
+      val request = createRenderRequest()
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(404).withBody("Not found"))
+
+      val actual = assertThrows<SubjectAccessRequestNotFoundException> {
+        dynamicServicesClient.getServiceTemplate(request)
+      }
+
+      assertThat(actual.message).startsWith("Get Service template request returned status not found")
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+      assertThat(actual.params).containsAllEntriesOf(
+        mapOf(
+          "service" to request.serviceConfiguration.serviceName,
+          "status" to 404,
+        ),
+      )
+
+      sarDataSourceApi.verifyGetTemplateCall(times = 1)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "400 | Bad Request",
+        "401 | Unauthorized",
+        "403 | Forbidden",
+      ],
+      delimiterString = "|",
+    )
+    fun `should throw exception when endpoint returns status 4xx`(errorStatus: Int, errorBody: String) {
+      val request = createRenderRequest()
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(errorStatus).withBody(errorBody))
+
+      val actual = assertThrows<SubjectAccessRequestException> {
+        dynamicServicesClient.getServiceTemplate(request)
+      }
+
+      assertThat(actual.message).startsWith("Get Service template request returned error status")
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+      assertThat(actual.params).containsAllEntriesOf(
+        mapOf(
+          "service" to request.serviceConfiguration.serviceName,
+          "url" to "${request.serviceConfiguration.url}/subject-access-request/template",
+          "status" to errorStatus,
+        ),
+      )
+
+      sarDataSourceApi.verifyGetTemplateCall(times = 1)
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "500 | Internal Server Error",
+        "502 | Bad Gateway",
+        "503 | Service Unavailable",
+      ],
+      delimiterString = "|",
+    )
+    fun `should retry when endpoint return 5xx status`(errorStatus: Int, errorBody: String) {
+      val request = createRenderRequest()
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(errorStatus).withBody(errorBody))
+
+      val actual = assertThrows<SubjectAccessRequestRetryExhaustedException> {
+        dynamicServicesClient.getServiceTemplate(request)
+      }
+
+      assertThat(actual.message).startsWith("request failed and max retry attempts (2) exhausted")
+      assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
+
+      sarDataSourceApi.verifyGetTemplateCall(times = 3)
+    }
+
+    @Test
+    fun `should return expected body when endpoint returns status 200`() {
+      val request = createRenderRequest()
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetTemplate(
+        ResponseDefinitionBuilder()
+          .withStatus(200)
+          .withBody("<h1>${request.serviceConfiguration.serviceName}</h1>"),
+      )
+
+      val actual = dynamicServicesClient.getServiceTemplate(request)
+
+      assertThat(actual).isNotNull
+      assertThat(actual!!.statusCode.value()).isEqualTo(200)
+      assertThat(actual.body).isEqualTo("<h1>${request.serviceConfiguration.serviceName}</h1>")
+
+      sarDataSourceApi.verifyGetTemplateCall(times = 1)
     }
   }
 

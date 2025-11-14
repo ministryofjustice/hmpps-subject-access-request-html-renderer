@@ -8,4 +8,10 @@ import java.util.UUID
 @Repository
 interface ServiceConfigurationRepository : JpaRepository<ServiceConfiguration, UUID> {
   fun findByServiceName(serviceName: String): ServiceConfiguration?
+
+  fun findByIdAndEnabledAndTemplateMigrated(
+    id: UUID,
+    enabled: Boolean = true,
+    templateMigrated: Boolean = true,
+  ): ServiceConfiguration?
 }

@@ -17,6 +17,16 @@ class ServiceConfigurationService(
 
   fun findByIdOrNull(id: UUID): ServiceConfiguration? = serviceConfigurationRepository.findByIdOrNull(id)
 
+  fun findByIdAndEnabledAndTemplateMigrated(
+    id: UUID,
+    enabled: Boolean = true,
+    templateMigrated: Boolean = true,
+  ): ServiceConfiguration? = serviceConfigurationRepository.findByIdAndEnabledAndTemplateMigrated(
+    id = id,
+    enabled = enabled,
+    templateMigrated = templateMigrated,
+  )
+
   fun findByServiceNameOrNull(
     serviceName: String,
   ): ServiceConfiguration? = serviceConfigurationRepository.findByServiceName(serviceName)

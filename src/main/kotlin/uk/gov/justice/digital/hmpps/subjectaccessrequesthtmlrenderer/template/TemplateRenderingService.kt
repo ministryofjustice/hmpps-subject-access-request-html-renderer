@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import com.github.mustachejava.DefaultMustacheFactory
 import com.microsoft.applicationinsights.TelemetryClient
@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRende
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.io.BufferedWriter
 import java.io.ByteArrayOutputStream
 import java.io.OutputStreamWriter
@@ -17,14 +17,14 @@ import java.io.StringReader
 import java.nio.charset.StandardCharsets
 
 @Service
-class TemplateService(
+class TemplateRenderingService(
   private val templateRenderService: TemplateRenderService,
-  private val templateResources: TemplateResources,
+  private val templateResourcesService: TemplateResourcesService,
   private val telemetryClient: TelemetryClient,
 ) {
 
   private companion object {
-    private val log = LoggerFactory.getLogger(TemplateService::class.java)
+    private val log = LoggerFactory.getLogger(TemplateRenderingService::class.java)
   }
 
   fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
@@ -43,14 +43,14 @@ class TemplateService(
     renderRequest: RenderRequest,
     data: Any?,
   ): RenderParameters = if (data != null) {
-    RenderParameters(templateResources.getServiceTemplate(renderRequest), data)
+    RenderParameters(templateResourcesService.getServiceTemplate(renderRequest), data)
   } else {
-    RenderParameters(templateResources.getNoDataTemplate(renderRequest), renderRequest.serviceNameMap())
+    RenderParameters(templateResourcesService.getNoDataTemplate(renderRequest), renderRequest.serviceNameMap())
   }
 
   private fun renderStyleTemplate(renderedServiceTemplate: String): ByteArrayOutputStream {
     val defaultMustacheFactory = DefaultMustacheFactory()
-    val styleTemplate = templateResources.getStyleTemplate()
+    val styleTemplate = templateResourcesService.getStyleTemplate()
     val compiledStyleTemplate = defaultMustacheFactory.compile(StringReader(styleTemplate), "styleTemplate")
 
     val out = ByteArrayOutputStream()

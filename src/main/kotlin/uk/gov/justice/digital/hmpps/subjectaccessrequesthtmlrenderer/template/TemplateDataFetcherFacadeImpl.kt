@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade

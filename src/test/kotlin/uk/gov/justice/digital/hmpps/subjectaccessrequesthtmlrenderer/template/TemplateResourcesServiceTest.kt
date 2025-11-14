@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templates
+package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -8,11 +8,11 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
-class TemplateResourcesTest {
+class TemplateResourcesServiceTest {
 
-  private var templateResources = TemplateResources()
+  private var templateResourcesService = TemplateResourcesService()
 
   @ParameterizedTest
   @CsvSource(
@@ -52,59 +52,29 @@ class TemplateResourcesTest {
         url = "https://example.com",
       ),
     )
-    val testTemplate = templateResources.getServiceTemplate(renderRequest)
+    val testTemplate = templateResourcesService.getServiceTemplate(renderRequest)
     assertThat(testTemplate).isNotNull()
     assertThat(testTemplate).contains(expectedTitle)
   }
 
   @Test
   fun `should return style template`() {
-    val styleTemplate = templateResources.getStyleTemplate()
+    val styleTemplate = templateResourcesService.getStyleTemplate()
 
     assertThat(styleTemplate).isNotNull()
     assertThat(styleTemplate).isNotEmpty()
     assertThat(styleTemplate).contains("{{{ serviceTemplate }}}")
   }
 
-  @ParameterizedTest
-  @CsvSource(
-    value = [
-      "     | service name is null",
-      " ''  | service name is empty",
-    ],
-    delimiterString = "|",
-  )
-  fun `should throw service name missing exception when render request serviceName is missing`(
-    serviceName: String?,
-    description: String,
-  ) {
-    val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-      templateResources.getServiceTemplate(
-        RenderRequest(
-          serviceConfiguration = ServiceConfiguration(
-            serviceName = serviceName ?: "",
-            label = "",
-            order = 1,
-            enabled = true,
-            templateMigrated = false,
-            url = "https://example.com",
-          ),
-        ),
-      )
-    }
-
-    assertThat(actual.message).startsWith("unable to load service template: service name was null or empty")
-  }
-
   @Nested
   inner class TemplatesNotFoundTest {
     private val incorrectTemplateDir = "/not_templates_dir"
-    private val templateResources = TemplateResources(templatesDirectory = incorrectTemplateDir)
+    private val templateResourcesService = TemplateResourcesService(templatesDirectory = incorrectTemplateDir)
 
     @Test
     fun `should throw expected exception if requested template does not exist`() {
       val actual = assertThrows<SubjectAccessRequestTemplatingException> {
-        templateResources.getServiceTemplate(
+        templateResourcesService.getServiceTemplate(
           RenderRequest(
             serviceConfiguration = ServiceConfiguration(
               serviceName = "no-exist-service",
@@ -126,7 +96,7 @@ class TemplateResourcesTest {
 
     @Test
     fun `should return empty string if style template not found`() {
-      assertThat(templateResources.getStyleTemplate()).isEmpty()
+      assertThat(templateResourcesService.getStyleTemplate()).isEmpty()
     }
   }
 }

@@ -22,12 +22,12 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.CREATED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderService.RenderResult.DATA_ALREADY_EXISTS
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService.RenderResult.CREATED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService.RenderResult.DATA_ALREADY_EXISTS
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
@@ -135,7 +135,10 @@ class RenderController(
   private fun getServiceConfiguration(
     request: RenderRequestEntity,
   ): ServiceConfiguration = serviceConfigurationService.findByIdOrNull(request.serviceConfigurationId!!)
-    ?: throw SubjectAccessRequestServiceConfigurationNotFoundException(request.serviceConfigurationId, request.id!!)
+    ?: throw SubjectAccessRequestNotFoundException(
+      subjectAccessRequestId = request.id,
+      params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
+    )
 
   private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
     RenderResponse(

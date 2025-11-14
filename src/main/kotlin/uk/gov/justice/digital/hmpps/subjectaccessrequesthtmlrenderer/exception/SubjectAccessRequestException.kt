@@ -36,6 +36,29 @@ open class SubjectAccessRequestException(
 }
 
 /**
+ * Exception type for Bad Request scenarios.
+ */
+class SubjectAccessRequestBadRequestException(
+  message: String,
+  subjectAccessRequestId: UUID? = null,
+) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
+
+/**
+ * Exception type for Resource Not Found scenarios.
+ */
+class SubjectAccessRequestNotFoundException(
+  subjectAccessRequestId: UUID? = null,
+  message: String = "resource not found",
+  params: Map<String, *>? = null,
+  cause: Throwable? = null,
+) : SubjectAccessRequestException(
+  subjectAccessRequestId = subjectAccessRequestId,
+  message = message,
+  params = params,
+  cause = cause,
+)
+
+/**
  * Exception type for fatal/non retryable errors.
  */
 class FatalSubjectAccessRequestException(
@@ -121,20 +144,17 @@ class SubjectAccessRequestRetryExhaustedException(
   }
 }
 
-class SubjectAccessRequestServiceConfigurationNotFoundException(
-  val serviceConfigurationId: UUID,
-  subjectAccessRequestId: UUID,
-) : SubjectAccessRequestException(
-  message = "Subject access request service configuration Id: $serviceConfigurationId not found",
-  subjectAccessRequestId = subjectAccessRequestId,
-)
-
-class SubjectAccessRequestResourceNotFoundException(resource: String) :
-  RuntimeException(
-    "Subject access request resource $resource not found",
-  )
-
-class SubjectAccessRequestBadRequestException(
-  message: String,
+/**
+ * Exception type for Service Template errors.
+ */
+class SubjectAccessRequestServiceTemplateException(
   subjectAccessRequestId: UUID? = null,
-) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
+  message: String,
+  params: Map<String, *>? = null,
+  cause: Throwable? = null,
+) : SubjectAccessRequestException(
+  subjectAccessRequestId = subjectAccessRequestId,
+  message = message,
+  params = params,
+  cause = cause,
+)

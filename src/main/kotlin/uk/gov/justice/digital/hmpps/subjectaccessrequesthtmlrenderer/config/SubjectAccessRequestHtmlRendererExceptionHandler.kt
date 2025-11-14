@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestResourceNotFoundException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceConfigurationNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice
@@ -80,35 +79,19 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     }
 
   @ExceptionHandler
-  fun handleSubjectAccessRequestResourceNotFoundException(
-    e: SubjectAccessRequestResourceNotFoundException,
+  fun handleSubjectAccessRequestNotFoundException(
+    e: SubjectAccessRequestNotFoundException,
   ): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(NOT_FOUND)
     .body(
       ErrorResponse(
         status = NOT_FOUND,
-        userMessage = "resource not found: ${e.message}",
+        userMessage = e.message,
         developerMessage = e.message,
       ),
     ).also {
       telemetryClient.trackRenderException(e, NOT_FOUND)
       log.error("Subject access request resource not found exception", e)
-    }
-
-  @ExceptionHandler
-  fun handleSubjectAccessRequestServiceConfigurationNotFoundException(
-    e: SubjectAccessRequestServiceConfigurationNotFoundException,
-  ): ResponseEntity<ErrorResponse> = ResponseEntity
-    .status(NOT_FOUND)
-    .body(
-      ErrorResponse(
-        status = NOT_FOUND,
-        userMessage = "service configuration ID: ${e.serviceConfigurationId} not found",
-        developerMessage = e.message,
-      ),
-    ).also {
-      telemetryClient.trackRenderException(e, NOT_FOUND)
-      log.error("service configuration ID: ${e.serviceConfigurationId} not found", e)
     }
 
   @ExceptionHandler
@@ -133,7 +116,7 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
 
   private fun TelemetryClient.trackRenderException(e: Exception, status: HttpStatus) {
     if (e is SubjectAccessRequestException) {
-      telemetryClient.renderEvent(
+      this.renderEvent(
         event = RenderEvent.REQUEST_ERRORED,
         id = e.subjectAccessRequestId,
         "status" to status.value().toString(),
