@@ -318,7 +318,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       assertThat(actual.params).containsAllEntriesOf(
         mapOf(
           "service" to request.serviceConfiguration.serviceName,
-          "url" to "${request.serviceConfiguration.url}/subject-access-request/template" ,
+          "url" to "${request.serviceConfiguration.url}/subject-access-request/template",
           "status" to errorStatus,
         ),
       )
