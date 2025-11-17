@@ -1,0 +1,13 @@
+{
+  "content": [
+    {
+      "id": "1234567890",
+      "created": "2025-11-14T10:10:10.666666",
+      "prisonCode": "SPT",
+      "staffMember": {
+        "firstName": "HOMER",
+        "lastName": "SIMPSON"
+      }
+    }
+  ]
+}

@@ -291,7 +291,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
         ),
       )
 
-      sarDataSourceApi.verifyGetTemplateCall(times = 1)
+      sarDataSourceApi.verifyGetTemplateCalled(times = 1)
     }
 
     @ParameterizedTest
@@ -323,7 +323,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
         ),
       )
 
-      sarDataSourceApi.verifyGetTemplateCall(times = 1)
+      sarDataSourceApi.verifyGetTemplateCalled(times = 1)
     }
 
     @ParameterizedTest
@@ -348,7 +348,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       assertThat(actual.message).startsWith("request failed and max retry attempts (2) exhausted")
       assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
 
-      sarDataSourceApi.verifyGetTemplateCall(times = 3)
+      sarDataSourceApi.verifyGetTemplateCalled(times = 3)
     }
 
     @Test
@@ -368,7 +368,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       assertThat(actual!!.statusCode.value()).isEqualTo(200)
       assertThat(actual.body).isEqualTo("<h1>${request.serviceConfiguration.serviceName}</h1>")
 
-      sarDataSourceApi.verifyGetTemplateCall(times = 1)
+      sarDataSourceApi.verifyGetTemplateCalled(times = 1)
     }
   }
 

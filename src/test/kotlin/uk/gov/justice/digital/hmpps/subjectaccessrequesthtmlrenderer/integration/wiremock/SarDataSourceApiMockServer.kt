@@ -112,8 +112,13 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     getRequestedFor(urlPathEqualTo("/attachments/$filename")),
   )
 
-  fun verifyGetTemplateCall(times: Int = 1) = verify(
+  fun verifyGetTemplateCalled(times: Int = 1) = verify(
     times,
+    getRequestedFor(urlPathEqualTo("/subject-access-request/template")),
+  )
+
+  fun verifyGetTemplateNeverCalled() = verify(
+    0,
     getRequestedFor(urlPathEqualTo("/subject-access-request/template")),
   )
 }

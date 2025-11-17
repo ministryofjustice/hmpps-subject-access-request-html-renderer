@@ -6,13 +6,22 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
 class TemplateResourcesServiceTest {
 
-  private var templateResourcesService = TemplateResourcesService()
+  private val templateVersionService: TemplateVersionService = mock()
+
+  private var templateResourcesService = TemplateResourcesService(
+    templateVersionService = templateVersionService,
+  )
 
   @ParameterizedTest
   @CsvSource(
@@ -45,7 +54,7 @@ class TemplateResourcesServiceTest {
     val renderRequest = RenderRequest(
       serviceConfiguration = ServiceConfiguration(
         serviceName = serviceName,
-        label = "",
+        label = "HMPPS Test Service",
         order = 1,
         enabled = true,
         templateMigrated = false,
@@ -55,6 +64,8 @@ class TemplateResourcesServiceTest {
     val testTemplate = templateResourcesService.getServiceTemplate(renderRequest)
     assertThat(testTemplate).isNotNull()
     assertThat(testTemplate).contains(expectedTitle)
+
+    verifyNoInteractions(templateVersionService)
   }
 
   @Test
@@ -69,7 +80,10 @@ class TemplateResourcesServiceTest {
   @Nested
   inner class TemplatesNotFoundTest {
     private val incorrectTemplateDir = "/not_templates_dir"
-    private val templateResourcesService = TemplateResourcesService(templatesDirectory = incorrectTemplateDir)
+    private val templateResourcesService = TemplateResourcesService(
+      templatesDirectory = incorrectTemplateDir,
+      templateVersionService = templateVersionService,
+    )
 
     @Test
     fun `should throw expected exception if requested template does not exist`() {
@@ -97,6 +111,45 @@ class TemplateResourcesServiceTest {
     @Test
     fun `should return empty string if style template not found`() {
       assertThat(templateResourcesService.getStyleTemplate()).isEmpty()
+    }
+  }
+
+  @Nested
+  inner class TemplateMigratedTest {
+
+    private val serviceConfiguration = ServiceConfiguration(
+      serviceName = "hmpps-test-service",
+      label = "HMPPS Test Service",
+      order = 1,
+      enabled = true,
+      templateMigrated = true,
+      url = "https://example.com",
+    )
+
+    private val renderRequest = RenderRequest(serviceConfiguration = serviceConfiguration)
+
+    @Test
+    fun `should return expected template when service configuration templateMigrated is true`() {
+      whenever(templateVersionService.getTemplate(renderRequest))
+        .thenReturn("<h1>HMPPS Test Service - Migrated Template</h1>")
+
+      val actual = templateResourcesService.getServiceTemplate(renderRequest)
+
+      assertThat(actual).isEqualTo("<h1>HMPPS Test Service - Migrated Template</h1>")
+
+      verify(templateVersionService, times(1)).getTemplate(renderRequest)
+    }
+
+    @Test
+    fun `should throw expected exception when templateVersionService throws exception`() {
+      whenever(templateVersionService.getTemplate(renderRequest))
+        .thenThrow(SubjectAccessRequestTemplatingException::class.java)
+
+      assertThrows<SubjectAccessRequestTemplatingException> {
+        templateResourcesService.getServiceTemplate(renderRequest)
+      }
+
+      verify(templateVersionService, times(1)).getTemplate(renderRequest)
     }
   }
 }

@@ -1,0 +1,10 @@
+<h1>HMPPS Test Service Template Migrated</h1>
+{{#.}}
+    <h2>Migrated Template</h2>
+    <table class="summary-list">
+        <tr><td>ID</td><td>{{ optionalValue id }}</td></tr>
+        <tr><td>Created</td><td>{{ optionalValue (formatDate created) }}</td></tr>
+        <tr><td>Updated By</td><td>{{ optionalValue staffMember.lastName }}</td></tr>
+        <tr><td>Prison name</td><td>{{ getPrisonName prisonCode }}</td></tr>
+    </table>
+{{/.}}

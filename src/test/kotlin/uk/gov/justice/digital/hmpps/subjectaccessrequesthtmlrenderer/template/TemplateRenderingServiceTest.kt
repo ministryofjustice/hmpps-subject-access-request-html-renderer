@@ -28,6 +28,7 @@ class TemplateRenderingServiceTest {
   private val locationsApiClient: LocationsApiClient = mock()
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
+  private val templateVersionService: TemplateVersionService = mock()
 
   private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
     prisonDetailsRepository,
@@ -40,7 +41,10 @@ class TemplateRenderingServiceTest {
   private val templateRenderService = TemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
     templateRenderService,
-    TemplateResourcesService(templatesDirectory = "/templates"),
+    TemplateResourcesService(
+      templatesDirectory = "/templates",
+      templateVersionService = templateVersionService,
+    ),
     telemetryClient,
   )
 

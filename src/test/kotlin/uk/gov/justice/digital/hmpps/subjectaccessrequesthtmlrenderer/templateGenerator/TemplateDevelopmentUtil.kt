@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateResourcesService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.nio.file.Files
@@ -34,8 +35,11 @@ fun main(args: Array<String>?) {
 class TemplateGeneratorUtil {
   private val telemetryClient: TelemetryClient = mock()
   private val templateDataFetcherFacade: TemplateDataFetcherFacade = mock()
+  private val templateVersionService: TemplateVersionService = mock()
 
-  private val templateResourcesService: TemplateResourcesService = TemplateResourcesService()
+  private val templateResourcesService: TemplateResourcesService = TemplateResourcesService(
+    templateVersionService = templateVersionService,
+  )
 
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
 

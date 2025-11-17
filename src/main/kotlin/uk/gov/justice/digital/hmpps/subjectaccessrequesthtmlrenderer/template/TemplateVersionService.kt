@@ -46,12 +46,21 @@ class TemplateVersionService(
     val serviceConfiguration = getServiceConfiguration(renderRequest)
     val serviceTemplateHash = getSha256HashValue(serviceTemplate)
 
-    findTemplateVersionForServiceConfigIdAndFileHash(serviceConfiguration, serviceTemplateHash)
-      ?.let { matchedTemplateVersion ->
-        matchedTemplateVersion.takeIf { it.status == TemplateVersionStatus.PENDING }?.let {
+    templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
+      ?.takeIf { it.fileHash == serviceTemplateHash }
+      ?.let {
+        log.info(
+          "service template hash matched template version: id={}, version={}, status={}, serviceName={}",
+          it.id,
+          it.version,
+          it.status,
+          serviceConfiguration.serviceName,
+        )
+        if (TemplateVersionStatus.PENDING == it.status) {
           publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
         }
-        matchedTemplateVersion
+
+        it
       } ?: throw templateHashMatchFailureException(
       renderRequest = renderRequest,
       serviceTemplateHash = serviceTemplateHash,
@@ -72,24 +81,6 @@ class TemplateVersionService(
   fun getSha256HashValue(input: String): String {
     val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
     return bytes.joinToString("") { "%02x".format(it) }
-  }
-
-  private fun findTemplateVersionForServiceConfigIdAndFileHash(
-    serviceConfiguration: ServiceConfiguration,
-    serviceTemplateHash: String,
-  ): TemplateVersion? = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-    serviceConfigurationId = serviceConfiguration.id,
-    fileHash = serviceTemplateHash,
-  ).also {
-    it?.let {
-      log.info(
-        "service template hash matched template version: id={}, version={}, status={}, serviceName={}",
-        it.id,
-        it.version,
-        it.status,
-        serviceConfiguration.serviceName,
-      )
-    }
   }
 
   private fun publishPendingTemplateVersion(
@@ -135,6 +126,7 @@ class TemplateVersionService(
     subjectAccessRequestId = renderRequest.id!!,
     message = "service template file hash does not match registered template versions",
     params = mapOf(
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
       "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
       "serviceTemplateHash" to serviceTemplateHash,
     ),

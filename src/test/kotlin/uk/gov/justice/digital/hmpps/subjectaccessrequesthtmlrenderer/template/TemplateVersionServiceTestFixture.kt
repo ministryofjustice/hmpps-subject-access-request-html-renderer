@@ -101,27 +101,17 @@ abstract class TemplateVersionServiceTestFixture {
     )
   }
 
-  protected fun TemplateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
-    fileHash: String,
+  protected fun TemplateVersionRepository.mockFindLatestByServiceConfigurationId(
     returnValue: TemplateVersion?,
   ) {
-    whenever(
-      this.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfig.id,
-        fileHash = fileHash,
-      ),
-    ).thenReturn(returnValue)
+    whenever(this.findLatestByServiceConfigurationId(serviceConfig.id)).thenReturn(returnValue)
   }
 
-  protected fun TemplateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
+  protected fun TemplateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(
     times: Int = 1,
     serviceConfigurationId: UUID = serviceConfig.id,
-    fileHash: String,
   ) {
-    verify(this, times(times)).findLatestByServiceConfigurationIdAndFileHash(
-      serviceConfigurationId = serviceConfigurationId,
-      fileHash = fileHash,
-    )
+    verify(this, times(times)).findLatestByServiceConfigurationId(serviceConfigurationId)
   }
 
   protected fun TemplateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(

@@ -16,13 +16,11 @@ interface TemplateVersionRepository : JpaRepository<TemplateVersion, UUID> {
   @Query(
     "SELECT tv FROM TemplateVersion tv " +
       "WHERE tv.serviceConfiguration.id = :serviceConfigId " +
-      "AND tv.fileHash = :fileHash " +
       "ORDER BY tv.createdAt DESC, tv.version DESC " +
       "LIMIT 1",
   )
-  fun findLatestByServiceConfigurationIdAndFileHash(
+  fun findLatestByServiceConfigurationId(
     @Param("serviceConfigId") serviceConfigurationId: UUID,
-    @Param("fileHash") fileHash: String,
   ): TemplateVersion?
 
   @Lock(LockModeType.PESSIMISTIC_WRITE)

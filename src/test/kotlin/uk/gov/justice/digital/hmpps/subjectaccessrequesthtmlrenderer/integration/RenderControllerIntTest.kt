@@ -175,6 +175,8 @@ class RenderControllerIntTest : IntegrationTestBase() {
         ExpectedTelemetryEvent(STORE_RENDERED_HTML_COMPLETED, eventProperties(renderRequest)),
         ExpectedTelemetryEvent(REQUEST_COMPLETE, eventProperties(renderRequest)),
       )
+
+      sarDataSourceApi.verifyGetTemplateNeverCalled()
     }
 
     @ParameterizedTest
@@ -246,6 +248,8 @@ class RenderControllerIntTest : IntegrationTestBase() {
         ExpectedTelemetryEvent(STORE_RENDERED_HTML_COMPLETED, eventProperties(renderRequest)),
         ExpectedTelemetryEvent(REQUEST_COMPLETE, eventProperties(renderRequest)),
       )
+
+      sarDataSourceApi.verifyGetTemplateNeverCalled()
     }
 
     @Test
