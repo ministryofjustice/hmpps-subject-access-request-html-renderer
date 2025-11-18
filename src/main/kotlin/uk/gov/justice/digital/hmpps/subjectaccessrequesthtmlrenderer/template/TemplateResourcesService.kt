@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 @Service
 class TemplateResourcesService(
   @Value("\${template-resources.directory}") private val templatesDirectory: String = "/templates",
+  private val templateVersionService: TemplateVersionService,
 ) {
 
   companion object {
@@ -25,10 +26,15 @@ class TemplateResourcesService(
       renderRequest.serviceConfiguration.serviceName,
       renderRequest.serviceConfiguration.templateMigrated,
     )
-    return getTemplateResource(
-      renderRequest = renderRequest,
-      resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
-    ).readText()
+
+    return if (renderRequest.serviceConfiguration.templateMigrated) {
+      templateVersionService.getTemplate(renderRequest)
+    } else {
+      getTemplateResource(
+        renderRequest = renderRequest,
+        resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
+      ).readText()
+    }
   }
 
   fun getNoDataTemplate(renderRequest: RenderRequest): String = getTemplateResource(

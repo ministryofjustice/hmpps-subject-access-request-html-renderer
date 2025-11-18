@@ -93,10 +93,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
-        fileHash = publishedTemplateHash,
-        returnValue = null,
-      )
+      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = null)
 
       val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
         templateVersionService.getTemplate(renderRequest)
@@ -113,10 +110,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
-        times = 1,
-        fileHash = publishedTemplateHash,
-      )
+      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
 
@@ -126,10 +120,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
       dynamicServicesClient.mockGetServiceTemplate(returnValue = ResponseEntity.ok(pendingTemplateBody))
       serviceConfigurationService.mockGetConfigurationById(returnValue = serviceConfig)
-      templateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
-        fileHash = pendingTemplateHash,
-        returnValue = pendingTemplateVersion,
-      )
+      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = pendingTemplateVersion)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
         id = pendingTemplateVersion.id,
         version = pendingTemplateVersion.version,
@@ -155,10 +146,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
-        times = 1,
-        fileHash = pendingTemplateHash,
-      )
+      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
       templateVersionRepository.verifyFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDescIsCalled(
         times = 1,
         templateVersionId = pendingTemplateVersion.id,
@@ -189,19 +177,13 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
-        fileHash = publishedTemplateHash,
-        returnValue = publishedTemplateVersion,
-      )
+      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = publishedTemplateVersion)
 
       templateVersionService.getTemplate(renderRequest)
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
-        times = 1,
-        fileHash = publishedTemplateHash,
-      )
+      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
 
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
@@ -216,10 +198,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationIdAndFileHash(
-        fileHash = pendingTemplateHash,
-        returnValue = pendingTemplateVersion,
-      )
+      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = pendingTemplateVersion)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
         id = pendingTemplateVersion.id,
         version = 2,
@@ -232,10 +211,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdAndFileHashIsCalled(
-        times = 1,
-        fileHash = pendingTemplateHash,
-      )
+      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
         id = pendingTemplateVersion.id,
         version = pendingTemplateVersion.version,

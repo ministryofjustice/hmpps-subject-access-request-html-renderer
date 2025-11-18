@@ -167,7 +167,11 @@ class DynamicServicesClient(
   private fun processGetTemplateResponse(
     renderRequest: RenderRequest,
   ) = { response: ClientResponse ->
-    log.info("get service template request returned status:{}", response.statusCode().value())
+    log.info(
+      "get {} service template request returned status: {}",
+      renderRequest.serviceConfiguration.serviceName,
+      response.statusCode().value(),
+    )
     when {
       response.statusCode().is2xxSuccessful -> {
         response.toEntity(String::class.java).also {
@@ -194,6 +198,7 @@ class DynamicServicesClient(
       }
 
       response.statusCode().is5xxServerError -> {
+        log.logGetTemplateError(renderRequest, response)
         val request = response.request()
         Mono.error(
           WebClientRetriesSpec.IsStatus5xxException(

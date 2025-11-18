@@ -85,14 +85,11 @@ class TemplateVersionRepositoryTest @Autowired constructor(
   }
 
   @Nested
-  inner class FindLatestByServiceConfigurationIdAndFileHash {
+  inner class FindLatestByServiceConfigurationId {
 
     @Test
     fun `should return null if no data exists`() {
-      val actual = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfiguration.id,
-        fileHash = templateHashV1,
-      )
+      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
       assertThat(actual).isNull()
     }
 
@@ -100,10 +97,7 @@ class TemplateVersionRepositoryTest @Autowired constructor(
     fun `should return latest template version if only 1 exists`() {
       templateVersionRepository.save(templateV1Published)
 
-      val actual = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfiguration.id,
-        fileHash = templateHashV1,
-      )
+      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
       assertThat(actual).isEqualTo(templateV1Published)
     }
 
@@ -111,24 +105,8 @@ class TemplateVersionRepositoryTest @Autowired constructor(
     fun `should return expected template version when multiple versions exist`() {
       templateVersionRepository.saveAll(listOf(templateV1Published, templateV2Published, templateV3Pending))
 
-      val actual = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfiguration.id,
-        fileHash = templateHashV1,
-      )
-
-      // template V2 is the latest version matching the file hash provided
-      assertThat(actual).isEqualTo(templateV2Published)
-    }
-
-    @Test
-    fun `should return null when file hash does not match`() {
-      templateVersionRepository.saveAll(listOf(templateV1Published, templateV2Published, templateV3Pending))
-
-      val actual = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfiguration.id,
-        fileHash = "a file hash value that does not exist",
-      )
-      assertThat(actual).isNull()
+      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
+      assertThat(actual).isEqualTo(templateV3Pending)
     }
 
     @Test
@@ -152,10 +130,7 @@ class TemplateVersionRepositoryTest @Autowired constructor(
       )
       templateVersionRepository.saveAll(listOf(v1, v2))
 
-      val actual = templateVersionRepository.findLatestByServiceConfigurationIdAndFileHash(
-        serviceConfigurationId = serviceConfiguration.id,
-        fileHash = templateHashV1,
-      )
+      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
 
       assertThat(actual).isEqualTo(v2)
     }
