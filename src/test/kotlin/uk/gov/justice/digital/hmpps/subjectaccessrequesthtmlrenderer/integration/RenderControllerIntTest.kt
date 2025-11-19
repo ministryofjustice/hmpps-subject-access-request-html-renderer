@@ -946,16 +946,26 @@ class RenderControllerIntTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `should return status 400 error when dateFrom is null`() {
-      val request = RenderRequestEntity(
+    fun `should be successful when dateFrom is null`() {
+      val serviceConfig = getServiceConfiguration("keyworker-api")
+
+      val renderRequestEntity = RenderRequestEntity(
         id = UUID.randomUUID(),
-        serviceConfigurationId = UUID.randomUUID(),
-        nomisId = "A",
+        nomisId = "nomis1234",
+        ndeliusId = null,
+        dateFrom = null,
+        dateTo = LocalDate.of(2021, 1, 1),
+        serviceConfigurationId = serviceConfig.id,
+        sarCaseReferenceNumber = "AAA",
       )
-      assertBadRequestWithExpectedMessage(
-        request = request,
-        expectedMessage = "request.dateFrom was null, id=${request.id}",
-      )
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfig)
+
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest, serviceConfig.serviceName)
+
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+
+      assertRenderTemplateSuccessResponse(response, renderRequest)
     }
 
     @Test
