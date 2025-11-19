@@ -1,16 +1,19 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.Mockito.mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -27,12 +30,17 @@ abstract class TemplateVersionServiceTestFixture {
   protected val serviceConfigurationService: ServiceConfigurationService = mock()
   protected val templateVersionRepository: TemplateVersionRepository = mock()
   protected val dynamicServicesClient: DynamicServicesClient = mock()
+  protected val telemetryClient: TelemetryClient = mock()
 
   protected val publishedTemplateBody = "<h1>HMPPS Test Service</h1>"
   protected val publishedTemplateHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
 
   protected val pendingTemplateBody = "<h1>HMPPS Test Service V2</h1>"
   protected val pendingTemplateHash = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
+
+  protected val telemetryEventTypeCaptor = argumentCaptor<String>()
+  protected val telemetryPropertiesCaptor = argumentCaptor<Map<String, String>>()
+  protected val telemetryMetricsCaptor = argumentCaptor<Map<String, Double>>()
 
   protected val serviceConfig = ServiceConfiguration(
     id = UUID.randomUUID(),
@@ -73,6 +81,7 @@ abstract class TemplateVersionServiceTestFixture {
     serviceConfigurationService = serviceConfigurationService,
     templateVersionRepository = templateVersionRepository,
     dynamicServicesClient = dynamicServicesClient,
+    telemetryClient = telemetryClient,
   )
 
   protected fun ServiceConfigurationService.mockGetConfigurationById(
@@ -196,5 +205,25 @@ abstract class TemplateVersionServiceTestFixture {
     expectedRequest: RenderRequest = renderRequest,
   ) {
     verify(this, times(times)).getServiceTemplate(expectedRequest)
+  }
+
+  protected fun verifyTelemetryEventsCaptures(
+    event: RenderEvent,
+    subjectAccessRequestId: UUID? = null,
+    vararg params: Pair<String, String> = emptyArray(),
+  ) {
+    verify(telemetryClient, times(1)).trackEvent(
+      telemetryEventTypeCaptor.capture(),
+      telemetryPropertiesCaptor.capture(),
+      telemetryMetricsCaptor.capture(),
+    )
+
+    assertThat(telemetryEventTypeCaptor.firstValue).isEqualTo(event.name)
+    assertThat(telemetryPropertiesCaptor.firstValue).containsEntry("id", subjectAccessRequestId.toString())
+
+    params.takeIf { it.isNotEmpty() }?.forEach { (key, value) ->
+      assertThat(telemetryPropertiesCaptor.firstValue).containsEntry(key, value)
+    }
+    assertThat(telemetryMetricsCaptor.firstValue).isNull()
   }
 }

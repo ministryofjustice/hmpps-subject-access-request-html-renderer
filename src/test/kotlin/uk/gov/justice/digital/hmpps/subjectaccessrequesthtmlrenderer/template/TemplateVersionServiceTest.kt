@@ -10,6 +10,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_CONFIGURATION_NOT_FOUND
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_EMPTY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_HASH_MISMATCH
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISHED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISH_ERROR
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceTemplateException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -47,6 +52,12 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       )
 
       verify(dynamicServicesClient, times(1)).getServiceTemplate(renderRequest)
+
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_TEMPLATE_EMPTY,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceName" to serviceConfig.serviceName,
+      )
     }
 
     @Test
@@ -83,6 +94,11 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_CONFIGURATION_NOT_FOUND,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceConfigurationId" to serviceConfig.id.toString(),
+      )
     }
 
     @Test
@@ -112,6 +128,13 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
       templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_TEMPLATE_HASH_MISMATCH,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceName" to serviceConfig.serviceName,
+        "serviceConfigurationId" to serviceConfig.id.toString(),
+        "serviceTemplateHash" to publishedTemplateHash,
+      )
     }
 
     @Test
@@ -161,6 +184,13 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         status = TemplateVersionStatus.PUBLISHED,
         fileHash = pendingTemplateHash,
         captor = saveCaptor,
+      )
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_TEMPLATE_PUBLISH_ERROR,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceName" to serviceConfig.serviceName,
+        "version" to pendingTemplateVersion.version.toString(),
+        "templateVersionId" to pendingTemplateVersion.id.toString(),
       )
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
@@ -232,6 +262,13 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         status = TemplateVersionStatus.PUBLISHED,
         fileHash = pendingTemplateHash,
         captor = saveCaptor,
+      )
+
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_TEMPLATE_PUBLISHED,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceName" to serviceConfig.serviceName,
+        "version" to pendingTemplateVersion.version.toString(),
       )
 
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)

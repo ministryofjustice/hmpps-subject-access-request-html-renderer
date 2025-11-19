@@ -1,9 +1,16 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_CONFIGURATION_NOT_FOUND
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_EMPTY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_HASH_MISMATCH
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISHED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISH_ERROR
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceTemplateException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -19,6 +26,7 @@ class TemplateVersionService(
   val serviceConfigurationService: ServiceConfigurationService,
   val templateVersionRepository: TemplateVersionRepository,
   val dynamicServicesClient: DynamicServicesClient,
+  val telemetryClient: TelemetryClient,
 ) {
 
   companion object {
@@ -105,6 +113,13 @@ class TemplateVersionService(
       pending.publishedAt = LocalDateTime.now()
       try {
         templateVersionRepository.saveAndFlush(pending)
+
+        telemetryClient.renderEvent(
+          SERVICE_TEMPLATE_PUBLISHED,
+          renderRequest.id,
+          "serviceName" to renderRequest.serviceConfiguration.serviceName,
+          "version" to pending.version.toString(),
+        )
       } catch (ex: Exception) {
         throw publishTemplateException(renderRequest, pending, ex)
       }
@@ -130,7 +145,16 @@ class TemplateVersionService(
       "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
       "serviceTemplateHash" to serviceTemplateHash,
     ),
-  ).also { log.error("service template file hash does not match registered template versions") }
+  ).also {
+    telemetryClient.renderEvent(
+      SERVICE_TEMPLATE_HASH_MISMATCH,
+      renderRequest.id,
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+      "serviceConfigurationId" to renderRequest.serviceConfiguration.id.toString(),
+      "serviceTemplateHash" to serviceTemplateHash,
+    )
+    log.error("service template file hash does not match registered template versions")
+  }
 
   private fun serviceTemplateBlankException(
     renderRequest: RenderRequest,
@@ -138,7 +162,13 @@ class TemplateVersionService(
     subjectAccessRequestId = renderRequest.id,
     message = "service template hash error: service template was empty",
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
-  )
+  ).also {
+    telemetryClient.renderEvent(
+      SERVICE_TEMPLATE_EMPTY,
+      renderRequest.id,
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+    )
+  }
 
   private fun serviceConfigurationNotFoundException(
     renderRequest: RenderRequest,
@@ -146,7 +176,13 @@ class TemplateVersionService(
     subjectAccessRequestId = renderRequest.id!!,
     message = "service configuration not found matching id, templateMigrated=true, and enabled=true",
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
-  )
+  ).also {
+    telemetryClient.renderEvent(
+      SERVICE_CONFIGURATION_NOT_FOUND,
+      renderRequest.id,
+      "serviceConfigurationId" to renderRequest.serviceConfiguration.id.toString(),
+    )
+  }
 
   private fun publishTemplateException(
     renderRequest: RenderRequest,
@@ -161,5 +197,13 @@ class TemplateVersionService(
       "version" to templateVersion.version,
       "templateVersionId" to templateVersion.id,
     ),
-  )
+  ).also {
+    telemetryClient.renderEvent(
+      SERVICE_TEMPLATE_PUBLISH_ERROR,
+      renderRequest.id,
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+      "version" to templateVersion.version.toString(),
+      "templateVersionId" to templateVersion.id.toString(),
+    )
+  }
 }

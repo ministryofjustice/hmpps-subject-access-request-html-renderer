@@ -3,8 +3,8 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
+import com.microsoft.applicationinsights.TelemetryClient
 import org.apache.commons.text.StringEscapeUtils
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpHeaders
@@ -17,9 +17,11 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_TEMPLATE_RETRY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
@@ -35,6 +37,7 @@ class DynamicServicesClient(
   @Qualifier("dynamicWebClient") private val dynamicApiWebClient: WebClient,
   private val webClientRetriesSpec: WebClientRetriesSpec,
   private val serviceConfigurationService: ServiceConfigurationService,
+  private val telemetryClient: TelemetryClient,
 ) {
 
   private companion object {
@@ -167,13 +170,10 @@ class DynamicServicesClient(
   private fun processGetTemplateResponse(
     renderRequest: RenderRequest,
   ) = { response: ClientResponse ->
-    log.info(
-      "get {} service template request returned status: {}",
-      renderRequest.serviceConfiguration.serviceName,
-      response.statusCode().value(),
-    )
     when {
-      response.statusCode().is2xxSuccessful -> {
+      response.statusCode().value() == HttpStatus.OK.value() -> {
+        logGetTemplateSuccess(renderRequest, response)
+
         response.toEntity(String::class.java).also {
           log.debug(
             "get service template request successful, service={}, subjectAccessRequestId={}",
@@ -184,7 +184,7 @@ class DynamicServicesClient(
       }
 
       response.statusCode().value() == HttpStatus.NOT_FOUND.value() -> {
-        log.logGetTemplateError(renderRequest, response)
+        logGetTemplateError(renderRequest, response)
         Mono.error(
           SubjectAccessRequestNotFoundException(
             subjectAccessRequestId = renderRequest.id,
@@ -198,8 +198,9 @@ class DynamicServicesClient(
       }
 
       response.statusCode().is5xxServerError -> {
-        log.logGetTemplateError(renderRequest, response)
+        logGetTemplateError(renderRequest, response)
         val request = response.request()
+
         Mono.error(
           WebClientRetriesSpec.IsStatus5xxException(
             "${request.method} ${request.uri}, status: ${response.statusCode().value()}",
@@ -208,7 +209,8 @@ class DynamicServicesClient(
       }
 
       else -> {
-        log.logGetTemplateError(renderRequest, response)
+        logGetTemplateError(renderRequest, response)
+
         Mono.error(
           SubjectAccessRequestException(
             subjectAccessRequestId = renderRequest.id,
@@ -224,12 +226,32 @@ class DynamicServicesClient(
     }
   }
 
-  private fun Logger.logGetTemplateError(renderRequest: RenderRequest, response: ClientResponse) {
-    this.error(
+  private fun logGetTemplateError(renderRequest: RenderRequest, response: ClientResponse) {
+    telemetryClient.renderEvent(
+      event = RenderEvent.GET_SERVICE_TEMPLATE_ERROR,
+      id = renderRequest.id,
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+      "responseStatus" to response.statusCode().toString(),
+    )
+    log.error(
       "get service template request unsuccessful, service={}, subjectAccessRequestId={}, url={}, status={}",
       renderRequest.serviceConfiguration.serviceName,
       renderRequest.id,
       response.request().uri,
+      response.statusCode().value(),
+    )
+  }
+
+  private fun logGetTemplateSuccess(renderRequest: RenderRequest, response: ClientResponse) {
+    telemetryClient.renderEvent(
+      event = RenderEvent.GET_SERVICE_TEMPLATE_SUCCESS,
+      id = renderRequest.id,
+      "serviceName" to renderRequest.serviceConfiguration.serviceName,
+      "responseStatus" to response.statusCode().toString(),
+    )
+    log.info(
+      "get {} service template request returned status: {}",
+      renderRequest.serviceConfiguration.serviceName,
       response.statusCode().value(),
     )
   }
