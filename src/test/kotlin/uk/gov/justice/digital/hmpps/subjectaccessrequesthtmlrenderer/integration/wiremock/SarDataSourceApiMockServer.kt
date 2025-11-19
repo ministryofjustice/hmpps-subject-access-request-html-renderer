@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.client.MappingBuilder
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
@@ -16,6 +17,11 @@ import org.springframework.http.HttpHeaders.CONTENT_TYPE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.GetSubjectAccessRequestDataParams
 
 class SarDataSourceApiMockServer : WireMockServer(8092) {
+
+  fun MappingBuilder.withQueryParamIfPresent(
+    name: String,
+    value: Any?,
+  ): MappingBuilder = value?.let { this.withQueryParam(name, equalTo(value.toString())) } ?: this
 
   fun stubHealthPing(status: Int) {
     stubFor(
@@ -35,7 +41,7 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     stubFor(
       get(urlPathEqualTo("/subject-access-request"))
         .withQueryParam("prn", equalTo(params.prn))
-        .withQueryParam("fromDate", equalTo(params.dateFrom.toString()))
+        .withQueryParamIfPresent("fromDate", params.dateFrom)
         .withQueryParam("toDate", equalTo(params.dateTo.toString()))
         .willReturn(responseDefinition),
     )

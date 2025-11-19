@@ -118,13 +118,10 @@ class RenderController(
         request.id,
       )
     }
-    if (request.dateFrom == null) {
-      throw SubjectAccessRequestBadRequestException("request.dateFrom was null", request.id)
-    }
     if (request.dateTo == null) {
       throw SubjectAccessRequestBadRequestException("request.dateTo was null", request.id)
     }
-    if (request.dateTo!!.isBefore(request.dateFrom)) {
+    if (request.dateFrom != null && request.dateTo!!.isBefore(request.dateFrom)) {
       throw SubjectAccessRequestBadRequestException("request.dateTo is before request.dateFrom", request.id)
     }
     if (request.sarCaseReferenceNumber.isNullOrEmpty()) {
