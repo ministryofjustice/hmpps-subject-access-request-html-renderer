@@ -112,6 +112,6 @@ class DeveloperController(private val renderService: RenderService) {
     ?: throw SubjectAccessRequestException(
       message = "subject access request $subjectAccessRequestId not found",
       errorCode = ErrorCode.NOT_FOUND,
-      subjectAccessRequestId = UUID.fromString(subjectAccessRequestId)
+      subjectAccessRequestId = UUID.fromString(subjectAccessRequestId),
     )
 }

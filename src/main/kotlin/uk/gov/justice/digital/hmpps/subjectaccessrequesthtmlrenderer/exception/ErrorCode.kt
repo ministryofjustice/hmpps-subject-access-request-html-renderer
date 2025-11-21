@@ -37,7 +37,8 @@ enum class ErrorCode(val code: Int) {
 
   DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED(4002),
 
-  DOCUMENT_STORE_FILE_NOT_FOUND(4003);
+  DOCUMENT_STORE_FILE_NOT_FOUND(4003),
+  ;
 
   fun codeString(): String = this.code.toString()
 }

@@ -1037,7 +1037,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequestEntity = request)
         .expectStatus().isEqualTo(400)
         .expectBody()
-        .jsonPath("$.developerMessage").value{ value: String ->
+        .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith(expectedMessage)
         }
         .jsonPath("$.errorCode").isEqualTo("1001")
