@@ -40,8 +40,11 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .isNotFound
         .expectBody()
         .jsonPath("$.status").isEqualTo(HttpStatus.NOT_FOUND.value())
-        .jsonPath("$.errorCode").isEmpty()
-        .jsonPath("$.userMessage").isEqualTo("resource not found, id=$subjectAccessRequestId, documentKey=$subjectAccessRequestId/service-xyz.html")
+        .jsonPath("$.errorCode").isEqualTo("1002")
+        .jsonPath("$.userMessage").value { value: String ->
+          assertThat(value).startsWith("document $subjectAccessRequestId/service-xyz.html not found")
+          assertThat(value).contains("id=$subjectAccessRequestId, documentKey=$subjectAccessRequestId/service-xyz.html")
+        }
     }
 
     @Test
@@ -79,8 +82,10 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .isNotFound
         .expectBody()
         .jsonPath("$.status").isEqualTo(HttpStatus.NOT_FOUND.value())
-        .jsonPath("$.errorCode").isEmpty()
-        .jsonPath("$.userMessage").isEqualTo("resource not found, id=$sarId")
+        .jsonPath("$.errorCode").isEqualTo("1002")
+        .jsonPath("$.userMessage").value { value: String ->
+          assertThat(value).startsWith("subject access request $sarId not found")
+        }
     }
 
     @Test

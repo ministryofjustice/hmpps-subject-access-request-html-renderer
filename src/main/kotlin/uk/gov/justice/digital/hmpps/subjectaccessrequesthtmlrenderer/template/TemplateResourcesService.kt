@@ -3,7 +3,8 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
 @Service
@@ -50,9 +51,10 @@ class TemplateResourcesService(
   private fun templateResourceNotFoundException(
     renderRequest: RenderRequest,
     resourcePath: String,
-  ) = SubjectAccessRequestTemplatingException(
-    subjectAccessRequestId = renderRequest.id,
+  ) = SubjectAccessRequestException(
     message = "template resource not found",
+    errorCode = TEMPLATE_RESOURCE_NOT_FOUND,
+    subjectAccessRequestId = renderRequest.id,
     params = mapOf(
       "resource" to resourcePath,
     ),

@@ -15,8 +15,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_HASH_MISMATCH
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISHED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISH_ERROR
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceTemplateException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
 
@@ -41,13 +42,14 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         returnValue = ResponseEntity.ok(""),
       )
 
-      val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         templateVersionService.getTemplate(renderRequest = renderRequest)
       }
 
       assertIsExpectedException(
         actual = actual,
         message = "service template hash error: service template was empty",
+        errorCode = ErrorCode.SERVICE_TEMPLATE_EMPTY,
         params = mapOf("serviceConfigurationId" to serviceConfig.id),
       )
 
@@ -81,13 +83,14 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         returnValue = null,
       )
 
-      val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         templateVersionService.getTemplate(renderRequest)
       }
 
       assertIsExpectedException(
         actual = actual,
         message = "service configuration not found matching id, templateMigrated=true, and enabled=true",
+        errorCode = ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND,
         params = mapOf("serviceConfigurationId" to serviceConfig.id),
       )
 
@@ -111,13 +114,14 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       )
       templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = null)
 
-      val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         templateVersionService.getTemplate(renderRequest)
       }
 
       assertIsExpectedException(
         actual = actual,
         message = "service template file hash does not match registered template versions",
+        errorCode = ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH,
         params = mapOf(
           "serviceConfigurationId" to serviceConfig.id,
           "serviceTemplateHash" to publishedTemplateHash,
@@ -153,13 +157,14 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
       templateVersionRepository.mockSaveAndFlushException()
 
-      val actual = assertThrows<SubjectAccessRequestServiceTemplateException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         templateVersionService.getTemplate(renderRequest)
       }
 
       assertIsExpectedException(
         actual = actual,
         message = "unexpected error whilst attempting to publish template version",
+        errorCode = ErrorCode.SERVICE_TEMPLATE_PUBLISH_FAILURE,
         params = mapOf(
           "serviceName" to serviceConfig.serviceName,
           "version" to pendingTemplateVersion.version,

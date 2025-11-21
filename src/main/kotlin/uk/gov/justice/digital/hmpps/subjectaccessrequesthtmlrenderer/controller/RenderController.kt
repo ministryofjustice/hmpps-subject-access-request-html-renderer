@@ -20,9 +20,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService
@@ -78,6 +77,7 @@ class RenderController(
       throw SubjectAccessRequestException(
         message = "render request threw unexpected exception",
         cause = ex,
+        errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
         subjectAccessRequestId = renderRequest.id,
         params = mapOf("serviceConfigurationId" to renderRequest.serviceConfigurationId),
       )
@@ -107,32 +107,54 @@ class RenderController(
 
   private fun validateRequest(request: RenderRequestEntity) {
     if (request.id == null) {
-      throw SubjectAccessRequestBadRequestException("request.id was null")
+      throw SubjectAccessRequestException(
+        message = "request.id was null",
+        errorCode = ErrorCode.BAD_REQUEST,
+      )
     }
     if (request.serviceConfigurationId == null) {
-      throw SubjectAccessRequestBadRequestException("request.serviceConfigurationId was null", request.id)
+      throw SubjectAccessRequestException(
+        message = "request.serviceConfigurationId was null",
+        errorCode = ErrorCode.BAD_REQUEST,
+        subjectAccessRequestId = request.id,
+      )
     }
     if (request.nomisId.isNullOrEmpty() && request.ndeliusId.isNullOrEmpty()) {
-      throw SubjectAccessRequestBadRequestException(
-        "request.nomisId and request.ndeliusId was null or empty",
-        request.id,
+      throw SubjectAccessRequestException(
+        message = "request.nomisId and request.ndeliusId was null or empty",
+        errorCode = ErrorCode.BAD_REQUEST,
+        subjectAccessRequestId = request.id,
       )
     }
     if (request.dateTo == null) {
-      throw SubjectAccessRequestBadRequestException("request.dateTo was null", request.id)
+      throw SubjectAccessRequestException(
+        message = "request.dateTo was null",
+        errorCode = ErrorCode.BAD_REQUEST,
+        subjectAccessRequestId = request.id,
+      )
     }
     if (request.dateFrom != null && request.dateTo!!.isBefore(request.dateFrom)) {
-      throw SubjectAccessRequestBadRequestException("request.dateTo is before request.dateFrom", request.id)
+      throw SubjectAccessRequestException(
+        message = "request.dateTo is before request.dateFrom",
+        errorCode = ErrorCode.BAD_REQUEST,
+        subjectAccessRequestId = request.id,
+      )
     }
     if (request.sarCaseReferenceNumber.isNullOrEmpty()) {
-      throw SubjectAccessRequestBadRequestException("request.sarCaseReferenceNumber was null or empty", request.id)
+      throw SubjectAccessRequestException(
+        message = "request.sarCaseReferenceNumber was null or empty",
+        errorCode = ErrorCode.BAD_REQUEST,
+        subjectAccessRequestId = request.id,
+      )
     }
   }
 
   private fun getServiceConfiguration(
     request: RenderRequestEntity,
   ): ServiceConfiguration = serviceConfigurationService.findByIdOrNull(request.serviceConfigurationId!!)
-    ?: throw SubjectAccessRequestNotFoundException(
+    ?: throw SubjectAccessRequestException(
+      message = "service configuration id ${request.serviceConfigurationId} not found",
+      errorCode = ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND,
       subjectAccessRequestId = request.id,
       params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
     )

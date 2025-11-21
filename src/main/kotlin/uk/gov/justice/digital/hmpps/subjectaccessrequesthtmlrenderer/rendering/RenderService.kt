@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_SERVICE_DATA_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.documentstore.DocumentStore
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
 import java.io.ByteArrayOutputStream
@@ -134,6 +135,7 @@ class RenderService(
         .getSubjectAccessRequestData(renderRequest) ?: throw SubjectAccessRequestException(
         message = "API response data was null",
         cause = null,
+        errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
         subjectAccessRequestId = renderRequest.id,
         params = mapOf("serviceUrl" to renderRequest.serviceConfiguration.url),
       )
@@ -148,6 +150,7 @@ class RenderService(
       throw SubjectAccessRequestException(
         message = "get data request failed with exception",
         cause = ex,
+        errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
         subjectAccessRequestId = renderRequest.id,
         params = mapOf("serviceUrl" to renderRequest.serviceConfiguration.url),
       )
@@ -182,6 +185,7 @@ class RenderService(
     else -> throw SubjectAccessRequestException(
       message = "get service data returned unexpected response status",
       cause = null,
+      errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
       subjectAccessRequestId = renderRequest.id,
       params = mapOf(
         "status" to response.statusCode,
