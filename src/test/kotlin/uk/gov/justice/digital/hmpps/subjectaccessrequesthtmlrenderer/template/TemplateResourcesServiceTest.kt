@@ -11,7 +11,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
@@ -87,7 +88,7 @@ class TemplateResourcesServiceTest {
 
     @Test
     fun `should throw expected exception if requested template does not exist`() {
-      val actual = assertThrows<SubjectAccessRequestTemplatingException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         templateResourcesService.getServiceTemplate(
           RenderRequest(
             serviceConfiguration = ServiceConfiguration(
@@ -102,6 +103,7 @@ class TemplateResourcesServiceTest {
         )
       }
 
+      assertThat(actual.errorCode).isEqualTo(ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND)
       assertThat(actual.message).startsWith("template resource not found")
       assertThat(actual.params).containsExactlyEntriesOf(
         mapOf("resource" to "$incorrectTemplateDir/template_no-exist-service.mustache"),
@@ -143,9 +145,9 @@ class TemplateResourcesServiceTest {
     @Test
     fun `should throw expected exception when templateVersionService throws exception`() {
       whenever(templateVersionService.getTemplate(renderRequest))
-        .thenThrow(SubjectAccessRequestTemplatingException::class.java)
+        .thenThrow(SubjectAccessRequestException::class.java)
 
-      assertThrows<SubjectAccessRequestTemplatingException> {
+      assertThrows<SubjectAccessRequestException> {
         templateResourcesService.getServiceTemplate(renderRequest)
       }
 

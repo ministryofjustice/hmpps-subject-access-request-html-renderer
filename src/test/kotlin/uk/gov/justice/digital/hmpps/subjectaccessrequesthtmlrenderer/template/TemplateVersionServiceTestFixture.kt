@@ -14,6 +14,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -188,11 +189,13 @@ abstract class TemplateVersionServiceTestFixture {
     actual: T,
     subjectAccessRequestId: UUID? = renderRequest.id!!,
     message: String,
+    errorCode: ErrorCode,
     params: Map<String, *>? = null,
   ) {
     assertThat(actual).isNotNull()
     assertThat(actual.subjectAccessRequestId).isEqualTo(subjectAccessRequestId)
     assertThat(actual.message).startsWith(message)
+    assertThat(actual.errorCode).isEqualTo(errorCode)
     if (params == null) {
       assertThat(actual.params).isNull()
     } else {

@@ -22,9 +22,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_TEMPLATE_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.net.URI
@@ -186,8 +186,9 @@ class DynamicServicesClient(
       response.statusCode().value() == HttpStatus.NOT_FOUND.value() -> {
         logGetTemplateError(renderRequest, response)
         Mono.error(
-          SubjectAccessRequestNotFoundException(
+          SubjectAccessRequestException(
             subjectAccessRequestId = renderRequest.id,
+            errorCode = ErrorCode.SERVICE_TEMPLATE_NOT_FOUND,
             message = "Get Service template request returned status not found",
             params = mapOf(
               "service" to renderRequest.serviceConfiguration.serviceName,
@@ -215,6 +216,7 @@ class DynamicServicesClient(
           SubjectAccessRequestException(
             subjectAccessRequestId = renderRequest.id,
             message = "Get Service template request returned error status",
+            errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
             params = mapOf(
               "service" to renderRequest.serviceConfiguration.serviceName,
               "status" to response.statusCode().value(),

@@ -16,7 +16,11 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileInfo
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestDocumentStorageException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_FILE_NOT_FOUND
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_HTML_UPLOAD_FAILED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_JSON_UPLOAD_FAILED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.util.UUID
 
@@ -56,9 +60,10 @@ class DocumentStore(
 
       log.info("adding json document to document store.... ${renderRequest.documentJsonKey()}")
     } catch (ex: Exception) {
-      throw SubjectAccessRequestDocumentStorageException(
-        subjectAccessRequestId = renderRequest.id,
+      throw SubjectAccessRequestException(
         message = "failed to upload json document",
+        errorCode = DOCUMENT_STORE_JSON_UPLOAD_FAILED,
+        subjectAccessRequestId = renderRequest.id,
         params = mapOf("documentKey" to renderRequest.documentJsonKey()),
       )
     }
@@ -74,9 +79,10 @@ class DocumentStore(
 
       log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
     } catch (ex: Exception) {
-      throw SubjectAccessRequestDocumentStorageException(
-        subjectAccessRequestId = renderRequest.id,
+      throw SubjectAccessRequestException(
         message = "failed to upload html document",
+        errorCode = DOCUMENT_STORE_HTML_UPLOAD_FAILED,
+        subjectAccessRequestId = renderRequest.id,
         params = mapOf("documentKey" to renderRequest.documentHtmlKey()),
       )
     }
@@ -99,9 +105,10 @@ class DocumentStore(
 
       log.info("adding attachment to document store.... ${renderRequest.documentHtmlKey()}")
     } catch (ex: Exception) {
-      throw SubjectAccessRequestDocumentStorageException(
-        subjectAccessRequestId = renderRequest.id,
+      throw SubjectAccessRequestException(
         message = "failed to upload attachment",
+        errorCode = DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED,
+        subjectAccessRequestId = renderRequest.id,
         params = mapOf("documentKey" to renderRequest.documentHtmlKey(), "filename" to attachment.filename),
       )
     }
@@ -118,8 +125,9 @@ class DocumentStore(
     } catch (notFound: NoSuchKey) {
       null
     } catch (ex: Exception) {
-      throw SubjectAccessRequestDocumentStorageException(
+      throw SubjectAccessRequestException(
         message = "failed to get document from bucket",
+        errorCode = DOCUMENT_STORE_FILE_NOT_FOUND,
         params = mapOf("documentKey" to documentKey),
         cause = ex,
       )

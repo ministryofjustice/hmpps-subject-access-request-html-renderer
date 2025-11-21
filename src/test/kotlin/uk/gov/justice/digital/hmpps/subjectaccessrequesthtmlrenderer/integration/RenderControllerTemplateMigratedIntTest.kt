@@ -170,13 +170,14 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
-      hmppsServiceReturnServiceTemplate(getResourceAsString(templateV1Path))
+      hmppsServiceReturnServiceTemplateNotFoundError()
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
         .expectBody()
+        .jsonPath("$.errorCode").isEqualTo("3003")
         .jsonPath("$.developerMessage").value { value: String ->
-          assertThat(value).startsWith("service template file hash does not match registered template versions")
+          assertThat(value).startsWith("Get Service template request returned status not found")
         }
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
@@ -200,6 +201,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
         .expectBody()
+        .jsonPath("$.errorCode").isEqualTo("2000")
         .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith("request failed and max retry attempts (2) exhausted")
         }
@@ -225,7 +227,9 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
-        .expectBody().jsonPath("$.developerMessage").value { value: String ->
+        .expectBody()
+        .jsonPath("$.errorCode").isEqualTo("3001")
+        .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith("service template file hash does not match registered template versions")
         }
 
@@ -257,6 +261,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
         .expectBody()
+        .jsonPath("$.errorCode").isEqualTo("3001")
         .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith("service template file hash does not match registered template versions")
         }
@@ -332,6 +337,13 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       .responseDefinition()
       .withStatus(500)
       .withBody("failed to get service template"),
+  )
+
+  private fun hmppsServiceReturnServiceTemplateNotFoundError() = sarDataSourceApi.stubGetTemplate(
+    ResponseDefinitionBuilder
+      .responseDefinition()
+      .withStatus(404)
+      .withBody("resource not found"),
   )
 
   private fun assertThatTemplateVersionIsPending(id: UUID) {
