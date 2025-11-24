@@ -13,9 +13,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.springframework.beans.factory.annotation.Autowired
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
@@ -278,11 +278,12 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
       hmppsAuth.stubGrantToken()
       sarDataSourceApi.stubGetTemplate(ResponseDefinitionBuilder().withStatus(404).withBody("Not found"))
 
-      val actual = assertThrows<SubjectAccessRequestNotFoundException> {
+      val actual = assertThrows<SubjectAccessRequestException> {
         dynamicServicesClient.getServiceTemplate(request)
       }
 
       assertThat(actual.message).startsWith("Get Service template request returned status not found")
+      assertThat(actual.errorCode).isEqualTo(ErrorCode.SERVICE_TEMPLATE_NOT_FOUND)
       assertThat(actual.subjectAccessRequestId).isEqualTo(request.id)
       assertThat(actual.params).containsAllEntriesOf(
         mapOf(

@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileSummary
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 import java.util.UUID
@@ -69,7 +70,9 @@ class DeveloperController(private val renderService: RenderService) {
 
     return renderService.getRenderedHtml(documentKey)
       ?.let { return ResponseEntity(String(it), null, HttpStatus.OK) }
-      ?: throw SubjectAccessRequestNotFoundException(
+      ?: throw SubjectAccessRequestException(
+        message = "document $documentKey not found",
+        errorCode = ErrorCode.NOT_FOUND,
         subjectAccessRequestId = UUID.fromString(subjectAccessRequestId),
         params = mapOf("documentKey" to documentKey),
       )
@@ -106,5 +109,9 @@ class DeveloperController(private val renderService: RenderService) {
   suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<FileSummary> = renderService
     .listCacheFilesWithPrefix(UUID.fromString(subjectAccessRequestId))
     ?.let { ResponseEntity(FileSummary(it), null, HttpStatus.OK) }
-    ?: throw SubjectAccessRequestNotFoundException(subjectAccessRequestId = UUID.fromString(subjectAccessRequestId))
+    ?: throw SubjectAccessRequestException(
+      message = "subject access request $subjectAccessRequestId not found",
+      errorCode = ErrorCode.NOT_FOUND,
+      subjectAccessRequestId = UUID.fromString(subjectAccessRequestId),
+    )
 }

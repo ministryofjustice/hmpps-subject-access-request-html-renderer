@@ -13,9 +13,8 @@ import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestBadRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestNotFoundException
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice
@@ -78,37 +77,31 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
       log.error("Unexpected exception", e)
     }
 
-  @ExceptionHandler
-  fun handleSubjectAccessRequestNotFoundException(
-    e: SubjectAccessRequestNotFoundException,
-  ): ResponseEntity<ErrorResponse> = ResponseEntity
-    .status(NOT_FOUND)
-    .body(
-      ErrorResponse(
-        status = NOT_FOUND,
-        userMessage = e.message,
-        developerMessage = e.message,
-      ),
-    ).also {
-      telemetryClient.trackRenderException(e, NOT_FOUND)
-      log.error("Subject access request resource not found exception", e)
-    }
+  @ExceptionHandler(SubjectAccessRequestException::class)
+  fun handleSubjectAccessRequestException(e: SubjectAccessRequestException): ResponseEntity<ErrorResponse> {
+    val status = e.errorCode.resolveToStatusCode()
 
-  @ExceptionHandler
-  fun handleSubjectAccessRequestBadRequestException(
-    e: SubjectAccessRequestBadRequestException,
-  ): ResponseEntity<ErrorResponse> = ResponseEntity
-    .status(BAD_REQUEST)
-    .body(
-      ErrorResponse(
-        status = BAD_REQUEST,
-        userMessage = "bad request: ${e.message}",
-        developerMessage = e.message,
-      ),
-    ).also {
-      telemetryClient.trackRenderException(e, BAD_REQUEST)
-      log.error("bad request: ${e.message}", e)
-    }
+    return ResponseEntity
+      .status(status)
+      .body(
+        ErrorResponse(
+          status = status,
+          userMessage = e.message,
+          developerMessage = e.message,
+          errorCode = e.errorCode.codeString(),
+        ),
+      ).also {
+        telemetryClient.trackRenderException(e, status)
+        log.error("Unexpected exception", e)
+      }
+  }
+
+  private fun ErrorCode.resolveToStatusCode(): HttpStatus = when (this) {
+    ErrorCode.BAD_REQUEST -> BAD_REQUEST
+    ErrorCode.NOT_FOUND -> NOT_FOUND
+    ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND -> NOT_FOUND
+    else -> INTERNAL_SERVER_ERROR
+  }
 
   private companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

@@ -12,7 +12,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpe
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestTemplatingException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
@@ -276,7 +277,7 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate throws exception when the specified service template does not exist`() {
-    val actual = assertThrows<SubjectAccessRequestTemplatingException> {
+    val actual = assertThrows<SubjectAccessRequestException> {
       templateRenderingService.renderServiceDataHtml(
         RenderRequest(
           serviceConfiguration = ServiceConfiguration(
@@ -293,14 +294,16 @@ class TemplateRenderingServiceTest {
     }
 
     assertThat(actual.message).startsWith("template resource not found")
+    assertThat(actual.errorCode).isEqualTo(ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND)
   }
 
   @ParameterizedTest
   @MethodSource("serviceWithMandatoryTemplates")
   fun `renderTemplate throws expected exception when service template is mandated but not template is found`(serviceName: String) {
-    assertThrows<SubjectAccessRequestTemplatingException> {
+    val actual = assertThrows<SubjectAccessRequestException> {
       renderServiceDataHtml(serviceName, testServiceTemplateData)
     }
+    assertThat(actual.errorCode).isEqualTo(ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND)
   }
 
   companion object {

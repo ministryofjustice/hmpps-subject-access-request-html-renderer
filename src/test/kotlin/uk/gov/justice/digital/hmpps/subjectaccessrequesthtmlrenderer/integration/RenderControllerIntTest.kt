@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_SERVICE_DATA_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_SERVICE_DATA_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
@@ -904,7 +905,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
     fun `should return status 400 error when id is null`() {
       assertBadRequestWithExpectedMessage(
         request = RenderRequestEntity(id = null),
-        expectedMessage = "request.id was null, id=null",
+        expectedMessage = "request.id was null",
       )
     }
 
@@ -916,7 +917,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       )
       assertBadRequestWithExpectedMessage(
         request = request,
-        expectedMessage = "request.serviceConfigurationId was null, id=${request.id}",
+        expectedMessage = "request.serviceConfigurationId was null",
       )
     }
 
@@ -941,7 +942,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       assertBadRequestWithExpectedMessage(
         request = request,
-        expectedMessage = "request.nomisId and request.ndeliusId was null or empty, id=${request.id}",
+        expectedMessage = "request.nomisId and request.ndeliusId was null or empty",
       )
     }
 
@@ -978,7 +979,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       )
       assertBadRequestWithExpectedMessage(
         request = request,
-        expectedMessage = "request.dateTo was null, id=${request.id}",
+        expectedMessage = "request.dateTo was null",
       )
     }
 
@@ -993,7 +994,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       )
       assertBadRequestWithExpectedMessage(
         request = request,
-        expectedMessage = "request.dateTo is before request.dateFrom, id=${request.id}",
+        expectedMessage = "request.dateTo is before request.dateFrom",
       )
     }
 
@@ -1015,7 +1016,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       )
       assertBadRequestWithExpectedMessage(
         request = request,
-        expectedMessage = "request.sarCaseReferenceNumber was null or empty, id=${request.id}",
+        expectedMessage = "request.sarCaseReferenceNumber was null or empty",
       )
     }
 
@@ -1025,7 +1026,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
       val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
-        .expectStatus().isEqualTo(404)
+        .expectStatus()
+        .isEqualTo(404)
+        .expectBody().jsonPath("$.errorCode").isEqualTo("2002")
 
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
     }
@@ -1034,7 +1037,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sendRenderTemplateRequest(renderRequestEntity = request)
         .expectStatus().isEqualTo(400)
         .expectBody()
-        .jsonPath("$.developerMessage").isEqualTo(expectedMessage)
+        .jsonPath("$.developerMessage").value { value: String ->
+          assertThat(value).startsWith(expectedMessage)
+        }
+        .jsonPath("$.errorCode").isEqualTo("1001")
 
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
     }
@@ -1231,7 +1237,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
     causeMessage: String,
     uri: String,
   ) = "request failed and max retry attempts (${webClientConfiguration.maxRetries}) exhausted, cause=$causeMessage, " +
-    "id=${renderRequest.id}, serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=$uri"
+    "errorCode=${ErrorCode.WEB_CLIENT_RETRY_EXHAUSTED.codeString()}, id=${renderRequest.id}, serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=$uri"
 
   private fun retryExhaustedErrorMessage(
     renderRequest: RenderRequest,
@@ -1242,8 +1248,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
     renderRequest: RenderRequest,
     status: Int,
   ): String = "request failed and max retry attempts (${webClientConfiguration.maxRetries}) exhausted, " +
-    "cause=GET ${getSarRequestUrl(renderRequest)}, status: $status, id=${renderRequest.id}, " +
-    "serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=${renderRequest.serviceConfiguration.url}"
+    "cause=GET ${getSarRequestUrl(renderRequest)}, status: $status, errorCode=" +
+    "${ErrorCode.WEB_CLIENT_RETRY_EXHAUSTED.codeString()}, id=${renderRequest.id}, serviceName=" +
+    "${renderRequest.serviceConfiguration.serviceName}, uri=${renderRequest.serviceConfiguration.url}"
 
   private fun getSarRequestUrl(
     request: RenderRequest,

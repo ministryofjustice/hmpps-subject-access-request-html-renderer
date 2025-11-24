@@ -11,7 +11,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISHED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_PUBLISH_ERROR
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestServiceTemplateException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
@@ -137,9 +138,10 @@ class TemplateVersionService(
   private fun templateHashMatchFailureException(
     renderRequest: RenderRequest,
     serviceTemplateHash: String,
-  ): SubjectAccessRequestServiceTemplateException = SubjectAccessRequestServiceTemplateException(
-    subjectAccessRequestId = renderRequest.id!!,
+  ): SubjectAccessRequestException = SubjectAccessRequestException(
     message = "service template file hash does not match registered template versions",
+    errorCode = ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH,
+    subjectAccessRequestId = renderRequest.id!!,
     params = mapOf(
       "serviceName" to renderRequest.serviceConfiguration.serviceName,
       "serviceConfigurationId" to renderRequest.serviceConfiguration.id,
@@ -158,9 +160,10 @@ class TemplateVersionService(
 
   private fun serviceTemplateBlankException(
     renderRequest: RenderRequest,
-  ) = SubjectAccessRequestServiceTemplateException(
-    subjectAccessRequestId = renderRequest.id,
+  ) = SubjectAccessRequestException(
     message = "service template hash error: service template was empty",
+    errorCode = ErrorCode.SERVICE_TEMPLATE_EMPTY,
+    subjectAccessRequestId = renderRequest.id,
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
   ).also {
     telemetryClient.renderEvent(
@@ -172,9 +175,10 @@ class TemplateVersionService(
 
   private fun serviceConfigurationNotFoundException(
     renderRequest: RenderRequest,
-  ) = SubjectAccessRequestServiceTemplateException(
-    subjectAccessRequestId = renderRequest.id!!,
+  ) = SubjectAccessRequestException(
     message = "service configuration not found matching id, templateMigrated=true, and enabled=true",
+    errorCode = ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND,
+    subjectAccessRequestId = renderRequest.id!!,
     params = mapOf("serviceConfigurationId" to renderRequest.serviceConfiguration.id),
   ).also {
     telemetryClient.renderEvent(
@@ -188,10 +192,11 @@ class TemplateVersionService(
     renderRequest: RenderRequest,
     templateVersion: TemplateVersion,
     cause: Exception,
-  ) = SubjectAccessRequestServiceTemplateException(
-    subjectAccessRequestId = renderRequest.id,
-    "unexpected error whilst attempting to publish template version",
+  ) = SubjectAccessRequestException(
+    message = "unexpected error whilst attempting to publish template version",
     cause = cause,
+    errorCode = ErrorCode.SERVICE_TEMPLATE_PUBLISH_FAILURE,
+    subjectAccessRequestId = renderRequest.id,
     params = mapOf(
       "serviceName" to renderRequest.serviceConfiguration.serviceName,
       "version" to templateVersion.version,

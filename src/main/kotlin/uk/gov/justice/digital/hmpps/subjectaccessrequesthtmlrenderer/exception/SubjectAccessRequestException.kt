@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception
 
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.WEB_CLIENT_NON_RETRYABLE_ERROR
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.WEB_CLIENT_RETRY_EXHAUSTED
 import java.util.UUID
 
 /**
@@ -8,6 +10,7 @@ import java.util.UUID
 open class SubjectAccessRequestException(
   message: String,
   cause: Throwable? = null,
+  val errorCode: ErrorCode,
   val subjectAccessRequestId: UUID? = null,
   val params: Map<String, *>? = null,
 ) : RuntimeException(message, cause) {
@@ -19,6 +22,7 @@ open class SubjectAccessRequestException(
     get() = buildString {
       append(super.message)
       cause?.message?.let { append(", cause=$it") }
+      append(", errorCode=${errorCode.codeString()}")
       append(", id=$subjectAccessRequestId")
       params?.toFormattedString()?.let { append(", $it") }
     }
@@ -36,29 +40,6 @@ open class SubjectAccessRequestException(
 }
 
 /**
- * Exception type for Bad Request scenarios.
- */
-class SubjectAccessRequestBadRequestException(
-  message: String,
-  subjectAccessRequestId: UUID? = null,
-) : SubjectAccessRequestException(message = message, subjectAccessRequestId = subjectAccessRequestId)
-
-/**
- * Exception type for Resource Not Found scenarios.
- */
-class SubjectAccessRequestNotFoundException(
-  subjectAccessRequestId: UUID? = null,
-  message: String = "resource not found",
-  params: Map<String, *>? = null,
-  cause: Throwable? = null,
-) : SubjectAccessRequestException(
-  subjectAccessRequestId = subjectAccessRequestId,
-  message = message,
-  params = params,
-  cause = cause,
-)
-
-/**
  * Exception type for fatal/non retryable errors.
  */
 class FatalSubjectAccessRequestException(
@@ -67,10 +48,11 @@ class FatalSubjectAccessRequestException(
   subjectAccessRequestId: UUID? = null,
   params: Map<String, *>? = null,
 ) : SubjectAccessRequestException(
-  FATAL_ERROR_MESSAGE_PREFIX.format(message),
-  cause,
-  subjectAccessRequestId,
-  params,
+  message = FATAL_ERROR_MESSAGE_PREFIX.format(message),
+  errorCode = WEB_CLIENT_NON_RETRYABLE_ERROR,
+  cause = cause,
+  subjectAccessRequestId = subjectAccessRequestId,
+  params = params,
 ) {
 
   constructor(
@@ -85,46 +67,6 @@ class FatalSubjectAccessRequestException(
 }
 
 /**
- * Exception type for errors document storage errors
- */
-class SubjectAccessRequestDocumentStorageException(
-  subjectAccessRequestId: UUID? = null,
-  message: String,
-  params: Map<String, *>? = null,
-  cause: Throwable? = null,
-) : SubjectAccessRequestException(
-  subjectAccessRequestId = subjectAccessRequestId,
-  message = message,
-  params = params,
-  cause = cause,
-) {
-  constructor(
-    subjectAccessRequestId: UUID? = null,
-    message: String,
-    params: Map<String, *>? = null,
-  ) : this(subjectAccessRequestId, message, params, null)
-}
-
-/**
- * Exception type for templating errors.
- */
-class SubjectAccessRequestTemplatingException(
-  subjectAccessRequestId: UUID? = null,
-  message: String,
-  params: Map<String, *>? = null,
-) : SubjectAccessRequestException(
-  subjectAccessRequestId = subjectAccessRequestId,
-  message = message,
-  params = params,
-) {
-  constructor(message: String, params: Map<String, *>? = null) : this(
-    subjectAccessRequestId = null,
-    message = message,
-    params = params,
-  )
-}
-
-/**
  * Exception type for retry exhausted errors
  */
 class SubjectAccessRequestRetryExhaustedException(
@@ -133,28 +75,14 @@ class SubjectAccessRequestRetryExhaustedException(
   subjectAccessRequestId: UUID? = null,
   params: Map<String, *>? = null,
 ) : SubjectAccessRequestException(
-  RETRY_EXHAUSTED_ERROR_MESSAGE_PREFIX.format(retryAttempts),
-  cause,
-  subjectAccessRequestId,
-  params,
+  message = RETRY_EXHAUSTED_ERROR_MESSAGE_PREFIX.format(retryAttempts),
+  cause = cause,
+  errorCode = WEB_CLIENT_RETRY_EXHAUSTED,
+  subjectAccessRequestId = subjectAccessRequestId,
+  params = params,
 ) {
 
   companion object {
     private const val RETRY_EXHAUSTED_ERROR_MESSAGE_PREFIX = "request failed and max retry attempts (%s) exhausted"
   }
 }
-
-/**
- * Exception type for Service Template errors.
- */
-class SubjectAccessRequestServiceTemplateException(
-  subjectAccessRequestId: UUID? = null,
-  message: String,
-  params: Map<String, *>? = null,
-  cause: Throwable? = null,
-) : SubjectAccessRequestException(
-  subjectAccessRequestId = subjectAccessRequestId,
-  message = message,
-  params = params,
-  cause = cause,
-)
