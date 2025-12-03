@@ -16,12 +16,16 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.S
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
-class TemplateResourcesServiceTest {
+class TemplateServiceTest {
 
   private val templateVersionService: TemplateVersionService = mock()
 
-  private var templateResourcesService = TemplateResourcesService(
+  private var templateService: TemplateService = TemplateService(
     templateVersionService = templateVersionService,
+  )
+
+  private val data: Map<String, Any?> = mapOf(
+    "Id" to 1234L,
   )
 
   @ParameterizedTest
@@ -51,7 +55,10 @@ class TemplateResourcesServiceTest {
     ],
     delimiterString = "|",
   )
-  fun `should return expected service template`(serviceName: String, expectedTitle: String) {
+  fun `should return expected render parameters when template migrated is false`(
+    serviceName: String,
+    expectedTitle: String,
+  ) {
     val renderRequest = RenderRequest(
       serviceConfiguration = ServiceConfiguration(
         serviceName = serviceName,
@@ -62,16 +69,98 @@ class TemplateResourcesServiceTest {
         url = "https://example.com",
       ),
     )
-    val testTemplate = templateResourcesService.getServiceTemplate(renderRequest)
-    assertThat(testTemplate).isNotNull()
-    assertThat(testTemplate).contains(expectedTitle)
+    val renderParameters = templateService.getRenderParameters(renderRequest, data)
+
+    assertThat(renderParameters).isNotNull
+    assertThat(renderParameters.templateVersion).isEqualTo("v1-migrated-false")
+    assertThat(renderParameters.template).contains(expectedTitle)
+    assertThat(renderParameters.data).isEqualTo(data)
+
+    verifyNoInteractions(templateVersionService)
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    value = [
+      "court-case-service                       | <h1>Prepare a Case for Sentence</h1>  | 1.0.0",
+      "create-and-vary-a-licence-api            | <h1>Create and vary a licence</h1>    | 1.0.1",
+      "G1                                       | <h1>G1</h1>                           | 1.0.2",
+      "G2                                       | <h1>G2</h1>                           | 1.0.3",
+      "G3                                       | <h1>G3</h1>                           | 1.0.4",
+      "hmpps-accredited-programmes-api          | <h1>Accredited programmes</h1>        | 1.0.5",
+    ],
+    delimiterString = "|",
+  )
+  fun `should return expected render parameters when template migrated is true`(
+    serviceName: String,
+    expectedTemplate: String,
+    expectedVersion: String,
+  ) {
+    val renderRequest = RenderRequest(
+      serviceConfiguration = ServiceConfiguration(
+        serviceName = serviceName,
+        label = "HMPPS Test Service",
+        order = 1,
+        enabled = true,
+        templateMigrated = true,
+        url = "https://example.com",
+      ),
+    )
+
+    whenever(templateVersionService.getTemplate(renderRequest)).thenReturn(
+      TemplateDetails(
+        version = expectedVersion,
+        body = expectedTemplate,
+      ),
+    )
+
+    val renderParameters = templateService.getRenderParameters(renderRequest, data)
+
+    assertThat(renderParameters).isNotNull
+    assertThat(renderParameters.templateVersion).isEqualTo(expectedVersion)
+    assertThat(renderParameters.template).contains(expectedTemplate)
+    assertThat(renderParameters.data).isEqualTo(data)
+
+    verify(templateVersionService, times(1)).getTemplate(renderRequest)
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+    value = [
+      "court-case-service                       | Court Case Service                   | true",
+      "offender-management-allocation-manager   | Manage Prison Offender Manager Cases | false",
+    ],
+    delimiterString = "|",
+  )
+  fun `should return expected template when no data is held`(
+    serviceName: String,
+    serviceLabel: String,
+    templateMigrated: Boolean,
+  ) {
+    val renderRequest = RenderRequest(
+      serviceConfiguration = ServiceConfiguration(
+        serviceName = serviceName,
+        label = serviceLabel,
+        order = 1,
+        enabled = true,
+        templateMigrated = templateMigrated,
+        url = "https://example.com",
+      ),
+    )
+
+    val renderParameters = templateService.getRenderParameters(renderRequest, null)
+
+    assertThat(renderParameters).isNotNull
+    assertThat(renderParameters.templateVersion).isEqualTo("v1-no-data")
+    assertThat(renderParameters.template).isEqualTo("<h1>{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
+    assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to serviceLabel))
 
     verifyNoInteractions(templateVersionService)
   }
 
   @Test
   fun `should return style template`() {
-    val styleTemplate = templateResourcesService.getStyleTemplate()
+    val styleTemplate = templateService.getStyleTemplate()
 
     assertThat(styleTemplate).isNotNull()
     assertThat(styleTemplate).isNotEmpty()
@@ -81,7 +170,7 @@ class TemplateResourcesServiceTest {
   @Nested
   inner class TemplatesNotFoundTest {
     private val incorrectTemplateDir = "/not_templates_dir"
-    private val templateResourcesService = TemplateResourcesService(
+    private val templateService = TemplateService(
       templatesDirectory = incorrectTemplateDir,
       templateVersionService = templateVersionService,
     )
@@ -89,7 +178,7 @@ class TemplateResourcesServiceTest {
     @Test
     fun `should throw expected exception if requested template does not exist`() {
       val actual = assertThrows<SubjectAccessRequestException> {
-        templateResourcesService.getServiceTemplate(
+        templateService.getRenderParameters(
           RenderRequest(
             serviceConfiguration = ServiceConfiguration(
               serviceName = "no-exist-service",
@@ -100,6 +189,7 @@ class TemplateResourcesServiceTest {
               url = "https://example.com",
             ),
           ),
+          data = data,
         )
       }
 
@@ -112,43 +202,27 @@ class TemplateResourcesServiceTest {
 
     @Test
     fun `should return empty string if style template not found`() {
-      assertThat(templateResourcesService.getStyleTemplate()).isEmpty()
-    }
-  }
-
-  @Nested
-  inner class TemplateMigratedTest {
-
-    private val serviceConfiguration = ServiceConfiguration(
-      serviceName = "hmpps-test-service",
-      label = "HMPPS Test Service",
-      order = 1,
-      enabled = true,
-      templateMigrated = true,
-      url = "https://example.com",
-    )
-
-    private val renderRequest = RenderRequest(serviceConfiguration = serviceConfiguration)
-
-    @Test
-    fun `should return expected template when service configuration templateMigrated is true`() {
-      whenever(templateVersionService.getTemplate(renderRequest))
-        .thenReturn("<h1>HMPPS Test Service - Migrated Template</h1>")
-
-      val actual = templateResourcesService.getServiceTemplate(renderRequest)
-
-      assertThat(actual).isEqualTo("<h1>HMPPS Test Service - Migrated Template</h1>")
-
-      verify(templateVersionService, times(1)).getTemplate(renderRequest)
+      assertThat(templateService.getStyleTemplate()).isEmpty()
     }
 
     @Test
     fun `should throw expected exception when templateVersionService throws exception`() {
+      val renderRequest = RenderRequest(
+        serviceConfiguration = ServiceConfiguration(
+          serviceName = "hmpps-test-service",
+          label = "HMPPS Test Service",
+          order = 1,
+          enabled = true,
+          templateMigrated = true,
+          url = "https://example.com",
+        ),
+      )
+
       whenever(templateVersionService.getTemplate(renderRequest))
         .thenThrow(SubjectAccessRequestException::class.java)
 
       assertThrows<SubjectAccessRequestException> {
-        templateResourcesService.getServiceTemplate(renderRequest)
+        templateService.getRenderParameters(renderRequest, data)
       }
 
       verify(templateVersionService, times(1)).getTemplate(renderRequest)

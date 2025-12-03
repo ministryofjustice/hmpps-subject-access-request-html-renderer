@@ -42,7 +42,7 @@ class TemplateRenderingServiceTest {
   private val templateRenderService = TemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
     templateRenderService,
-    TemplateResourcesService(
+    TemplateService(
       templatesDirectory = "/templates",
       templateVersionService = templateVersionService,
     ),

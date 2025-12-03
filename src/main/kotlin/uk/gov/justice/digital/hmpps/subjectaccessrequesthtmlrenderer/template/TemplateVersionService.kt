@@ -38,24 +38,27 @@ class TemplateVersionService(
    * Get the SAR template from the HMPPS Service and verify the file hash against the expected template version.
    */
   @Transactional
-  fun getTemplate(renderRequest: RenderRequest): String {
+  fun getTemplate(renderRequest: RenderRequest): TemplateDetails {
     val serviceTemplate: String = getServiceTemplate(renderRequest)
 
-    verifyTemplateHash(
+    val templateVersion = verifyTemplateHash(
       renderRequest = renderRequest,
       serviceTemplate = serviceTemplate,
     )
 
-    return serviceTemplate
+    return TemplateDetails(
+      version = templateVersion.version.toString(),
+      body = serviceTemplate,
+    )
   }
 
-  private fun verifyTemplateHash(renderRequest: RenderRequest, serviceTemplate: String) {
+  private fun verifyTemplateHash(renderRequest: RenderRequest, serviceTemplate: String): TemplateVersion {
     assertServiceTemplateIsNotEmpty(renderRequest, serviceTemplate)
 
     val serviceConfiguration = getServiceConfiguration(renderRequest)
     val serviceTemplateHash = getSha256HashValue(serviceTemplate)
 
-    templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
+    return templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
       ?.takeIf { it.fileHash == serviceTemplateHash }
       ?.let {
         log.info(
