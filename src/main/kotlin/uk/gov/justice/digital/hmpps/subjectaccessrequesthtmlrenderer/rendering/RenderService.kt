@@ -96,8 +96,8 @@ class RenderService(
         documentHtmlKey,
         renderRequest.serviceConfiguration.serviceName,
       )
-      val renderedTemplate = templateRenderingService.renderServiceDataHtml(renderRequest, content)
-      storeRenderedHtml(renderRequest, renderedTemplate)
+      val renderedHtml = templateRenderingService.renderServiceDataHtml(renderRequest, content)
+      storeRenderedHtml(renderRequest, renderedHtml)
       log.info("document {} created and added to document store", documentHtmlKey)
       return RenderResult.CREATED
     }
