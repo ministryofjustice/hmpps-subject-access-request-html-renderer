@@ -4,7 +4,6 @@ import com.github.mustachejava.DefaultMustacheFactory
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.RenderParameters
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
@@ -19,7 +18,7 @@ import java.nio.charset.StandardCharsets
 @Service
 class TemplateRenderingService(
   private val templateRenderService: TemplateRenderService,
-  private val templateResourcesService: TemplateResourcesService,
+  private val templateService: TemplateService,
   private val telemetryClient: TelemetryClient,
 ) {
 
@@ -27,30 +26,34 @@ class TemplateRenderingService(
     private val log = LoggerFactory.getLogger(TemplateRenderingService::class.java)
   }
 
-  fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
+  fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): RenderedHtml {
     telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
-    log.info("starting html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceConfiguration.serviceName)
+    log.info(
+      "starting html render for id={}, service={}",
+      renderRequest.serviceNameMap(),
+      renderRequest.serviceConfiguration.serviceName,
+    )
 
-    val renderParameters = getRenderParameters(renderRequest, data)
+    val renderParameters = templateService.getRenderParameters(renderRequest, data)
     val renderedServiceTemplate = templateRenderService.renderServiceTemplate(renderParameters)
-    return renderStyleTemplate(renderedServiceTemplate).also {
+    val outputStream = renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
-      log.info("completed html render for id={}, service={}", renderRequest.serviceNameMap(), renderRequest.serviceConfiguration.serviceName)
+      log.info(
+        "completed html render for id={}, service={}",
+        renderRequest.serviceNameMap(),
+        renderRequest.serviceConfiguration.serviceName,
+      )
     }
-  }
 
-  private fun getRenderParameters(
-    renderRequest: RenderRequest,
-    data: Any?,
-  ): RenderParameters = if (data != null) {
-    RenderParameters(templateResourcesService.getServiceTemplate(renderRequest), data)
-  } else {
-    RenderParameters(templateResourcesService.getNoDataTemplate(renderRequest), renderRequest.serviceNameMap())
+    return RenderedHtml(
+      data = outputStream,
+      templateVersion = renderParameters.templateVersion,
+    )
   }
 
   private fun renderStyleTemplate(renderedServiceTemplate: String): ByteArrayOutputStream {
     val defaultMustacheFactory = DefaultMustacheFactory()
-    val styleTemplate = templateResourcesService.getStyleTemplate()
+    val styleTemplate = templateService.getStyleTemplate()
     val compiledStyleTemplate = defaultMustacheFactory.compile(StringReader(styleTemplate), "styleTemplate")
 
     val out = ByteArrayOutputStream()
@@ -65,3 +68,5 @@ class TemplateRenderingService(
 
   fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to this.serviceConfiguration.label)
 }
+
+data class RenderedHtml(val data: ByteArrayOutputStream?, val templateVersion: String)

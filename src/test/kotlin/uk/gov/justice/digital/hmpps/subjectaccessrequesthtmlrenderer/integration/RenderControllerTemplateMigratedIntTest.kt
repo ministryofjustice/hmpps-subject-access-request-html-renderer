@@ -99,7 +99,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
     @Test
     fun `should generate expected HTML for service with template migrated true`() {
-      templateVersionRepository.save(templateVersion1Published)
+      val templateVersion = templateVersionRepository.save(templateVersion1Published)
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
@@ -122,6 +122,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         renderRequest,
         getExpectedHtmlString("hmpps-test-service-migrated-template-v1"),
       )
+      assertStoredTemplateVersionMatchesExpected(renderRequest, templateVersion.version.toString())
     }
 
     @Test
@@ -155,6 +156,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString("hmpps-test-service-migrated-template-v2"))
       assertThatTemplateVersionIsPublished(templateVersion3Pending.id)
+      assertStoredTemplateVersionMatchesExpected(renderRequest, templateVersion3Pending.version.toString())
     }
   }
 
@@ -304,6 +306,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
   private fun assertUploadedHtmlDoesNotExist(renderRequest: RenderRequest) {
     assertThat(s3TestUtil.documentExists(renderRequest.documentHtmlKey())).isFalse()
+  }
+
+  private fun assertStoredTemplateVersionMatchesExpected(renderRequest: RenderRequest, expected: String?) {
+    assertThat(s3TestUtil.getTemplateVersion(renderRequest.documentHtmlKey())).isEqualTo(expected)
   }
 
   private fun assertRenderTemplateSuccessResponse(

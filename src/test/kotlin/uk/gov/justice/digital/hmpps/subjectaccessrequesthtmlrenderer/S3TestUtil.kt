@@ -78,6 +78,17 @@ class S3TestUtil(
     }
   }
 
+  fun getTemplateVersion(key: String): String? = runBlocking {
+    try {
+      s3.headObject {
+        this.bucket = s3Properties.bucketName
+        this.key = key
+      }.metadata?.get("template_version")
+    } catch (e: NotFound) {
+      null
+    }
+  }
+
   fun getAttachmentMetadata(key: String): AttachmentMetadata = runBlocking {
     s3.getObject(
       GetObjectRequest {

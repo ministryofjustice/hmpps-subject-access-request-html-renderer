@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRende
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateResourcesService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -37,15 +37,13 @@ class TemplateGeneratorUtil {
   private val templateDataFetcherFacade: TemplateDataFetcherFacade = mock()
   private val templateVersionService: TemplateVersionService = mock()
 
-  private val templateResourcesService: TemplateResourcesService = TemplateResourcesService(
-    templateVersionService = templateVersionService,
-  )
+  private val templateService: TemplateService = TemplateService(templateVersionService = templateVersionService)
 
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
 
   private val templateRenderService: TemplateRenderService = TemplateRenderService(templateHelpers)
 
-  private val templateRenderingService: TemplateRenderingService = TemplateRenderingService(templateRenderService, templateResourcesService, telemetryClient)
+  private val templateRenderingService: TemplateRenderingService = TemplateRenderingService(templateRenderService, templateService, telemetryClient)
 
   init {
     whenever(templateDataFetcherFacade.findUserLastNameByUsername(any())).thenReturn("Homer Simpson")
@@ -89,7 +87,7 @@ class TemplateGeneratorUtil {
   private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
     val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
 
-    return templateRenderingService.renderServiceDataHtml(renderRequest = renderRequest, data = data)
+    return templateRenderingService.renderServiceDataHtml(renderRequest = renderRequest, data = data).data
       ?: throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
   }
 

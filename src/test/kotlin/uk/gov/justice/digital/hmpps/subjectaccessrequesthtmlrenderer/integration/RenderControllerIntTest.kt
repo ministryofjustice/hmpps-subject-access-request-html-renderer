@@ -128,7 +128,6 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
         "hmpps-education-employment-api | Work Readiness",
-        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
         "hmpps-support-additional-needs-api | Support for Additional Needs",
@@ -163,6 +162,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-migrated-false")
 
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
@@ -205,7 +205,6 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "hmpps-resettlement-passport-api | Prepare Someone for Release",
         "hmpps-approved-premises-api | Approved Premises",
         "hmpps-education-employment-api | Work Readiness",
-        "launchpad-auth | Launchpad",
         "hmpps-health-and-medication-api | Health and Medication",
         "hmpps-managing-prisoner-apps-api | Managing Prisoner Applications",
         "hmpps-support-additional-needs-api | Support for Additional Needs",
@@ -239,6 +238,44 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
 
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-migrated-false")
+
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(SERVICE_DATA_EXISTS, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_COMPLETED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_RENDERED_HTML_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_RENDERED_HTML_COMPLETED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(REQUEST_COMPLETE, eventProperties(renderRequest)),
+      )
+
+      sarDataSourceApi.verifyGetTemplateNeverCalled()
+    }
+
+    @Test
+    fun `should store html with the correct templateVersion metadata when no data is held`() {
+      // Given
+      val serviceName = "launchpad-auth"
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
+      addServiceJsonDocumentToBucket(renderRequest)
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
+
+      // When
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+
+      // Then
+      assertRenderTemplateSuccessResponse(response, renderRequest)
+      hmppsAuth.verifyGrantTokenIsNeverCalled()
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+
+      assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-no-data")
 
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
@@ -1055,6 +1092,10 @@ class RenderControllerIntTest : IntegrationTestBase() {
         ServiceData::class.java,
       ),
     )
+  }
+
+  private fun assertStoredTemplateVersionMatchesExpected(renderRequest: RenderRequest, expected: String?) {
+    assertThat(s3TestUtil.getTemplateVersion(renderRequest.documentHtmlKey())).isEqualTo(expected)
   }
 
   private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {

@@ -28,8 +28,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.documentstore.DocumentStore
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
-import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.UUID
 
@@ -96,8 +96,8 @@ class RenderService(
         documentHtmlKey,
         renderRequest.serviceConfiguration.serviceName,
       )
-      val renderedData = templateRenderingService.renderServiceDataHtml(renderRequest, content)
-      storeRenderedHtml(renderRequest, renderedData)
+      val renderedHtml = templateRenderingService.renderServiceDataHtml(renderRequest, content)
+      storeRenderedHtml(renderRequest, renderedHtml)
       log.info("document {} created and added to document store", documentHtmlKey)
       return RenderResult.CREATED
     }
@@ -209,7 +209,10 @@ class RenderService(
     )
   }
 
-  private suspend fun storeRenderedHtml(renderRequest: RenderRequest, renderedData: ByteArrayOutputStream?) {
+  private suspend fun storeRenderedHtml(
+    renderRequest: RenderRequest,
+    renderedHtml: RenderedHtml,
+  ) {
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_STARTED, renderRequest)
     log.info(
       "stored rendered html document for id={}, service={}",
@@ -217,7 +220,7 @@ class RenderService(
       renderRequest.serviceConfiguration.serviceName,
     )
 
-    documentStore.addHtml(renderRequest, renderedData?.toByteArray())
+    documentStore.addHtml(renderRequest, renderedHtml)
 
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_COMPLETED, renderRequest)
     log.info(
