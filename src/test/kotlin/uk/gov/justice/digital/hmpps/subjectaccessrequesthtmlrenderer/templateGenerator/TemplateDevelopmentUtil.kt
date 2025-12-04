@@ -87,7 +87,7 @@ class TemplateGeneratorUtil {
   private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
     val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
 
-    return templateRenderingService.renderServiceDataHtml(renderRequest = renderRequest, data = data)
+    return templateRenderingService.renderServiceDataHtml(renderRequest = renderRequest, data = data).data
       ?: throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
   }
 

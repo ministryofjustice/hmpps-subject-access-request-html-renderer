@@ -26,7 +26,7 @@ class TemplateRenderingService(
     private val log = LoggerFactory.getLogger(TemplateRenderingService::class.java)
   }
 
-  fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): ByteArrayOutputStream? {
+  fun renderServiceDataHtml(renderRequest: RenderRequest, data: Any?): RenderedHtml {
     telemetryClient.renderEvent(RENDER_TEMPLATE_STARTED, renderRequest)
     log.info(
       "starting html render for id={}, service={}",
@@ -36,7 +36,7 @@ class TemplateRenderingService(
 
     val renderParameters = templateService.getRenderParameters(renderRequest, data)
     val renderedServiceTemplate = templateRenderService.renderServiceTemplate(renderParameters)
-    return renderStyleTemplate(renderedServiceTemplate).also {
+    val outputStream = renderStyleTemplate(renderedServiceTemplate).also {
       telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
       log.info(
         "completed html render for id={}, service={}",
@@ -44,6 +44,11 @@ class TemplateRenderingService(
         renderRequest.serviceConfiguration.serviceName,
       )
     }
+
+    return RenderedHtml(
+      data = outputStream,
+      templateVersion = renderParameters.templateVersion,
+    )
   }
 
   private fun renderStyleTemplate(renderedServiceTemplate: String): ByteArrayOutputStream {
@@ -63,3 +68,5 @@ class TemplateRenderingService(
 
   fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to this.serviceConfiguration.label)
 }
+
+data class RenderedHtml(val data: ByteArrayOutputStream?, val templateVersion: String)

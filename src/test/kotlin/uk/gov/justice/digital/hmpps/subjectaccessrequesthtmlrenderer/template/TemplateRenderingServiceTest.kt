@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
@@ -30,6 +31,7 @@ class TemplateRenderingServiceTest {
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
   private val templateVersionService: TemplateVersionService = mock()
+  private val expectedTemplateVersion = "v1-migrated-false"
 
   private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
     prisonDetailsRepository,
@@ -49,7 +51,7 @@ class TemplateRenderingServiceTest {
     telemetryClient,
   )
 
-  private fun renderServiceDataHtml(serviceName: String, data: Any?): String {
+  private fun renderServiceDataHtml(serviceName: String, data: Any?): RenderedHtml {
     val actual = templateRenderingService.renderServiceDataHtml(
       RenderRequest(
         serviceConfiguration = ServiceConfiguration(
@@ -64,7 +66,7 @@ class TemplateRenderingServiceTest {
       data,
     )
     assertThat(actual).isNotNull()
-    return String(actual!!.toByteArray())
+    return actual
   }
 
   @Test
@@ -72,15 +74,20 @@ class TemplateRenderingServiceTest {
     val actual = renderServiceDataHtml("test-service", testServiceTemplateData)
 
     assertThat(actual).isNotNull()
-    assertThat(actual).isNotEmpty()
-    assertThat(actual).contains("<style>")
-    assertThat(actual).contains("</style>")
-    assertThat(actual).contains("<td>Test Key:</td><td>testValue</td>")
-    assertThat(actual).contains("<td>Nested Data:</td><td>nestedValue</td>")
-    assertThat(actual).contains("<td>Array Data:</td><td><ul><li>arrayValue1-1</li><li>arrayValue1-2</li></ul></td>")
-    assertThat(actual).contains("<td>Test Key:</td><td>testValue2</td>")
-    assertThat(actual).contains("<td>Nested Data:</td><td>nestedValue2</td>")
-    assertThat(actual).contains("<td>Array Data:</td><td><ul><li>arrayValue2-1</li><li>arrayValue2-2</li></ul></td>")
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).isNotEmpty()
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td>Test Key:</td><td>testValue</td>")
+    assertThat(renderedTemplate).contains("<td>Nested Data:</td><td>nestedValue</td>")
+    assertThat(renderedTemplate).contains("<td>Array Data:</td><td><ul><li>arrayValue1-1</li><li>arrayValue1-2</li></ul></td>")
+    assertThat(renderedTemplate).contains("<td>Test Key:</td><td>testValue2</td>")
+    assertThat(renderedTemplate).contains("<td>Nested Data:</td><td>nestedValue2</td>")
+    assertThat(renderedTemplate).contains("<td>Array Data:</td><td><ul><li>arrayValue2-1</li><li>arrayValue2-2</li></ul></td>")
   }
 
   @Test
@@ -88,10 +95,14 @@ class TemplateRenderingServiceTest {
     val actual = renderServiceDataHtml("keyworker-api", testKeyworkerServiceData)
 
     assertThat(actual).isNotNull()
-    assertThat(actual).contains("<style>")
-    assertThat(actual).contains("</style>")
-    assertThat(actual).contains("<td>Allocated at</td><td>03 December 2019, 11:00:58 am</td>")
-    assertThat(actual).contains("<td>Allocation is active</td><td>No</td>")
+    assertThat(actual.data).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td>Allocated at</td><td>03 December 2019, 11:00:58 am</td>")
+    assertThat(renderedTemplate).contains("<td>Allocation is active</td><td>No</td>")
   }
 
   @Test
@@ -99,13 +110,17 @@ class TemplateRenderingServiceTest {
     val actual = renderServiceDataHtml("hmpps-activities-management-api", testActivitiesServiceData)
 
     assertThat(actual).isNotNull()
-    assertThat(actual).contains("<style>")
-    assertThat(actual).contains("</style>")
-    assertThat(actual).contains("<td class=\"data-column-25\">End date</td>")
-    assertThat(actual).contains("<h3>Application - Waiting list ID 1</h3>")
-    assertThat(actual).contains("<h3>Application - Waiting list ID 10</h3>")
-    assertThat(actual).contains("<td class=\"data-column-25\">Status date</td>")
-    assertThat(actual).contains("<h3>Appointment</h3>")
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">End date</td>")
+    assertThat(renderedTemplate).contains("<h3>Application - Waiting list ID 1</h3>")
+    assertThat(renderedTemplate).contains("<h3>Application - Waiting list ID 10</h3>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Status date</td>")
+    assertThat(renderedTemplate).contains("<h3>Appointment</h3>")
   }
 
   @Test
@@ -118,11 +133,14 @@ class TemplateRenderingServiceTest {
     )
 
     val actual = renderServiceDataHtml("hmpps-incentives-api", testIncentivesServiceData)
+    assertThat(actual.data).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    val renderedTemplate = actual.outputStreamToString()
 
-    assertThat(actual).contains("<style>")
-    assertThat(actual).contains("</style>")
-    assertThat(actual).contains("<td>03 December 2019</td>")
-    assertThat(actual).contains("<td>03 July 2023, 9:14:25 pm</td>")
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td>03 December 2019</td>")
+    assertThat(renderedTemplate).contains("<td>03 July 2023, 9:14:25 pm</td>")
   }
 
   @Test
@@ -130,41 +148,49 @@ class TemplateRenderingServiceTest {
     val actual = renderServiceDataHtml("hmpps-manage-adjudications-api", testAdjudicationsServiceData)
 
     assertThat(actual).isNotNull()
-    assertThat(actual).contains("<style>")
-    assertThat(actual).contains("</style>")
-    assertThat(actual).contains("<td>Date and time of incident</td><td>08 June 2023, 12:00:00 pm</td>")
-    assertThat(actual).contains("<td>Description</td><td>Assists another prisoner to commit, or to attempt to commit, any of the foregoing offences:</td>")
-    assertThat(actual).contains("<td>Description</td><td>Intentionally or recklessly sets fire to any part of a prison or any other property, whether or not her own</td>")
-    assertThat(actual).contains("<td>Status</td><td>CHARGE_PROVED</td>")
-    assertThat(actual).contains("<td>ELECTRICAL_REPAIR</td>")
-    assertThat(actual).contains("<td>BAGGED_AND_TAGGED</td>")
-    assertThat(actual).contains("<td>OIC hearing type</td><td>INAD_ADULT</td>")
-    assertThat(actual).contains("<td>James Warburton</td>")
-    assertThat(actual).contains("<td>Code</td><td>CHARGE_PROVED</td>")
-    assertThat(actual).contains("<td class=\"data-column-30\">Privilege type</td>")
-    assertThat(actual).contains("<td>Linked charge numbers</td><td>9872-1, 9872-2</td>")
-    assertThat(actual).contains("<td>DAYS</td>")
-    assertThat(actual).contains("<td>Some info</td>")
-    assertThat(actual).contains("<td>Reason for change</td><td>APPEAL</td>")
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td>Date and time of incident</td><td>08 June 2023, 12:00:00 pm</td>")
+    assertThat(renderedTemplate).contains("<td>Description</td><td>Assists another prisoner to commit, or to attempt to commit, any of the foregoing offences:</td>")
+    assertThat(renderedTemplate).contains("<td>Description</td><td>Intentionally or recklessly sets fire to any part of a prison or any other property, whether or not her own</td>")
+    assertThat(renderedTemplate).contains("<td>Status</td><td>CHARGE_PROVED</td>")
+    assertThat(renderedTemplate).contains("<td>ELECTRICAL_REPAIR</td>")
+    assertThat(renderedTemplate).contains("<td>BAGGED_AND_TAGGED</td>")
+    assertThat(renderedTemplate).contains("<td>OIC hearing type</td><td>INAD_ADULT</td>")
+    assertThat(renderedTemplate).contains("<td>James Warburton</td>")
+    assertThat(renderedTemplate).contains("<td>Code</td><td>CHARGE_PROVED</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-30\">Privilege type</td>")
+    assertThat(renderedTemplate).contains("<td>Linked charge numbers</td><td>9872-1, 9872-2</td>")
+    assertThat(renderedTemplate).contains("<td>DAYS</td>")
+    assertThat(renderedTemplate).contains("<td>Some info</td>")
+    assertThat(renderedTemplate).contains("<td>Reason for change</td><td>APPEAL</td>")
   }
 
   @Test
   fun `renderTemplate renders a template given a home detentions curfew template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-hdc-api", testHDCServiceData)
+    val actual = renderServiceDataHtml("hmpps-hdc-api", testHDCServiceData)
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-25\">Vary version</td>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-25\">Has considered checks</td>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>First night from</td><td>15:00</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-15\">Friday from</td>")
-    assertThat(renderedStyleTemplate).contains("<td>Decision maker</td><td>Test User</td>")
-    assertThat(renderedStyleTemplate).contains("<td>Offence committed before Feb 2015</td><td>No</td>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-25\">Telephone</td>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-25\">Curfew address line 1</td>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Bass requested</td><td>Yes</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<td>Additional conditions required</td><td>No</td>")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Vary version</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Has considered checks</td>")
+    assertThat(renderedTemplate).contains("<tr><td>First night from</td><td>15:00</td></tr>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-15\">Friday from</td>")
+    assertThat(renderedTemplate).contains("<td>Decision maker</td><td>Test User</td>")
+    assertThat(renderedTemplate).contains("<td>Offence committed before Feb 2015</td><td>No</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Telephone</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Curfew address line 1</td>")
+    assertThat(renderedTemplate).contains("<tr><td>Bass requested</td><td>Yes</td></tr>")
+    assertThat(renderedTemplate).contains("<td>Additional conditions required</td><td>No</td>")
   }
 
   @Test
@@ -176,103 +202,136 @@ class TemplateRenderingServiceTest {
       ),
     )
 
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-uof-data-api", testUseOfForceServiceData)
+    val actual = renderServiceDataHtml("hmpps-uof-data-api", testUseOfForceServiceData)
+    assertThat(actual.data).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    val renderedTemplate = actual.outputStreamToString()
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-50\">Incident date</td>")
-    assertThat(renderedStyleTemplate).contains("<td>CCTV recording</td>")
-    assertThat(renderedStyleTemplate).contains("<td>Name</td><td>Lee</td>")
-    assertThat(renderedStyleTemplate).contains("<td class=\"data-column-25\">Baton drawn</td>")
+    assertThat(renderedTemplate).isNotNull()
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-50\">Incident date</td>")
+    assertThat(renderedTemplate).contains("<td>CCTV recording</td>")
+    assertThat(renderedTemplate).contains("<td>Name</td><td>Lee</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-25\">Baton drawn</td>")
   }
 
   @Test
   fun `renderTemplate renders a template given a prepare someone for release template`() {
-    val renderedStyleTemplate =
-      renderServiceDataHtml("hmpps-resettlement-passport-api", testResettlementPassportServiceData)
+    val actual = renderServiceDataHtml(
+      "hmpps-resettlement-passport-api",
+      testResettlementPassportServiceData,
+    )
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("Prison name")
-    assertThat(renderedStyleTemplate).contains("Deed poll certificate")
-    assertThat(renderedStyleTemplate).contains("Account opened")
-    assertThat(renderedStyleTemplate).contains("FINANCE_AND_ID")
-    assertThat(renderedStyleTemplate).contains("Date application submitted")
-    assertThat(renderedStyleTemplate).contains("James Boobier")
-    assertThat(renderedStyleTemplate).contains("DRUGS_AND_ALCOHOL")
-    assertThat(renderedStyleTemplate).contains("Help finding accomodation")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("Prison name")
+    assertThat(renderedTemplate).contains("Deed poll certificate")
+    assertThat(renderedTemplate).contains("Account opened")
+    assertThat(renderedTemplate).contains("FINANCE_AND_ID")
+    assertThat(renderedTemplate).contains("Date application submitted")
+    assertThat(renderedTemplate).contains("James Boobier")
+    assertThat(renderedTemplate).contains("DRUGS_AND_ALCOHOL")
+    assertThat(renderedTemplate).contains("Help finding accomodation")
   }
 
   @Test
   fun `renderTemplate renders a template given a court case service template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("court-case-service", testCourtCaseServiceData)
+    val actual = renderServiceDataHtml("court-case-service", testCourtCaseServiceData)
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<h5>Notes</h5>")
-    assertThat(renderedStyleTemplate).contains("This is a note")
-    assertThat(renderedStyleTemplate).contains("<h5>Outcomes</h5>")
-    assertThat(renderedStyleTemplate).contains("ADJOURNED")
-    assertThat(renderedStyleTemplate).contains("<h3>Comments</h3>")
-    assertThat(renderedStyleTemplate).contains("Author One")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h5>Notes</h5>")
+    assertThat(renderedTemplate).contains("This is a note")
+    assertThat(renderedTemplate).contains("<h5>Outcomes</h5>")
+    assertThat(renderedTemplate).contains("ADJOURNED")
+    assertThat(renderedTemplate).contains("<h3>Comments</h3>")
+    assertThat(renderedTemplate).contains("Author One")
   }
 
   @Test
   fun `renderTemplate renders a template given a accredited programme service template`() {
-    val renderedStyleTemplate =
-      renderServiceDataHtml("hmpps-accredited-programmes-api", testAccreditedProgrammesServiceData)
+    val actual = renderServiceDataHtml(
+      "hmpps-accredited-programmes-api",
+      testAccreditedProgrammesServiceData,
+    )
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<h2>Referrals</h2>")
-    assertThat(renderedStyleTemplate).contains("<td>Becoming New Me Plus</td>")
-    assertThat(renderedStyleTemplate).contains("<td>12 March 2024, 2:23:12 pm</td>")
-    assertThat(renderedStyleTemplate).contains("<td>Kaizen</td>")
-    assertThat(renderedStyleTemplate).contains("<td>AELANGOVAN_ADM</td>")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h2>Referrals</h2>")
+    assertThat(renderedTemplate).contains("<td>Becoming New Me Plus</td>")
+    assertThat(renderedTemplate).contains("<td>12 March 2024, 2:23:12 pm</td>")
+    assertThat(renderedTemplate).contains("<td>Kaizen</td>")
+    assertThat(renderedTemplate).contains("<td>AELANGOVAN_ADM</td>")
   }
 
   @Test
   fun `renderTemplate renders a template given a Non-associations template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-non-associations-api", testNonAssociationsServiceData)
+    val actual = renderServiceDataHtml("hmpps-non-associations-api", testNonAssociationsServiceData)
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<h3>Non-association - ID 83493</h3>")
-    assertThat(renderedStyleTemplate).contains("Restriction type")
-    assertThat(renderedStyleTemplate).contains("This is a test for SAR")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h3>Non-association - ID 83493</h3>")
+    assertThat(renderedTemplate).contains("Restriction type")
+    assertThat(renderedTemplate).contains("This is a test for SAR")
   }
 
   @Test
   fun `renderTemplate renders a template given a Interventions Service template`() {
-    val renderedStyleTemplate = renderServiceDataHtml("hmpps-interventions-service", testInterventionsServiceData)
+    val actual = renderServiceDataHtml("hmpps-interventions-service", testInterventionsServiceData)
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<h2>Referrals</h2>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Referral number</td><td>JE2862AC</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Late reason</td><td>SAR Test 21 - Add how late they were and anything you know about the reason.</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Referral number</td><td>FY7705FI</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<p>No Data Held</p>")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h2>Referrals</h2>")
+    assertThat(renderedTemplate).contains("<tr><td>Referral number</td><td>JE2862AC</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Late reason</td><td>SAR Test 21 - Add how late they were and anything you know about the reason.</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Referral number</td><td>FY7705FI</td></tr>")
+    assertThat(renderedTemplate).contains("<p>No Data Held</p>")
   }
 
   @Test
   fun `renderTemplate renders a template given a Categorisation Service template`() {
-    val renderedStyleTemplate =
-      renderServiceDataHtml("hmpps-offender-categorisation-api", testCategorisationServiceData)
+    val actual = renderServiceDataHtml(
+      "hmpps-offender-categorisation-api",
+      testCategorisationServiceData,
+    )
 
-    assertThat(renderedStyleTemplate).isNotNull()
-    assertThat(renderedStyleTemplate).contains("<style>")
-    assertThat(renderedStyleTemplate).contains("</style>")
-    assertThat(renderedStyleTemplate).contains("<h3>Categorisation form</h3>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Text</td><td>previous terrorism offences text - talking about bombs</td></tr>")
-    assertThat(renderedStyleTemplate).contains("<h5>Ratings</h5>")
-    assertThat(renderedStyleTemplate).contains("<tr><td>Risk information last updated</td><td>27 July 2021, 2:17:48 am</td></tr>")
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h3>Categorisation form</h3>")
+    assertThat(renderedTemplate).contains("<tr><td>Text</td><td>previous terrorism offences text - talking about bombs</td></tr>")
+    assertThat(renderedTemplate).contains("<h5>Ratings</h5>")
+    assertThat(renderedTemplate).contains("<tr><td>Risk information last updated</td><td>27 July 2021, 2:17:48 am</td></tr>")
   }
 
   @Test
@@ -1656,4 +1715,6 @@ class TemplateRenderingServiceTest {
       ),
     )
   }
+
+  fun RenderedHtml.outputStreamToString(): String = String(this.data!!.toByteArray())
 }

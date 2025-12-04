@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.E
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_JSON_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
 import java.util.UUID
 
 @Service
@@ -69,12 +70,13 @@ class DocumentStore(
     }
   }
 
-  suspend fun addHtml(renderRequest: RenderRequest, data: ByteArray?) {
+  suspend fun addHtml(renderRequest: RenderRequest, renderedHtml: RenderedHtml) {
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
         key = renderRequest.documentHtmlKey()
-        body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
+        body = ByteStream.fromBytes(renderedHtml.data?.toByteArray() ?: byteArrayOf()) // default to empty if null TODO check if this is right
+        metadata = mapOf("template_version" to renderedHtml.templateVersion)
       }
 
       log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
