@@ -76,7 +76,7 @@ class DocumentStore(
         bucket = s3Properties.bucketName
         key = renderRequest.documentHtmlKey()
         body = ByteStream.fromBytes(renderedHtml.data?.toByteArray() ?: byteArrayOf()) // default to empty if null TODO check if this is right
-        metadata = mapOf("template_version" to renderedHtml.templateVersion)
+        metadata = mapOf("template_version" to "v${renderedHtml.templateVersion}")
       }
 
       log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
@@ -85,7 +85,10 @@ class DocumentStore(
         message = "failed to upload html document",
         errorCode = DOCUMENT_STORE_HTML_UPLOAD_FAILED,
         subjectAccessRequestId = renderRequest.id,
-        params = mapOf("documentKey" to renderRequest.documentHtmlKey()),
+        params = mapOf(
+          "documentKey" to renderRequest.documentHtmlKey(),
+          "template_version" to "v${renderedHtml.templateVersion}",
+        ),
       )
     }
   }

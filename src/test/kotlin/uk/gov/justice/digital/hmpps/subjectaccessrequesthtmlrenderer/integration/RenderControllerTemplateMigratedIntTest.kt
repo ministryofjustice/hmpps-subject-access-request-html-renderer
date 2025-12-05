@@ -122,7 +122,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         renderRequest,
         getExpectedHtmlString("hmpps-test-service-migrated-template-v1"),
       )
-      assertStoredTemplateVersionMatchesExpected(renderRequest, templateVersion.version.toString())
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1")
     }
 
     @Test
@@ -156,7 +156,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString("hmpps-test-service-migrated-template-v2"))
       assertThatTemplateVersionIsPublished(templateVersion3Pending.id)
-      assertStoredTemplateVersionMatchesExpected(renderRequest, templateVersion3Pending.version.toString())
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v3")
     }
   }
 

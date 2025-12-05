@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.RenderParameters
@@ -14,48 +13,48 @@ class TemplateService(
   val templateVersionService: TemplateVersionService,
 ) {
 
-  private companion object {
-    private val log = LoggerFactory.getLogger(TemplateService::class.java)
-  }
-
   fun getStyleTemplate(): String = getTemplateResourceOrNull("$templatesDirectory/main_stylesheet.mustache") ?: ""
 
   fun getRenderParameters(
     renderRequest: RenderRequest,
     data: Any?,
-  ): RenderParameters = data?.let { getDataHeldParameters(renderRequest, it) } ?: getNoDataHeldParameters(renderRequest)
+  ): RenderParameters = createRenderParameters(data, renderRequest, getTemplateDetails(renderRequest))
 
-  private fun getDataHeldParameters(
+  private fun getTemplateDetails(
     renderRequest: RenderRequest,
-    data: Any?,
-  ): RenderParameters = renderRequest.takeIf { it.serviceConfiguration.templateMigrated }?.let {
-    log.info("creating renderParameters for migrated service template: {}", it.serviceConfiguration.serviceName)
-
-    templateVersionService.getTemplate(renderRequest).toRenderParameters(data)
-  } ?: run {
-    log.info("creating renderParameters for local service template: {}", renderRequest.serviceConfiguration.serviceName)
-
-    RenderParameters(
-      templateVersion = "v1-migrated-false",
-      data = data,
-      template = getTemplateResource(
-        renderRequest = renderRequest,
-        resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
-      ).readText(),
-    )
-  }
-
-  private fun getNoDataHeldParameters(renderRequest: RenderRequest) = RenderParameters(
-    templateVersion = "v1-no-data",
-    data = renderRequest.serviceNameMap(),
-    template = getTemplateResource(
+  ): TemplateDetails = renderRequest.takeIf { it.serviceConfiguration.templateMigrated }?.let {
+    templateVersionService.getTemplate(renderRequest)
+  } ?: TemplateDetails(
+    version = "legacy",
+    body = getTemplate(
       renderRequest = renderRequest,
-      resourcePath = "$templatesDirectory/template_no_data.mustache",
-    ).readText(),
+      resourcePath = "$templatesDirectory/template_${renderRequest.serviceConfiguration.serviceName}.mustache",
+    ),
   )
 
-  private fun getTemplateResource(renderRequest: RenderRequest, resourcePath: String) = this::class.java
-    .getResource(resourcePath) ?: throw templateResourceNotFoundException(renderRequest, resourcePath)
+  private fun createRenderParameters(
+    data: Any?,
+    renderRequest: RenderRequest,
+    templateDetails: TemplateDetails,
+  ): RenderParameters = data?.let {
+    RenderParameters(
+      templateVersion = templateDetails.version,
+      template = templateDetails.body,
+      data = data,
+    )
+  } ?: RenderParameters(
+    templateVersion = templateDetails.version,
+    template = getNoDataHeldTemplate(renderRequest),
+    data = renderRequest.serviceNameMap(),
+  )
+
+  private fun getNoDataHeldTemplate(renderRequest: RenderRequest): String = getTemplate(
+    renderRequest = renderRequest,
+    resourcePath = "$templatesDirectory/template_no_data.mustache",
+  )
+
+  private fun getTemplate(renderRequest: RenderRequest, resourcePath: String): String = this::class.java
+    .getResource(resourcePath)?.readText() ?: throw templateResourceNotFoundException(renderRequest, resourcePath)
 
   private fun getTemplateResourceOrNull(path: String) = this::class.java.getResource(path)?.readText()
 
@@ -69,12 +68,6 @@ class TemplateService(
     params = mapOf(
       "resource" to resourcePath,
     ),
-  )
-
-  private fun TemplateDetails.toRenderParameters(data: Any?): RenderParameters = RenderParameters(
-    templateVersion = this.version,
-    template = this.body,
-    data = data,
   )
 
   private fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to this.serviceConfiguration.label)

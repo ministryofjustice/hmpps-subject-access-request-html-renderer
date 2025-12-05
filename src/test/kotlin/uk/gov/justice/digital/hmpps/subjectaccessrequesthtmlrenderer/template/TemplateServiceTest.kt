@@ -72,7 +72,7 @@ class TemplateServiceTest {
     val renderParameters = templateService.getRenderParameters(renderRequest, data)
 
     assertThat(renderParameters).isNotNull
-    assertThat(renderParameters.templateVersion).isEqualTo("v1-migrated-false")
+    assertThat(renderParameters.templateVersion).isEqualTo("legacy")
     assertThat(renderParameters.template).contains(expectedTitle)
     assertThat(renderParameters.data).isEqualTo(data)
 
@@ -124,26 +124,15 @@ class TemplateServiceTest {
     verify(templateVersionService, times(1)).getTemplate(renderRequest)
   }
 
-  @ParameterizedTest
-  @CsvSource(
-    value = [
-      "court-case-service                       | Court Case Service                   | true",
-      "offender-management-allocation-manager   | Manage Prison Offender Manager Cases | false",
-    ],
-    delimiterString = "|",
-  )
-  fun `should return expected template when no data is held`(
-    serviceName: String,
-    serviceLabel: String,
-    templateMigrated: Boolean,
-  ) {
+  @Test
+  fun `should return expected template when template is not migrated and no data is held`() {
     val renderRequest = RenderRequest(
       serviceConfiguration = ServiceConfiguration(
-        serviceName = serviceName,
-        label = serviceLabel,
+        serviceName = "court-case-service",
+        label = "Court Case Service",
         order = 1,
         enabled = true,
-        templateMigrated = templateMigrated,
+        templateMigrated = false,
         url = "https://example.com",
       ),
     )
@@ -151,11 +140,41 @@ class TemplateServiceTest {
     val renderParameters = templateService.getRenderParameters(renderRequest, null)
 
     assertThat(renderParameters).isNotNull
-    assertThat(renderParameters.templateVersion).isEqualTo("v1-no-data")
+    assertThat(renderParameters.templateVersion).isEqualTo("legacy")
     assertThat(renderParameters.template).isEqualTo("<h1>{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
-    assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to serviceLabel))
+    assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to "Court Case Service"))
 
     verifyNoInteractions(templateVersionService)
+  }
+
+  @Test
+  fun `should return expected params when template is migrated and no data is held`() {
+    val renderRequest = RenderRequest(
+      serviceConfiguration = ServiceConfiguration(
+        serviceName = "offender-management-allocation-manager",
+        label = "Manage Prison Offender Manager Cases",
+        order = 1,
+        enabled = true,
+        templateMigrated = true,
+        url = "https://example.com",
+      ),
+    )
+
+    whenever(templateVersionService.getTemplate(renderRequest)).thenReturn(
+      TemplateDetails(
+        version = "1",
+        body = "Some template value",
+      ),
+    )
+
+    val renderParameters = templateService.getRenderParameters(renderRequest, null)
+
+    assertThat(renderParameters).isNotNull
+    assertThat(renderParameters.templateVersion).isEqualTo("1")
+    assertThat(renderParameters.template).isEqualTo("<h1>{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
+    assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to "Manage Prison Offender Manager Cases"))
+
+    verify(templateVersionService, times(1)).getTemplate(renderRequest)
   }
 
   @Test
