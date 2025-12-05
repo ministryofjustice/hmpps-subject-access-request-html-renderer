@@ -30,7 +30,7 @@ class TemplateRenderingServiceTest {
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
   private val templateVersionService: TemplateVersionService = mock()
-  private val expectedTemplateVersion = "v1-migrated-false"
+  private val expectedTemplateVersion = "legacy"
 
   private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
     prisonDetailsRepository,

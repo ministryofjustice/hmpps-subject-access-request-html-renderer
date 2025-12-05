@@ -162,7 +162,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
-      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-migrated-false")
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "vlegacy")
 
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
@@ -238,7 +238,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
 
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
-      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-migrated-false")
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "vlegacy")
 
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
@@ -275,7 +275,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
 
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(serviceName))
-      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1-no-data")
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "vlegacy")
 
       assertTelemetryEvents(
         ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
