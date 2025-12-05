@@ -134,7 +134,7 @@
       },
       {
         "referral_number": "JE2862AC",
-        "accessibility_needs": "SAR test 9 - Does Sadie have any other mobility, disability or accessibility needs? (optional)\r\n - None",
+        "accessibility_needs": "SAR test 9 - Does Sadie have any other mobility, disability or accessibility needs? (optional)\n - None",
         "additional_needs_information": "SAR test 10 - Additional information about Sadie’s needs (optional) - None",
         "when_unavailable": "SAR test 11 - Provide details of when Sadie will not be able to attend sessions - Weekday mornings",
         "end_requested_comments": "",
@@ -3756,7 +3756,7 @@
           },
           {
             "session_summary": "learned how to do stuff and present for interview and work",
-            "session_response": "very well \r\nNext week she intends to look for a refresh wardrobe from charity shop",
+            "session_response": "very well \nNext week she intends to look for a refresh wardrobe from charity shop",
             "session_concerns": "",
             "late_reason": "",
             "future_session_plan": ""
@@ -3770,7 +3770,7 @@
           },
           {
             "description": [
-              "I am going to do something and then do more things\r\nAnd then something else",
+              "I am going to do something and then do more things\nAnd then something else",
               "then another thing different entirely",
               "then the summary thing"
             ]
@@ -4735,17 +4735,17 @@
         "action_plan_activity": [
           {
             "description": [
-              "ABC\r\nDEFGH"
+              "ABC\nDEFGH"
             ]
           },
           {
             "description": [
-              "ABC\r\nDEFGH"
+              "ABC\nDEFGH"
             ]
           },
           {
             "description": [
-              "ABC\r\nDEFGH"
+              "ABC\nDEFGH"
             ]
           }
         ],

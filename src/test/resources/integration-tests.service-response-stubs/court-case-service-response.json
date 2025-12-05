@@ -38,11 +38,11 @@
                 "authorSurname": "TestAuthorTwo"
               },
               {
-                "note": "Another note with some great \r\ninformation about the case.",
+                "note": "Another note with some great \ninformation about the case.",
                 "authorSurname": "TestAuthorTwo"
               },
               {
-                "note": "information about the case.\r\n",
+                "note": "information about the case.\n",
                 "authorSurname": "TestAuthorTwo"
               }
             ],
@@ -56,15 +56,15 @@
                 "authorSurname": "TestAuthorTwo"
               },
               {
-                "note": "information about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\n",
+                "note": "information about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\n",
                 "authorSurname": "TestAuthorTwo"
               },
               {
-                "note": "information about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\ninformation about the case.\r\n",
+                "note": "information about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\ninformation about the case.\n",
                 "authorSurname": "TestAuthorTwo"
               },
               {
-                "note": "Multi line comment\r\n\r\nline two\r\n\r\nline three",
+                "note": "Multi line comment\n\nline two\n\nline three",
                 "authorSurname": "TestAuthorTwo"
               }
             ],

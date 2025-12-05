@@ -107,7 +107,7 @@
         "inPrisonTrainingInterests": [
           {
             "trainingType": "OTHER",
-            "trainingTypeOther": "Lol\r\n"
+            "trainingTypeOther": "Lol\n"
           }
         ],
         "createdBy": "TEST_USER",

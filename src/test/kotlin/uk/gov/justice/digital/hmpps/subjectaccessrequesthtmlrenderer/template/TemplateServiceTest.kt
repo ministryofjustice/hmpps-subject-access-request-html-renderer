@@ -31,27 +31,27 @@ class TemplateServiceTest {
   @ParameterizedTest
   @CsvSource(
     value = [
-      "court-case-service                       | <h1>Prepare a Case for Sentence</h1>",
-      "create-and-vary-a-licence-api            | <h1>Create and vary a licence</h1>",
-      "G1                                       | <h1>G1</h1>",
-      "G2                                       | <h1>G2</h1>",
-      "G3                                       | <h1>G3</h1>",
-      "hmpps-accredited-programmes-api          | <h1>Accredited programmes</h1>",
-      "hmpps-activities-management-api          | <h1>Manage Activities and Appointments</h1>",
-      "hmpps-approved-premises-api              | <h1>Approved Premises</h1>",
-      "hmpps-book-secure-move-api               | <h1>Book a secure move</h1>",
-      "hmpps-complexity-of-need                 | <h1>Complexity of need</h1>",
-      "hmpps-education-and-work-plan-api        | <h1>Personal Learning Plan</h1>",
-      "hmpps-education-employment-api           | <h1>Work Readiness</h1>",
-      "hmpps-hdc-api                            | <h1>Home Detention Curfew</h1>",
-      "hmpps-incentives-api                     | <h1>Incentives</h1>",
-      "hmpps-interventions-service              | <h1>Refer and monitor an intervention</h1>",
-      "hmpps-manage-adjudications-api           | <h1>Manage Adjudications</h1>",
-      "hmpps-non-associations-api               | <h1>Non-associations</h1>",
-      "hmpps-resettlement-passport-api          | <h1>Prepare Someone for Release</h1>",
-      "hmpps-restricted-patients-api            | <h1>Restricted Patients</h1>",
-      "hmpps-uof-data-api                       | <h1>Use of force</h1>",
-      "offender-management-allocation-manager   | <h1>Manage Prison Offender Manager Cases</h1>",
+      "court-case-service                       | <h1 class=\"title\">Prepare a Case for Sentence</h1>",
+      "create-and-vary-a-licence-api            | <h1 class=\"title\">Create and vary a licence</h1>",
+      "G1                                       | <h1 class=\"title\">G1</h1>",
+      "G2                                       | <h1 class=\"title\">G2</h1>",
+      "G3                                       | <h1 class=\"title\">G3</h1>",
+      "hmpps-accredited-programmes-api          | <h1 class=\"title\">Accredited programmes</h1>",
+      "hmpps-activities-management-api          | <h1 class=\"title\">Manage Activities and Appointments</h1>",
+      "hmpps-approved-premises-api              | <h1 class=\"title\">Approved Premises</h1>",
+      "hmpps-book-secure-move-api               | <h1 class=\"title\">Book a secure move</h1>",
+      "hmpps-complexity-of-need                 | <h1 class=\"title\">Complexity of need</h1>",
+      "hmpps-education-and-work-plan-api        | <h1 class=\"title\">Personal Learning Plan</h1>",
+      "hmpps-education-employment-api           | <h1 class=\"title\">Work Readiness</h1>",
+      "hmpps-hdc-api                            | <h1 class=\"title\">Home Detention Curfew</h1>",
+      "hmpps-incentives-api                     | <h1 class=\"title\">Incentives</h1>",
+      "hmpps-interventions-service              | <h1 class=\"title\">Refer and monitor an intervention</h1>",
+      "hmpps-manage-adjudications-api           | <h1 class=\"title\">Manage Adjudications</h1>",
+      "hmpps-non-associations-api               | <h1 class=\"title\">Non-associations</h1>",
+      "hmpps-resettlement-passport-api          | <h1 class=\"title\">Prepare Someone for Release</h1>",
+      "hmpps-restricted-patients-api            | <h1 class=\"title\">Restricted Patients</h1>",
+      "hmpps-uof-data-api                       | <h1 class=\"title\">Use of force</h1>",
+      "offender-management-allocation-manager   | <h1 class=\"title\">Manage Prison Offender Manager Cases</h1>",
     ],
     delimiterString = "|",
   )
@@ -141,7 +141,7 @@ class TemplateServiceTest {
 
     assertThat(renderParameters).isNotNull
     assertThat(renderParameters.templateVersion).isEqualTo("legacy")
-    assertThat(renderParameters.template).isEqualTo("<h1>{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
+    assertThat(renderParameters.template).isEqualTo("<h1 class=\"title\">{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
     assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to "Court Case Service"))
 
     verifyNoInteractions(templateVersionService)
@@ -171,7 +171,7 @@ class TemplateServiceTest {
 
     assertThat(renderParameters).isNotNull
     assertThat(renderParameters.templateVersion).isEqualTo("1")
-    assertThat(renderParameters.template).isEqualTo("<h1>{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
+    assertThat(renderParameters.template).isEqualTo("<h1 class=\"title\">{{serviceLabel}}</h1>\n<p>No Data Held</p>\n")
     assertThat(renderParameters.data).isEqualTo(mapOf("serviceLabel" to "Manage Prison Offender Manager Cases"))
 
     verify(templateVersionService, times(1)).getTemplate(renderRequest)

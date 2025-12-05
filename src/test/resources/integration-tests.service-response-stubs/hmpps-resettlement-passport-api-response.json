@@ -1141,7 +1141,7 @@
         "creationDateTime": "2023-12-13T15:06:01.373261",
         "occurenceDateTime": "2023-12-13T15:06:01.373261",
         "createdBy": "Test User",
-        "text": "Resettlement status set to: In progress. Delius user setting to In Progress.\r\n\r\ncase note here...."
+        "text": "Resettlement status set to: In progress. Delius user setting to In Progress.\n\ncase note here...."
       },
       {
         "caseNoteId": "db-5",
@@ -1149,7 +1149,7 @@
         "creationDateTime": "2023-12-13T16:10:15.982503",
         "occurenceDateTime": "2023-12-13T16:10:15.982503",
         "createdBy": "Test User",
-        "text": "Resettlement status set to: Done. line1\r\nline2\r\nline3"
+        "text": "Resettlement status set to: Done. line1\nline2\nline3"
       },
       {
         "caseNoteId": "db-1",
