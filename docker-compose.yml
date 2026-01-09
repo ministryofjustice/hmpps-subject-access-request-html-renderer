@@ -1,8 +1,7 @@
-version: "3"
+version:
 services:
   hmpps-subject-access-request-html-renderer:
-    build:
-      context: .
+    image: quay.io/hmpps/hmpps-subject-access-request-html-renderer:latest
     networks:
       - hmpps
     container_name: hmpps-subject-access-request-html-renderer
