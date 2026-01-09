@@ -1,8 +1,6 @@
-version: "3"
 services:
   hmpps-subject-access-request-html-renderer:
-    build:
-      context: .
+    image: ghcr.io/ministryofjustice/hmpps-subject-access-request-html-renderer:latest
     networks:
       - hmpps
     container_name: hmpps-subject-access-request-html-renderer
@@ -18,7 +16,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
+    image: ghcr.io/ministryofjustice/hmpps/hmpps-auth:latest
     networks:
       - hmpps
     container_name: hmpps-auth
