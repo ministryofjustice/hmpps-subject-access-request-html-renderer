@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
 import java.util.Optional
@@ -54,6 +55,7 @@ class ServiceConfigurationServiceTest {
           label = serviceName,
           templateMigrated = false,
           order = 1,
+          category = ServiceCategory.PRISON,
         ),
       )
 

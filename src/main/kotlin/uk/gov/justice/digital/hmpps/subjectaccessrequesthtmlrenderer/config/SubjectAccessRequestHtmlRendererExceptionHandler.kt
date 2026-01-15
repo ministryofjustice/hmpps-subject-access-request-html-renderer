@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.FORBIDDEN
 import org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR
 import org.springframework.http.HttpStatus.NOT_FOUND
+import org.springframework.http.HttpStatus.CONFLICT
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -100,6 +101,7 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     ErrorCode.BAD_REQUEST -> BAD_REQUEST
     ErrorCode.NOT_FOUND -> NOT_FOUND
     ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND -> NOT_FOUND
+    ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH -> CONFLICT
     else -> INTERNAL_SERVER_ERROR
   }
 

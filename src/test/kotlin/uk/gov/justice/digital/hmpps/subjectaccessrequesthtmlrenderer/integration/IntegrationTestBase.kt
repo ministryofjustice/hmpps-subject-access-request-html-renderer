@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.NomisMappingsApiExtension.Companion.nomisMappingsApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
@@ -284,6 +285,7 @@ abstract class IntegrationTestBase {
     enabled = enabled,
     order = order,
     templateMigrated = templateMigrated,
+    category = ServiceCategory.PRISON,
   )
 
   protected fun getServiceConfiguration(serviceName: String): ServiceConfiguration {

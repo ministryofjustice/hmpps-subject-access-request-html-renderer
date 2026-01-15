@@ -8,6 +8,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
@@ -65,6 +66,7 @@ class TemplateGeneratorUtil {
         templateMigrated = true,
         order = 1,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       )
       val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceConfiguration = serviceConfiguration)
       val output = renderHtml(renderRequest, isNullData).use { os -> writeToFile(serviceName, os) }

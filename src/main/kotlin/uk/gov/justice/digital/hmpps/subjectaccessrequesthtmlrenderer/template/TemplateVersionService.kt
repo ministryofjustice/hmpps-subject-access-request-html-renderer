@@ -27,6 +27,7 @@ class TemplateVersionService(
   val serviceConfigurationService: ServiceConfigurationService,
   val templateVersionRepository: TemplateVersionRepository,
   val dynamicServicesClient: DynamicServicesClient,
+  val templateVersionHealthService: TemplateVersionHealthService,
   val telemetryClient: TelemetryClient,
 ) {
 
@@ -39,6 +40,10 @@ class TemplateVersionService(
    */
   @Transactional
   fun getTemplate(renderRequest: RenderRequest): TemplateDetails {
+    templateVersionHealthService.createServiceTemplateVersionHealthStatusIfNotExists(
+      renderRequest.serviceConfiguration,
+    )
+
     val serviceTemplate: String = getServiceTemplate(renderRequest)
 
     val templateVersion = verifyTemplateHash(
@@ -72,11 +77,16 @@ class TemplateVersionService(
           publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
         }
 
+        templateVersionHealthService.markAsHealthyIfNotAlready(serviceConfiguration)
         it
-      } ?: throw templateHashMatchFailureException(
-      renderRequest = renderRequest,
-      serviceTemplateHash = serviceTemplateHash,
-    )
+      } ?: run {
+      templateVersionHealthService.markAsUnhealthyIfNotAlready(serviceConfiguration)
+
+      throw templateHashMatchFailureException(
+        renderRequest = renderRequest,
+        serviceTemplateHash = serviceTemplateHash,
+      )
+    }
   }
 
   private fun getServiceTemplate(

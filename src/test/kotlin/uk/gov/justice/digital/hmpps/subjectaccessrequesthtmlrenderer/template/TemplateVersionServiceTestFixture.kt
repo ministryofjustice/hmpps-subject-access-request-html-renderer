@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Dyna
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
@@ -31,6 +32,7 @@ abstract class TemplateVersionServiceTestFixture {
   protected val serviceConfigurationService: ServiceConfigurationService = mock()
   protected val templateVersionRepository: TemplateVersionRepository = mock()
   protected val dynamicServicesClient: DynamicServicesClient = mock()
+  protected val templateVersionHealthService: TemplateVersionHealthService = mock()
   protected val telemetryClient: TelemetryClient = mock()
 
   protected val publishedTemplateBody = "<h1>HMPPS Test Service</h1>"
@@ -51,6 +53,7 @@ abstract class TemplateVersionServiceTestFixture {
     enabled = true,
     templateMigrated = true,
     url = "http://localhost:8080/",
+    category = ServiceCategory.PRISON,
   )
 
   protected val publishedTemplateVersion = TemplateVersion(
@@ -81,6 +84,7 @@ abstract class TemplateVersionServiceTestFixture {
   protected val templateVersionService = TemplateVersionService(
     serviceConfigurationService = serviceConfigurationService,
     templateVersionRepository = templateVersionRepository,
+    templateVersionHealthService = templateVersionHealthService,
     dynamicServicesClient = dynamicServicesClient,
     telemetryClient = telemetryClient,
   )

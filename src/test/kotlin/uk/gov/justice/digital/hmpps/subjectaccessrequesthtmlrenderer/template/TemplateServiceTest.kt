@@ -13,6 +13,7 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 
@@ -67,6 +68,7 @@ class TemplateServiceTest {
         enabled = true,
         templateMigrated = false,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       ),
     )
     val renderParameters = templateService.getRenderParameters(renderRequest, data)
@@ -104,6 +106,7 @@ class TemplateServiceTest {
         enabled = true,
         templateMigrated = true,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       ),
     )
 
@@ -134,6 +137,7 @@ class TemplateServiceTest {
         enabled = true,
         templateMigrated = false,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       ),
     )
 
@@ -157,6 +161,7 @@ class TemplateServiceTest {
         enabled = true,
         templateMigrated = true,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       ),
     )
 
@@ -206,6 +211,7 @@ class TemplateServiceTest {
               enabled = true,
               templateMigrated = false,
               url = "https://example.com",
+              category = ServiceCategory.PRISON,
             ),
           ),
           data = data,
@@ -234,6 +240,7 @@ class TemplateServiceTest {
           enabled = true,
           templateMigrated = true,
           url = "https://example.com",
+          category = ServiceCategory.PRISON,
         ),
       )
 
