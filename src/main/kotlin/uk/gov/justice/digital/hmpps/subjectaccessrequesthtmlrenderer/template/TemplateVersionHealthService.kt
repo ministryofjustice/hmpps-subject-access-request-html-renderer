@@ -8,11 +8,13 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Heal
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionHealthStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionHealthStatusRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.time.LocalDateTime
 
 @Service
 class TemplateVersionHealthService(
   private val templateVersionHealthStatusRepository: TemplateVersionHealthStatusRepository,
+  private val serviceConfigurationService: ServiceConfigurationService,
 ) {
 
   private companion object {
@@ -23,7 +25,13 @@ class TemplateVersionHealthService(
    * Create a new [TemplateVersionHealthStatus] for the specified service if it does not already exist.
    */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  fun createServiceTemplateVersionHealthStatusIfNotExists(serviceConfiguration: ServiceConfiguration) {
+  fun ensureTemplateVersionHealthStatusExists(serviceConfiguration: ServiceConfiguration) {
+    serviceConfigurationService.findByIdAndEnabledAndTemplateMigrated(
+      id = serviceConfiguration.id,
+      templateMigrated = true,
+      enabled = true,
+    ) ?: return
+
     templateVersionHealthStatusRepository.findByServiceConfigurationId(serviceConfiguration.id) ?: run {
       log.info("creating new templateVersionHealthStatus record for {}", serviceConfiguration.serviceName)
 
@@ -37,29 +45,11 @@ class TemplateVersionHealthService(
     }
   }
 
-  /**
-   * Set the Service Template Version Health Status to [HealthStatusType.UNHEALTHY] if it is not already. No update
-   * applied if the status is already [HealthStatusType.UNHEALTHY].
-   */
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  fun markAsUnhealthyIfNotAlready(serviceConfiguration: ServiceConfiguration) {
+  fun updateHealthStatusIfChanged(serviceConfiguration: ServiceConfiguration, newStatus: HealthStatusType) {
     templateVersionHealthStatusRepository.updateStatusWhenChanged(
-      newStatus = HealthStatusType.UNHEALTHY,
+      newStatus = newStatus,
       serviceConfigurationId = serviceConfiguration.id,
-      currentStatus = HealthStatusType.HEALTHY,
-    )
-  }
-
-  /**
-   * Set the Service Template Version Health Status to [HealthStatusType.HEALTHY] if it is not already. No update
-   * applied if the status is already [HealthStatusType.HEALTHY].
-   */
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  fun markAsHealthyIfNotAlready(serviceConfiguration: ServiceConfiguration) {
-    templateVersionHealthStatusRepository.updateStatusWhenChanged(
-      newStatus = HealthStatusType.HEALTHY,
-      serviceConfigurationId = serviceConfiguration.id,
-      currentStatus = HealthStatusType.UNHEALTHY,
     )
   }
 }

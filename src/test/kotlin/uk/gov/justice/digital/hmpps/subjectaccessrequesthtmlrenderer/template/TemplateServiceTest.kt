@@ -20,9 +20,11 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 class TemplateServiceTest {
 
   private val templateVersionService: TemplateVersionService = mock()
+  private val templateVersionHealthService: TemplateVersionHealthService = mock()
 
   private var templateService: TemplateService = TemplateService(
     templateVersionService = templateVersionService,
+    templateVersionHealthService = templateVersionHealthService,
   )
 
   private val data: Map<String, Any?> = mapOf(
@@ -197,6 +199,7 @@ class TemplateServiceTest {
     private val templateService = TemplateService(
       templatesDirectory = incorrectTemplateDir,
       templateVersionService = templateVersionService,
+      templateVersionHealthService = templateVersionHealthService,
     )
 
     @Test

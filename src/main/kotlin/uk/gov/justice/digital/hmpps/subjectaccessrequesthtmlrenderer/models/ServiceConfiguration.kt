@@ -11,7 +11,6 @@ import java.util.UUID
 @Entity
 @Table(name = "SERVICE_CONFIGURATION")
 data class ServiceConfiguration(
-
   @Id
   var id: UUID = UUID.randomUUID(),
 
@@ -36,8 +35,7 @@ data class ServiceConfiguration(
   @Enumerated(EnumType.STRING)
   @Column(name = "category", nullable = false)
   val category: ServiceCategory,
-
-  ) {
+) {
   constructor() : this(
     id = UUID.randomUUID(),
     serviceName = "",

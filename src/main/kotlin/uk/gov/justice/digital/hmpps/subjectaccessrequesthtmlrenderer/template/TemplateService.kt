@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 class TemplateService(
   @Value("\${template-resources.directory}") private val templatesDirectory: String = "/templates",
   val templateVersionService: TemplateVersionService,
+  val templateVersionHealthService: TemplateVersionHealthService,
 ) {
 
   fun getStyleTemplate(): String = getTemplateResourceOrNull("$templatesDirectory/main_stylesheet.mustache") ?: ""
@@ -23,6 +24,8 @@ class TemplateService(
   private fun getTemplateDetails(
     renderRequest: RenderRequest,
   ): TemplateDetails = renderRequest.takeIf { it.serviceConfiguration.templateMigrated }?.let {
+    templateVersionHealthService.ensureTemplateVersionHealthStatusExists(it.serviceConfiguration)
+
     templateVersionService.getTemplate(renderRequest)
   } ?: TemplateDetails(
     version = "legacy",

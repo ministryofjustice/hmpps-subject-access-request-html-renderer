@@ -15,17 +15,16 @@ interface TemplateVersionHealthStatusRepository : JpaRepository<TemplateVersionH
 
   fun findByServiceConfigurationId(serviceConfigurationId: UUID): TemplateVersionHealthStatus?
 
-  @Modifying
+  @Modifying(flushAutomatically = true, clearAutomatically = true)
   @Query(
     "UPDATE TemplateVersionHealthStatus t " +
       "SET t.status =:newStatus, t.lastModified = :lastModified " +
       "WHERE t.serviceConfiguration.id = :serviceConfigurationId " +
-      "AND t.status = :currentStatus",
+      "AND t.status != :newStatus",
   )
   fun updateStatusWhenChanged(
     @Param("newStatus") newStatus: HealthStatusType,
     @Param("lastModified") lastModified: LocalDateTime = LocalDateTime.now(),
     @Param("serviceConfigurationId") serviceConfigurationId: UUID,
-    @Param("currentStatus") currentStatus: HealthStatusType,
-  )
+  ): Int
 }
