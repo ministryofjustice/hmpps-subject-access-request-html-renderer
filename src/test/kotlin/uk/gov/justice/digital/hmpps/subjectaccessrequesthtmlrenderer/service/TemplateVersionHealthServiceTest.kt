@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionHealthStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionHealthStatusRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionHealthService
-import java.time.LocalDateTime
+import java.time.Instant
 
 class TemplateVersionHealthServiceTest {
 
@@ -44,7 +44,7 @@ class TemplateVersionHealthServiceTest {
 
       verify(templateVersionHealthStatusRepository, times(1)).updateStatusWhenChanged(
         newStatus = eq(HEALTHY),
-        lastModified = any<LocalDateTime>(),
+        lastModified = any<Instant>(),
         serviceConfigurationId = eq(serviceConfiguration.id),
       )
     }
@@ -82,7 +82,7 @@ class TemplateVersionHealthServiceTest {
 
       val healthStatusCaptor = argumentCaptor<TemplateVersionHealthStatus>()
 
-      val start = LocalDateTime.now()
+      val start = Instant.now()
       templateVersionHealthService.ensureTemplateVersionHealthStatusExists(serviceConfiguration)
 
       verifyFindByIdAndEnabledAndTemplateMigratedIsCalled()
@@ -96,7 +96,7 @@ class TemplateVersionHealthServiceTest {
       val actual = healthStatusCaptor.firstValue
       assertThat(actual.status).isEqualTo(HEALTHY)
       assertThat(actual.serviceConfiguration).isEqualTo(serviceConfiguration)
-      assertThat(actual.lastModified).isBetween(start, LocalDateTime.now())
+      assertThat(actual.lastModified).isBetween(start, Instant.now())
     }
   }
 

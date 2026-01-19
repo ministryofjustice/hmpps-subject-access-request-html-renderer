@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionHealthStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionHealthStatusRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
-import java.time.LocalDateTime
+import java.time.Instant
 
 @Service
 class TemplateVersionHealthService(
@@ -38,7 +38,7 @@ class TemplateVersionHealthService(
       templateVersionHealthStatusRepository.saveAndFlush(
         TemplateVersionHealthStatus(
           serviceConfiguration = serviceConfiguration,
-          lastModified = LocalDateTime.now(),
+          lastModified = Instant.now(),
           status = HealthStatusType.HEALTHY,
         ),
       )

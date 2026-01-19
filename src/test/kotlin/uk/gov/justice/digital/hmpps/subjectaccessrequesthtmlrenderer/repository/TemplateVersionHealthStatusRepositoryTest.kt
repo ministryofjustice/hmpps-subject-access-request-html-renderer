@@ -12,7 +12,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Heal
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionHealthStatus
-import java.time.LocalDateTime
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @DataJpaTest
@@ -34,7 +35,7 @@ class TemplateVersionHealthStatusRepositoryTest {
     category = ServiceCategory.PRISON,
   )
 
-  private val initialLastModified = LocalDateTime.now().minusHours(1)
+  private val initialLastModified: Instant = Instant.now().minus(1, ChronoUnit.HOURS)
 
   private val healthyTemplateStatus = newTemplateVersionHealthStatus(
     serviceConfig = testServiceConfig,
@@ -99,10 +100,12 @@ class TemplateVersionHealthStatusRepositoryTest {
         expected = healthyTemplateStatus,
       )
 
+      val updatedLastModified = initialLastModified.plus(30, ChronoUnit.MINUTES)
+
       templateVersionHealthStatusRepository.updateStatusWhenChanged(
         serviceConfigurationId = testServiceConfig.id,
         newStatus = HealthStatusType.HEALTHY,
-        lastModified = initialLastModified.plusMinutes(30),
+        lastModified = updatedLastModified,
       )
 
       val actual = templateVersionHealthStatusRepository.findByServiceConfigurationId(testServiceConfig.id)
@@ -120,7 +123,7 @@ class TemplateVersionHealthStatusRepositoryTest {
         expected = healthyTemplateStatus,
       )
 
-      val updatedLastModified = initialLastModified.plusMinutes(30)
+      val updatedLastModified = initialLastModified.plus(30, ChronoUnit.MINUTES)
 
       templateVersionHealthStatusRepository.updateStatusWhenChanged(
         serviceConfigurationId = testServiceConfig.id,
@@ -146,7 +149,7 @@ class TemplateVersionHealthStatusRepositoryTest {
   private fun newTemplateVersionHealthStatus(
     serviceConfig: ServiceConfiguration = testServiceConfig,
     status: HealthStatusType = HealthStatusType.HEALTHY,
-    lastModified: LocalDateTime = initialLastModified,
+    lastModified: Instant = initialLastModified,
   ) = TemplateVersionHealthStatus(
     status = status,
     serviceConfiguration = serviceConfig,

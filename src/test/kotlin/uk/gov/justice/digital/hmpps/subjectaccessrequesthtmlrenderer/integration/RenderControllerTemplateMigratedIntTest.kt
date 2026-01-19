@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Temp
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionHealthStatusRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepository
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -439,7 +440,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     TemplateVersionHealthStatus(
       serviceConfiguration = serviceConfiguration,
       status = status,
-      lastModified = LocalDateTime.now(),
+      lastModified = Instant.now(),
     ),
   )
 
