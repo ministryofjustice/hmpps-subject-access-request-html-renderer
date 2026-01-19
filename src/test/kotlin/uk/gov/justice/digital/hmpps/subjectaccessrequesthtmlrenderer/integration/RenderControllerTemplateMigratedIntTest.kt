@@ -16,16 +16,25 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionHealthStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionHealthStatusRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepository
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ExtendWith(SarDataSourceApiExtension::class)
 class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
+
+  @Autowired
+  private lateinit var templateVersionHealthStatusRepository: TemplateVersionHealthStatusRepository
 
   private val sarDataJsonFilePath =
     "/integration-tests.service-response-stubs/hmpps-test-service-migrated-template-response.json"
@@ -47,6 +56,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     enabled = true,
     order = 666,
     templateMigrated = true,
+    category = ServiceCategory.PRISON,
   )
 
   private val templateVersion1Published = TemplateVersion(
@@ -91,6 +101,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
   @AfterEach
   fun teardown() {
     templateVersionRepository.deleteAll()
+    templateVersionHealthStatusRepository.deleteAll()
     serviceConfigurationRepository.deleteById(testServiceConfiguration.id)
   }
 
@@ -123,6 +134,11 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         getExpectedHtmlString("hmpps-test-service-migrated-template-v1"),
       )
       assertStoredTemplateVersionMatchesExpected(renderRequest, "v1")
+
+      assertTemplateVersionHealthStatusEquals(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        expectedStatus = HealthStatusType.HEALTHY,
+      )
     }
 
     @Test
@@ -157,6 +173,11 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString("hmpps-test-service-migrated-template-v2"))
       assertThatTemplateVersionIsPublished(templateVersion3Pending.id)
       assertStoredTemplateVersionMatchesExpected(renderRequest, "v3")
+
+      assertTemplateVersionHealthStatusEquals(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        expectedStatus = HealthStatusType.HEALTHY,
+      )
     }
   }
 
@@ -167,6 +188,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     fun `should return error when no template version exists for service with migrated template`() {
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+      val initialTemplateHealthStatus = createTemplateVersionHealthStatus(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        status = HealthStatusType.HEALTHY,
+      )
 
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
@@ -185,6 +210,12 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled(1)
+
+      // Template state should not update since error happens before hash check
+      assertTemplateVersionHealthStatusEqualTo(
+        expected = initialTemplateHealthStatus,
+        serviceConfiguration = renderRequest.serviceConfiguration,
+      )
     }
 
     @Test
@@ -193,6 +224,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+      val initialTemplateHealthStatus = createTemplateVersionHealthStatus(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        status = HealthStatusType.HEALTHY,
+      )
 
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
@@ -208,6 +243,12 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
           assertThat(value).startsWith("request failed and max retry attempts (2) exhausted")
         }
 
+      // Template state should not update since error happens before hash check
+      assertTemplateVersionHealthStatusEqualTo(
+        expected = initialTemplateHealthStatus,
+        serviceConfiguration = renderRequest.serviceConfiguration,
+      )
+
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled(times = 3)
@@ -220,6 +261,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+      val initialTemplateHealthStatus = createTemplateVersionHealthStatus(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        status = HealthStatusType.HEALTHY,
+      )
 
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
@@ -228,12 +273,18 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsServiceReturnServiceTemplate(templateV1Path)
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
-        .expectStatus().isEqualTo(500)
+        .expectStatus().isEqualTo(409)
         .expectBody()
         .jsonPath("$.errorCode").isEqualTo("3001")
         .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith("service template file hash does not match registered template versions")
         }
+
+      assertThatTemplateVersionHealthStatusHasUpdated(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        initialStatus = initialTemplateHealthStatus,
+        expectedStatus = HealthStatusType.UNHEALTHY,
+      )
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
@@ -251,6 +302,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+      val initialTemplateHealthStatus = createTemplateVersionHealthStatus(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        status = HealthStatusType.HEALTHY,
+      )
 
       assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
@@ -261,12 +316,18 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsServiceReturnServiceTemplate(getResourceAsString(templateV1Path))
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
-        .expectStatus().isEqualTo(500)
+        .expectStatus().isEqualTo(409)
         .expectBody()
         .jsonPath("$.errorCode").isEqualTo("3001")
         .jsonPath("$.developerMessage").value { value: String ->
           assertThat(value).startsWith("service template file hash does not match registered template versions")
         }
+
+      assertThatTemplateVersionHealthStatusHasUpdated(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        initialStatus = initialTemplateHealthStatus,
+        expectedStatus = HealthStatusType.UNHEALTHY,
+      )
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
@@ -274,7 +335,28 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
       assertUploadedHtmlDoesNotExist(renderRequest)
+      assertTemplateVersionHealthStatusEquals(testServiceConfiguration, HealthStatusType.UNHEALTHY)
     }
+  }
+
+  private fun assertTemplateVersionHealthStatusEquals(
+    serviceConfiguration: ServiceConfiguration,
+    expectedStatus: HealthStatusType,
+  ) {
+    val actual = templateVersionHealthStatusRepository.findByServiceConfigurationId(serviceConfiguration.id)
+    assertThat(actual).isNotNull
+    assertThat(actual!!.serviceConfiguration).isEqualTo(serviceConfiguration)
+    assertThat(actual.status).isEqualTo(expectedStatus)
+    assertThat(actual.lastModified).isNotNull
+  }
+
+  private fun assertTemplateVersionHealthStatusEqualTo(
+    expected: TemplateVersionHealthStatus,
+    serviceConfiguration: ServiceConfiguration,
+  ) {
+    assertThat(templateVersionHealthStatusRepository.findByServiceConfigurationId(serviceConfiguration.id)).isEqualTo(
+      expected,
+    )
   }
 
   private fun sendRenderTemplateRequest(
@@ -352,6 +434,17 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       .withBody("resource not found"),
   )
 
+  private fun createTemplateVersionHealthStatus(
+    serviceConfiguration: ServiceConfiguration,
+    status: HealthStatusType,
+  ): TemplateVersionHealthStatus = templateVersionHealthStatusRepository.save(
+    TemplateVersionHealthStatus(
+      serviceConfiguration = serviceConfiguration,
+      status = status,
+      lastModified = Instant.now().truncateToMicros(),
+    ),
+  )
+
   private fun assertThatTemplateVersionIsPending(id: UUID) {
     val actual = templateVersionRepository.findByIdOrNull(id)
     assertThat(actual?.status).isEqualTo(TemplateVersionStatus.PENDING)
@@ -365,4 +458,17 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(actual!!.publishedAt).isBefore(LocalDateTime.now())
     assertThat(actual.publishedAt).isAfter(actual.createdAt)
   }
+
+  private fun assertThatTemplateVersionHealthStatusHasUpdated(
+    serviceConfiguration: ServiceConfiguration,
+    initialStatus: TemplateVersionHealthStatus,
+    expectedStatus: HealthStatusType,
+  ) {
+    val actual = templateVersionHealthStatusRepository.findByServiceConfigurationId(serviceConfiguration.id)
+    assertThat(actual).isNotNull
+    assertThat(actual!!.status).isEqualTo(expectedStatus)
+    assertThat(actual.lastModified).isAfter(initialStatus.lastModified)
+  }
+
+  private fun Instant.truncateToMicros(): Instant = this.truncatedTo(ChronoUnit.MICROS)
 }

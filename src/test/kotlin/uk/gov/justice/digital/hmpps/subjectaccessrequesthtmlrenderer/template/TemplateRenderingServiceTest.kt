@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Nomi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -30,6 +31,7 @@ class TemplateRenderingServiceTest {
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
   private val telemetryClient: TelemetryClient = mock()
   private val templateVersionService: TemplateVersionService = mock()
+  private val templateVersionHealthService: TemplateVersionHealthService = mock()
   private val expectedTemplateVersion = "legacy"
 
   private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
@@ -46,6 +48,7 @@ class TemplateRenderingServiceTest {
     TemplateService(
       templatesDirectory = "/templates",
       templateVersionService = templateVersionService,
+      templateVersionHealthService = templateVersionHealthService,
     ),
     telemetryClient,
   )
@@ -60,6 +63,7 @@ class TemplateRenderingServiceTest {
           order = 1,
           enabled = true,
           templateMigrated = false,
+          category = ServiceCategory.PRISON,
         ),
       ),
       data,
@@ -345,6 +349,7 @@ class TemplateRenderingServiceTest {
             order = 1,
             enabled = true,
             templateMigrated = false,
+            category = ServiceCategory.PRISON,
           ),
         ),
         testServiceTemplateData,

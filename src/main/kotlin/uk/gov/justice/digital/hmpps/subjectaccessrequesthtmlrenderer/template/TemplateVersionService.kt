@@ -13,6 +13,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType.HEALTHY
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType.UNHEALTHY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
@@ -27,6 +29,7 @@ class TemplateVersionService(
   val serviceConfigurationService: ServiceConfigurationService,
   val templateVersionRepository: TemplateVersionRepository,
   val dynamicServicesClient: DynamicServicesClient,
+  val templateVersionHealthService: TemplateVersionHealthService,
   val telemetryClient: TelemetryClient,
 ) {
 
@@ -72,11 +75,22 @@ class TemplateVersionService(
           publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
         }
 
+        templateVersionHealthService.updateHealthStatusIfChanged(
+          serviceConfiguration = serviceConfiguration,
+          newStatus = HEALTHY,
+        )
         it
-      } ?: throw templateHashMatchFailureException(
-      renderRequest = renderRequest,
-      serviceTemplateHash = serviceTemplateHash,
-    )
+      } ?: run {
+      templateVersionHealthService.updateHealthStatusIfChanged(
+        serviceConfiguration = serviceConfiguration,
+        newStatus = UNHEALTHY,
+      )
+
+      throw templateHashMatchFailureException(
+        renderRequest = renderRequest,
+        serviceTemplateHash = serviceTemplateHash,
+      )
+    }
   }
 
   private fun getServiceTemplate(

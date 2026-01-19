@@ -8,10 +8,12 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionHealthService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
 import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
@@ -36,14 +38,19 @@ class TemplateGeneratorUtil {
   private val telemetryClient: TelemetryClient = mock()
   private val templateDataFetcherFacade: TemplateDataFetcherFacade = mock()
   private val templateVersionService: TemplateVersionService = mock()
+  private val templateVersionHealthService: TemplateVersionHealthService = mock()
 
-  private val templateService: TemplateService = TemplateService(templateVersionService = templateVersionService)
+  private val templateService: TemplateService = TemplateService(
+    templateVersionService = templateVersionService,
+    templateVersionHealthService = templateVersionHealthService,
+  )
 
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
 
   private val templateRenderService: TemplateRenderService = TemplateRenderService(templateHelpers)
 
-  private val templateRenderingService: TemplateRenderingService = TemplateRenderingService(templateRenderService, templateService, telemetryClient)
+  private val templateRenderingService: TemplateRenderingService =
+    TemplateRenderingService(templateRenderService, templateService, telemetryClient)
 
   init {
     whenever(templateDataFetcherFacade.findUserLastNameByUsername(any())).thenReturn("Homer Simpson")
@@ -65,6 +72,7 @@ class TemplateGeneratorUtil {
         templateMigrated = true,
         order = 1,
         url = "https://example.com",
+        category = ServiceCategory.PRISON,
       )
       val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceConfiguration = serviceConfiguration)
       val output = renderHtml(renderRequest, isNullData).use { os -> writeToFile(serviceName, os) }
@@ -120,9 +128,13 @@ class TemplateGeneratorUtil {
 
   private fun getTestResourcesDir() = System.getenv("TEST_RESOURCES_DIR")
 
-  private fun renderedTemplateNullException(serviceName: String) = RuntimeException("Rendered HTML for service $serviceName was null")
+  private fun renderedTemplateNullException(
+    serviceName: String,
+  ) = RuntimeException("Rendered HTML for service $serviceName was null")
 
-  private fun responseStubJsonNotFoundException(target: Path) = RuntimeException("response stub json file $target not found")
+  private fun responseStubJsonNotFoundException(
+    target: Path,
+  ) = RuntimeException("response stub json file $target not found")
 
   private fun log(message: String) {
     println("[generateTemplate] $message")
