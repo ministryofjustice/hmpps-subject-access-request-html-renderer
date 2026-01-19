@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepository
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @ExtendWith(SarDataSourceApiExtension::class)
@@ -440,7 +441,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     TemplateVersionHealthStatus(
       serviceConfiguration = serviceConfiguration,
       status = status,
-      lastModified = Instant.now(),
+      lastModified = Instant.now().truncateToMicros(),
     ),
   )
 
@@ -468,4 +469,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(actual!!.status).isEqualTo(expectedStatus)
     assertThat(actual.lastModified).isAfter(initialStatus.lastModified)
   }
+
+  private fun Instant.truncateToMicros(): Instant = this.truncatedTo(ChronoUnit.MICROS)
 }

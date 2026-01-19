@@ -35,7 +35,9 @@ class TemplateVersionHealthStatusRepositoryTest {
     category = ServiceCategory.PRISON,
   )
 
-  private val initialLastModified: Instant = Instant.now().minus(1, ChronoUnit.HOURS)
+  private val initialLastModified: Instant = Instant.now()
+    .minus(1, ChronoUnit.HOURS)
+    .truncatedTo(ChronoUnit.HOURS)
 
   private val healthyTemplateStatus = newTemplateVersionHealthStatus(
     serviceConfig = testServiceConfig,
@@ -155,4 +157,6 @@ class TemplateVersionHealthStatusRepositoryTest {
     serviceConfiguration = serviceConfig,
     lastModified = lastModified,
   )
+
+  private fun Instant.truncateToMicros(): Instant = this.truncatedTo(ChronoUnit.MICROS)
 }
