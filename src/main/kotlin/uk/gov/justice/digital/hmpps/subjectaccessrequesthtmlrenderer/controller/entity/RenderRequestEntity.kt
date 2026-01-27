@@ -13,10 +13,10 @@ data class RenderRequestEntity(
 
   val ndeliusId: String? = null,
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @param:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   val dateFrom: LocalDate? = null,
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+  @param:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
   var dateTo: LocalDate? = null,
 
   val sarCaseReferenceNumber: String? = null,

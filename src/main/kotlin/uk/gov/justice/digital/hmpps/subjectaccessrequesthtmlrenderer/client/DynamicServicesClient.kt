@@ -34,7 +34,7 @@ import java.util.UUID
 
 @Service
 class DynamicServicesClient(
-  @Qualifier("dynamicWebClient") private val dynamicApiWebClient: WebClient,
+  @param:Qualifier("dynamicWebClient") private val dynamicApiWebClient: WebClient,
   private val webClientRetriesSpec: WebClientRetriesSpec,
   private val serviceConfigurationService: ServiceConfigurationService,
   private val telemetryClient: TelemetryClient,

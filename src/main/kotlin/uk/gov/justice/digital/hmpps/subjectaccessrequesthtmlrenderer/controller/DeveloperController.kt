@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -69,7 +70,7 @@ class DeveloperController(private val renderService: RenderService) {
     val documentKey = "$subjectAccessRequestId/$serviceName.html"
 
     return renderService.getRenderedHtml(documentKey)
-      ?.let { return ResponseEntity(String(it), null, HttpStatus.OK) }
+      ?.let { return ResponseEntity(String(it), HttpHeaders(), HttpStatus.OK) }
       ?: throw SubjectAccessRequestException(
         message = "document $documentKey not found",
         errorCode = ErrorCode.NOT_FOUND,
@@ -108,7 +109,7 @@ class DeveloperController(private val renderService: RenderService) {
   @GetMapping("/{subjectAccessRequestId}", produces = ["application/json"])
   suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<FileSummary> = renderService
     .listCacheFilesWithPrefix(UUID.fromString(subjectAccessRequestId))
-    ?.let { ResponseEntity(FileSummary(it), null, HttpStatus.OK) }
+    ?.let { ResponseEntity(FileSummary(it), HttpHeaders(), HttpStatus.OK) }
     ?: throw SubjectAccessRequestException(
       message = "subject access request $subjectAccessRequestId not found",
       errorCode = ErrorCode.NOT_FOUND,

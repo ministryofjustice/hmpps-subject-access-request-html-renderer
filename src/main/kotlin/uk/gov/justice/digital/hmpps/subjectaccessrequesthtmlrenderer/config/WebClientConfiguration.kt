@@ -11,13 +11,13 @@ import java.time.Duration
 
 @Configuration
 class WebClientConfiguration(
-  @Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
-  @Value("\${locations-api.url}") val locationsApiBaseUri: String,
-  @Value("\${nomis-mappings-api.url}") val nomisMappingsApiBaseUri: String,
-  @Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
-  @Value("\${api.timeout:20s}") val timeout: Duration,
-  @Value("\${web-client.configuration.max-retries:0}") val maxRetries: Long,
-  @Value("\${web-client.configuration.back-off:PT10S}") val backOff: String,
+  @param:Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
+  @param:Value("\${locations-api.url}") val locationsApiBaseUri: String,
+  @param:Value("\${nomis-mappings-api.url}") val nomisMappingsApiBaseUri: String,
+  @param:Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
+  @param:Value("\${api.timeout:20s}") val timeout: Duration,
+  @param:Value("\${web-client.configuration.max-retries:0}") val maxRetries: Long,
+  @param:Value("\${web-client.configuration.back-off:PT10S}") val backOff: String,
 ) {
   // HMPPS Auth health ping is required if your service calls HMPPS Auth to get a token to call other services
   // TODO: Remove the health ping if no call outs to other services are made

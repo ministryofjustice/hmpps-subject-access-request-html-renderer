@@ -9,7 +9,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 
 @Service
 class TemplateService(
-  @Value("\${template-resources.directory}") private val templatesDirectory: String = "/templates",
+  @param:Value("\${template-resources.directory}") private val templatesDirectory: String = "/templates",
   val templateVersionService: TemplateVersionService,
   val templateVersionHealthService: TemplateVersionHealthService,
 ) {
