@@ -13,6 +13,7 @@ abstract class BaseClientIntTest : IntegrationTestBase() {
 
     const val AUTH_ERROR_PREFIX =
       "[invalid_token_response] An error occurred while attempting to retrieve the OAuth 2.0 Access Token Response:"
+    const val AUTH_ERROR_SUFFIX = "on POST request for \"http://localhost:8090/auth/oauth/token\""
 
     @JvmStatic
     fun status5xxResponseStubs(): List<StubErrorResponse> = listOf(

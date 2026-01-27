@@ -63,9 +63,9 @@ class BacklogController(
   data class SubjectDataHeldRequest(
     val nomisId: String? = null,
     val ndeliusId: String? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @param:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val dateFrom: LocalDate? = null,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @param:JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     val dateTo: LocalDate? = null,
     val serviceName: String? = null,
     val serviceUrl: String? = null,

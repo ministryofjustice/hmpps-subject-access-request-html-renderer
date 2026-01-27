@@ -169,6 +169,12 @@ class RenderService(
           renderRequest.id,
           renderRequest.serviceConfiguration.serviceName,
         )
+      } ?: ServiceData().also {
+        log.warn(
+          "received null response body, id: {}, service: {}",
+          renderRequest.id,
+          renderRequest.serviceConfiguration.serviceName,
+        )
       }
     }
 

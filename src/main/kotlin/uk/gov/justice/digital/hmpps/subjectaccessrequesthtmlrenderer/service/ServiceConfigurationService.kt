@@ -10,9 +10,9 @@ import java.util.UUID
 @Service
 class ServiceConfigurationService(
   private val serviceConfigurationRepository: ServiceConfigurationRepository,
-  @Value("\${G1-api.url}") private val g1ApiUrl: String,
-  @Value("\${G2-api.url}") private val g2ApiUrl: String,
-  @Value("\${G3-api.url}") private val g3ApiUrl: String,
+  @param:Value("\${G1-api.url}") private val g1ApiUrl: String,
+  @param:Value("\${G2-api.url}") private val g2ApiUrl: String,
+  @param:Value("\${G3-api.url}") private val g3ApiUrl: String,
 ) {
 
   fun findByIdOrNull(id: UUID): ServiceConfiguration? = serviceConfigurationRepository.findByIdOrNull(id)

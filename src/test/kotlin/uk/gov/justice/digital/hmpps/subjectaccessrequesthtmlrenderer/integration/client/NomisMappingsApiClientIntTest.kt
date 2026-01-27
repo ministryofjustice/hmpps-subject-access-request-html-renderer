@@ -125,7 +125,7 @@ class NomisMappingsApiClientIntTest : BaseClientIntTest() {
       expectedPrefix = "subjectAccessRequest failed with non-retryable error: nomisMappingsApiClient error authorization exception",
       expectedCause = stubResponse.expectedException,
       expectedParams = mapOf(
-        "cause" to "$AUTH_ERROR_PREFIX ${stubResponse.status.value()} ${stubResponse.status.reasonPhrase}: [no body]",
+        "cause" to "$AUTH_ERROR_PREFIX ${stubResponse.status.value()} ${stubResponse.status.reasonPhrase} $AUTH_ERROR_SUFFIX: [no body]",
       ),
     )
   }

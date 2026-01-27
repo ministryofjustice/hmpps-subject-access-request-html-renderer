@@ -11,7 +11,7 @@ data class FileSummary(val files: List<FileInfo>)
 data class FileInfo(
   val key: String? = "no-value",
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING)
+  @param:JsonFormat(shape = JsonFormat.Shape.STRING)
   val lastModified: Instant? = null,
 
   val size: Long? = null,

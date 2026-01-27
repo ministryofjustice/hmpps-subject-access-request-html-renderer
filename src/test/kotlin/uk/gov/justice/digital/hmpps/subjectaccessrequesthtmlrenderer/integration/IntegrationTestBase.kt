@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
+import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.capture
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
@@ -15,6 +16,7 @@ import org.mockito.kotlin.verify
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.context.annotation.Import
 import org.springframework.http.HttpHeaders
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService
@@ -47,10 +49,12 @@ import java.util.UUID
   SarDataSourceApiExtension::class,
   LocationsApiExtension::class,
   NomisMappingsApiExtension::class,
+  MockitoExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @ActiveProfiles("test")
 @Import(S3TestUtil::class)
+@AutoConfigureWebTestClient
 abstract class IntegrationTestBase {
 
   @Autowired
