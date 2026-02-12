@@ -287,7 +287,6 @@ abstract class IntegrationTestBase {
     label = serviceLabel,
     url = url,
     enabled = enabled,
-    order = order,
     templateMigrated = templateMigrated,
     category = ServiceCategory.PRISON,
   )

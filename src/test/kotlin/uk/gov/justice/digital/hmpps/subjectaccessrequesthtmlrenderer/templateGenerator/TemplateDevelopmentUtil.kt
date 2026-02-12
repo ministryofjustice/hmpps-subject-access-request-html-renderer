@@ -70,7 +70,6 @@ class TemplateGeneratorUtil {
         label = getServiceLabel(serviceName),
         enabled = true,
         templateMigrated = true,
-        order = 1,
         url = "https://example.com",
         category = ServiceCategory.PRISON,
       )

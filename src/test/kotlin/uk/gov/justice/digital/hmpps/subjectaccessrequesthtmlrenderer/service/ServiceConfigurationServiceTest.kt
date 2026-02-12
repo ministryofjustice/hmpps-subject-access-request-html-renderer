@@ -54,7 +54,6 @@ class ServiceConfigurationServiceTest {
           enabled = true,
           label = serviceName,
           templateMigrated = false,
-          order = 1,
           category = ServiceCategory.PRISON,
         ),
       )
