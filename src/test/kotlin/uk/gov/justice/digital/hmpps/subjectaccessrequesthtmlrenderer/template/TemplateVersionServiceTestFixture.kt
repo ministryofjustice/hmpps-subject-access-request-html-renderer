@@ -49,7 +49,6 @@ abstract class TemplateVersionServiceTestFixture {
     id = UUID.randomUUID(),
     serviceName = "hmpps-test-service",
     label = "HMPPS Test Service",
-    order = 1,
     enabled = true,
     templateMigrated = true,
     url = "http://localhost:8080/",

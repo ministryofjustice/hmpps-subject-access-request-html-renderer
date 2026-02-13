@@ -66,7 +66,6 @@ class TemplateServiceTest {
       serviceConfiguration = ServiceConfiguration(
         serviceName = serviceName,
         label = "HMPPS Test Service",
-        order = 1,
         enabled = true,
         templateMigrated = false,
         url = "https://example.com",
@@ -104,7 +103,6 @@ class TemplateServiceTest {
       serviceConfiguration = ServiceConfiguration(
         serviceName = serviceName,
         label = "HMPPS Test Service",
-        order = 1,
         enabled = true,
         templateMigrated = true,
         url = "https://example.com",
@@ -135,7 +133,6 @@ class TemplateServiceTest {
       serviceConfiguration = ServiceConfiguration(
         serviceName = "court-case-service",
         label = "Court Case Service",
-        order = 1,
         enabled = true,
         templateMigrated = false,
         url = "https://example.com",
@@ -159,7 +156,6 @@ class TemplateServiceTest {
       serviceConfiguration = ServiceConfiguration(
         serviceName = "offender-management-allocation-manager",
         label = "Manage Prison Offender Manager Cases",
-        order = 1,
         enabled = true,
         templateMigrated = true,
         url = "https://example.com",
@@ -210,7 +206,6 @@ class TemplateServiceTest {
             serviceConfiguration = ServiceConfiguration(
               serviceName = "no-exist-service",
               label = "",
-              order = 1,
               enabled = true,
               templateMigrated = false,
               url = "https://example.com",
@@ -239,7 +234,6 @@ class TemplateServiceTest {
         serviceConfiguration = ServiceConfiguration(
           serviceName = "hmpps-test-service",
           label = "HMPPS Test Service",
-          order = 1,
           enabled = true,
           templateMigrated = true,
           url = "https://example.com",

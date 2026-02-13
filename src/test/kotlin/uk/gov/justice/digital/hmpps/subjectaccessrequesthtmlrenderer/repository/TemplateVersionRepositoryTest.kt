@@ -29,7 +29,6 @@ class TemplateVersionRepositoryTest @Autowired constructor(
     label = "Example",
     enabled = true,
     templateMigrated = true,
-    order = 1,
     url = "https://example.com/",
     category = ServiceCategory.PRISON,
   )

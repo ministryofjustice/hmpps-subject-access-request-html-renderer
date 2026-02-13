@@ -23,9 +23,6 @@ data class ServiceConfiguration(
   @Column(name = "url", nullable = false)
   var url: String,
 
-  @Column(name = "list_order", nullable = false)
-  var order: Int,
-
   @Column(name = "enabled", nullable = false)
   var enabled: Boolean,
 
@@ -41,7 +38,6 @@ data class ServiceConfiguration(
     serviceName = "",
     label = "",
     url = "",
-    order = 0,
     enabled = false,
     templateMigrated = false,
     category = ServiceCategory.PRISON,

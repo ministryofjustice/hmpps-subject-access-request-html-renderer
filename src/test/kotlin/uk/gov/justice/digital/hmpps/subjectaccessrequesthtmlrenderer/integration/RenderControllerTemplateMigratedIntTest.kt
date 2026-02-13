@@ -54,7 +54,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     label = serviceLabel,
     url = "http://localhost:${sarDataSourceApi.port()}",
     enabled = true,
-    order = 666,
     templateMigrated = true,
     category = ServiceCategory.PRISON,
   )

@@ -29,7 +29,6 @@ class TemplateVersionHealthStatusRepositoryTest {
     serviceName = "service-666",
     label = "Service Six Six Six",
     url = "http://localhost:8080",
-    order = 666,
     enabled = true,
     templateMigrated = true,
     category = ServiceCategory.PRISON,
