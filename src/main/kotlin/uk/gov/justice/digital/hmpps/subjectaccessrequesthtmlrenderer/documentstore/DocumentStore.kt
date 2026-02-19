@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_FILE_NOT_FOUND
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_HTML_UPLOAD_FAILED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_JSON_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
@@ -48,25 +47,6 @@ class DocumentStore(
 
     return result.also {
       log.info("subject access request html partial: $documentKey exists? $it")
-    }
-  }
-
-  suspend fun addJson(renderRequest: RenderRequest, data: ByteArray?) {
-    try {
-      s3.putObject {
-        bucket = s3Properties.bucketName
-        key = renderRequest.documentJsonKey()
-        body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
-      }
-
-      log.info("adding json document to document store.... ${renderRequest.documentJsonKey()}")
-    } catch (ex: Exception) {
-      throw SubjectAccessRequestException(
-        message = "failed to upload json document",
-        errorCode = DOCUMENT_STORE_JSON_UPLOAD_FAILED,
-        subjectAccessRequestId = renderRequest.id,
-        params = mapOf("documentKey" to renderRequest.documentJsonKey()),
-      )
     }
   }
 
