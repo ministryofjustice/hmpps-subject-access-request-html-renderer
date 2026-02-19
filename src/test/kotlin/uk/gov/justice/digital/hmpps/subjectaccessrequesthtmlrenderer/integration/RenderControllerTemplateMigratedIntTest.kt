@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.ServiceData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
@@ -109,12 +108,11 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
     @Test
     fun `should generate expected HTML for service with template migrated true`() {
-      val templateVersion = templateVersionRepository.save(templateVersion1Published)
+      templateVersionRepository.save(templateVersion1Published)
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -127,7 +125,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled()
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
       assertUploadedHtmlMatchesExpected(
         renderRequest,
         getExpectedHtmlString("hmpps-test-service-migrated-template-v1"),
@@ -155,7 +153,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
       val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -168,8 +165,11 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled()
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
-      assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString("hmpps-test-service-migrated-template-v2"))
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
+      assertUploadedHtmlMatchesExpected(
+        renderRequest,
+        getExpectedHtmlString("hmpps-test-service-migrated-template-v2"),
+      )
       assertThatTemplateVersionIsPublished(templateVersion3Pending.id)
       assertStoredTemplateVersionMatchesExpected(renderRequest, "v3")
 
@@ -192,7 +192,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         status = HealthStatusType.HEALTHY,
       )
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -215,6 +214,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         expected = initialTemplateHealthStatus,
         serviceConfiguration = renderRequest.serviceConfiguration,
       )
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
     }
 
     @Test
@@ -228,7 +228,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         status = HealthStatusType.HEALTHY,
       )
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -247,6 +246,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         expected = initialTemplateHealthStatus,
         serviceConfiguration = renderRequest.serviceConfiguration,
       )
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
@@ -265,7 +265,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         status = HealthStatusType.HEALTHY,
       )
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -284,6 +283,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         initialStatus = initialTemplateHealthStatus,
         expectedStatus = HealthStatusType.UNHEALTHY,
       )
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
@@ -306,7 +306,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
         status = HealthStatusType.HEALTHY,
       )
 
-      assertServiceJsonDocumentDoesNotAlreadyExist(renderRequest)
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
@@ -332,9 +331,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled()
 
-      assertUploadedJsonMatchesExpected(renderRequest, getServiceResponseBody(serviceName))
+      assertBucketDoesNotContainServiceDataJsonFile(renderRequest)
       assertUploadedHtmlDoesNotExist(renderRequest)
       assertTemplateVersionHealthStatusEquals(testServiceConfiguration, HealthStatusType.UNHEALTHY)
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
     }
   }
 
@@ -369,15 +369,8 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     .bodyValue(objectMapper.writeValueAsString(renderRequestEntity))
     .exchange()
 
-  private fun assertUploadedJsonMatchesExpected(renderRequest: RenderRequest, expectedJson: String) {
-    val uploadedFile = s3TestUtil.getFile(renderRequest.documentJsonKey())
-    assertThat(uploadedFile).isNotNull().isNotEmpty()
-    assertThat(objectMapper.readValue(uploadedFile, ServiceData::class.java)).isEqualTo(
-      objectMapper.readValue(
-        expectedJson,
-        ServiceData::class.java,
-      ),
-    )
+  private fun assertBucketDoesNotContainServiceDataJsonFile(renderRequest: RenderRequest) {
+    assertThat(s3TestUtil.documentExists(key = "${renderRequest.id}/${renderRequest.serviceConfiguration.serviceName}.json")).isFalse()
   }
 
   private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
@@ -467,6 +460,10 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(actual).isNotNull
     assertThat(actual!!.status).isEqualTo(expectedStatus)
     assertThat(actual.lastModified).isAfter(initialStatus.lastModified)
+  }
+
+  private fun assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(request: RenderRequest) {
+    assertDocumentDoesNotExists("${request.id}/${request.serviceConfiguration.serviceName}.json")
   }
 
   private fun Instant.truncateToMicros(): Instant = this.truncatedTo(ChronoUnit.MICROS)

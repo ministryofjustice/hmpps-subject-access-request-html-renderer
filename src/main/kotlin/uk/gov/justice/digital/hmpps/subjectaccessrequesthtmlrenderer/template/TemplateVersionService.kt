@@ -144,6 +144,12 @@ class TemplateVersionService(
     }
   }
 
+  internal fun getTemplateVersionsForServiceConfigurationId(
+    serviceConfiguration: ServiceConfiguration,
+  ): List<TemplateVersion> = templateVersionRepository.findTemplateVersionByServiceConfigurationId(
+    serviceConfiguration.id,
+  )
+
   private fun getServiceConfiguration(
     renderRequest: RenderRequest,
   ): ServiceConfiguration = serviceConfigurationService.findByIdAndEnabledAndTemplateMigrated(

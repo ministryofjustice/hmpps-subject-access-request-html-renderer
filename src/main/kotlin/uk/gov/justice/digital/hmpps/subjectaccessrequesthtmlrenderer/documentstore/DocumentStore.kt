@@ -51,25 +51,6 @@ class DocumentStore(
     }
   }
 
-  suspend fun addJson(renderRequest: RenderRequest, data: ByteArray?) {
-    try {
-      s3.putObject {
-        bucket = s3Properties.bucketName
-        key = renderRequest.documentJsonKey()
-        body = ByteStream.fromBytes(data ?: byteArrayOf()) // default to empty if null TODO check if this is right
-      }
-
-      log.info("adding json document to document store.... ${renderRequest.documentJsonKey()}")
-    } catch (ex: Exception) {
-      throw SubjectAccessRequestException(
-        message = "failed to upload json document",
-        errorCode = DOCUMENT_STORE_JSON_UPLOAD_FAILED,
-        subjectAccessRequestId = renderRequest.id,
-        params = mapOf("documentKey" to renderRequest.documentJsonKey()),
-      )
-    }
-  }
-
   suspend fun addHtml(renderRequest: RenderRequest, renderedHtml: RenderedHtml) {
     try {
       s3.putObject {

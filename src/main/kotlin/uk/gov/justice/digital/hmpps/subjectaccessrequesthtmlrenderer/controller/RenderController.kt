@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE_HTML_CACHED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
@@ -25,8 +24,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.S
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService.RenderResult.CREATED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService.RenderResult.DATA_ALREADY_EXISTS
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
@@ -92,17 +89,11 @@ class RenderController(
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
-    val response = when (renderService.renderServiceDataHtml(renderRequest)) {
-      CREATED -> documentCreatedResponse(renderRequest).also {
-        telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
-      }
 
-      DATA_ALREADY_EXISTS -> documentAlreadyExistsResponse().also {
-        telemetryClient.renderEvent(REQUEST_COMPLETE_HTML_CACHED, renderRequest)
-      }
+    renderService.renderServiceDataHtml(renderRequest).also {
+      telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
     }
-
-    return response
+    return documentCreatedResponse(renderRequest)
   }
 
   private fun validateRequest(request: RenderRequestEntity) {
@@ -166,6 +157,4 @@ class RenderController(
     ),
     HttpStatus.CREATED,
   )
-
-  private fun documentAlreadyExistsResponse(): ResponseEntity<RenderResponse> = ResponseEntity.noContent().build()
 }

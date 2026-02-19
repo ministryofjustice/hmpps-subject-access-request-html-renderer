@@ -30,4 +30,6 @@ interface TemplateVersionRepository : JpaRepository<TemplateVersion, UUID> {
     @Param("fileHash") fileHash: String,
     @Param("status") status: TemplateVersionStatus = TemplateVersionStatus.PENDING,
   ): TemplateVersion?
+
+  fun findTemplateVersionByServiceConfigurationId(serviceConfigurationId: UUID): List<TemplateVersion>
 }

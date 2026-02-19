@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.capture
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
@@ -139,14 +140,6 @@ abstract class IntegrationTestBase {
     sarCaseReferenceNumber = "AAA",
   )
 
-  protected fun documentJsonKey(serviceConfiguration: ServiceConfiguration): String = ""
-
-  protected fun assertServiceJsonDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
-      .withFailMessage { "expected file ${request.documentJsonKey()} to not exist" }
-      .isFalse()
-  }
-
   protected fun assertServiceHtmlDocumentDoesNotAlreadyExist(request: RenderRequest): Unit = runBlocking {
     assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
       .withFailMessage { "expected file ${request.documentHtmlKey()} to not exist" }
@@ -163,22 +156,20 @@ abstract class IntegrationTestBase {
       .isFalse()
   }
 
-  protected fun assertServiceJsonDocumentExists(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
-      .withFailMessage { "expected file ${request.documentJsonKey()} to exist" }
-      .isTrue()
-  }
-
-  protected fun assertServiceJsonDocumentDoesNoExists(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentJsonKey()))
-      .withFailMessage { "expected file ${request.documentJsonKey()} to not exist" }
-      .isFalse()
-  }
-
   protected fun assertServiceHtmlDocumentExists(request: RenderRequest): Unit = runBlocking {
-    assertThat(s3TestUtil.documentExists(request.documentHtmlKey()))
-      .withFailMessage { "expected file ${request.documentHtmlKey()} to exist" }
+    assertDocumentExists(request.documentHtmlKey())
+  }
+
+  protected fun assertDocumentExists(key: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(key))
+      .withFailMessage { "expected file $key to exist" }
       .isTrue()
+  }
+
+  protected fun assertDocumentDoesNotExists(key: String): Unit = runBlocking {
+    assertThat(s3TestUtil.documentExists(key))
+      .withFailMessage { "expected file $key exists = false" }
+      .isFalse()
   }
 
   protected fun assertServiceHtmlDocumentDoesNotExists(request: RenderRequest): Unit = runBlocking {
@@ -244,24 +235,16 @@ abstract class IntegrationTestBase {
     return s3TestUtil.getFileMetadata(renderRequest.documentHtmlKey())
   }
 
-  protected fun addServiceJsonDocumentToBucket(renderRequest: RenderRequest, content: String): S3TestUtil.FileMetadata {
+  protected fun addContentToBucket(key: String, content: String): S3TestUtil.FileMetadata {
     s3TestUtil.addFilesToBucket(
       S3File(
-        key = renderRequest.documentJsonKey(),
+        key = key,
         content = content,
       ),
     )
-
-    assertServiceJsonDocumentExists(renderRequest)
-    return s3TestUtil.getFileMetadata(renderRequest.documentJsonKey())
+    assertDocumentExists(key)
+    return s3TestUtil.getFileMetadata(key)
   }
-
-  protected fun addServiceJsonDocumentToBucket(
-    renderRequest: RenderRequest,
-  ): S3TestUtil.FileMetadata = addServiceJsonDocumentToBucket(
-    renderRequest,
-    getServiceResponseBody(renderRequest.serviceConfiguration.serviceName),
-  )
 
   protected fun addServiceAttachmentToBucket(renderRequest: RenderRequest, attachmentNumber: Int, filename: String) {
     s3TestUtil.addFilesToBucket(

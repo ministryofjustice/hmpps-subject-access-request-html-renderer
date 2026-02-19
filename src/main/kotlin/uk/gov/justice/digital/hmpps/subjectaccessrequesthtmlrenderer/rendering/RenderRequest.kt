@@ -26,8 +26,6 @@ data class RenderRequest(
 
   fun documentHtmlKey(): String = "$id/${serviceConfiguration.serviceName}.html"
 
-  fun documentJsonKey(): String = "$id/${serviceConfiguration.serviceName}.json"
-
   fun documentAttachmentKey(
     attachmentNumber: Int,
     filename: String,
