@@ -1,0 +1,34 @@
+{
+  "content": [
+    {
+      "testKey": "testValue",
+      "moreData": {
+        "nestedKey": "nestedValue"
+      },
+      "arrayData": [
+        "arrayValue1-1",
+        "arrayValue1-2"
+      ]
+    },
+    {
+      "testKey": "testValue2",
+      "moreData": {
+        "nestedKey": "nestedValue2"
+      },
+      "arrayData": [
+        "arrayValue2-1",
+        "arrayValue2-2"
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "attachmentNumber": 1,
+      "name": "Test Text Attachment 1",
+      "contentType": "text/plain",
+      "url": "http://localhost:8092/attachments/text-1.txt",
+      "filename": "text-1.txt",
+      "filesize": 447
+    }
+  ]
+}

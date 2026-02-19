@@ -19,7 +19,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_FILE_NOT_FOUND
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_HTML_UPLOAD_FAILED
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_JSON_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml

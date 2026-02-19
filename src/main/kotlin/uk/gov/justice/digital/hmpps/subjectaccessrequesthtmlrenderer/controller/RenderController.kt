@@ -89,7 +89,6 @@ class RenderController(
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
-
     renderService.renderServiceDataHtml(renderRequest).also {
       telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
     }

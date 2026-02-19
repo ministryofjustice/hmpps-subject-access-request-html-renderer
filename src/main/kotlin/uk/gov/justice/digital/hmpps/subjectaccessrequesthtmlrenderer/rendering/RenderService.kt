@@ -47,7 +47,9 @@ class RenderService(
     )
 
     val (content, attachments) = getContentAndAttachmentsFromJsonData(renderRequest)
-    renderAndStoreHtml(renderRequest, content)
+    val renderedHtml = renderServiceDataHtml(renderRequest, content)
+    storeRenderedHtml(renderRequest, renderedHtml)
+
     attachments?.forEach { attachment -> getAndStoreAttachment(renderRequest, attachment) }
   }
 
@@ -92,13 +94,10 @@ class RenderService(
     }
   }
 
-  private suspend fun renderAndStoreHtml(
+  private fun renderServiceDataHtml(
     renderRequest: RenderRequest,
     content: Any?,
-  ) {
-    val renderedHtml = templateRenderingService.renderServiceDataHtml(renderRequest, content)
-    storeRenderedHtml(renderRequest, renderedHtml)
-  }
+  ): RenderedHtml = templateRenderingService.renderServiceDataHtml(renderRequest, content)
 
   private suspend fun getAndStoreAttachment(renderRequest: RenderRequest, attachment: Attachment) {
     val documentAttachmentKey = renderRequest.documentAttachmentKey(attachment.attachmentNumber, attachment.filename)

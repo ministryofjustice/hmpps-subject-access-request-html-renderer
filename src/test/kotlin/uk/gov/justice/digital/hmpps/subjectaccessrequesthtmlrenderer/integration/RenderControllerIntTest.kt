@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -14,6 +13,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.LocationDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.UserDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -319,7 +320,92 @@ class RenderControllerIntTest : IntegrationTestBase() {
         ExpectedTelemetryEvent(REQUEST_COMPLETE, eventProperties(renderRequest)),
       )
     }
+  }
 
+  @Nested
+  inner class OverwritingExistingS3Content {
+
+    private val testServiceConfiguration = ServiceConfiguration(
+      id = UUID.randomUUID(),
+      serviceName = "test-service",
+      label = "Test Service",
+      url = "http://localhost:${sarDataSourceApi.port()}",
+      enabled = true,
+      templateMigrated = false,
+      category = ServiceCategory.PRISON,
+    )
+
+    @BeforeEach
+    fun setup() {
+      serviceConfigurationRepository.saveAndFlush(testServiceConfiguration)
+    }
+
+    @AfterEach
+    fun teardown() {
+      serviceConfigurationRepository.deleteById(testServiceConfiguration.id)
+    }
+
+    @Test
+    fun `should overwrite attachment and html content in S3 bucket if files already exist`() {
+      assertThat(serviceConfigurationRepository.findByIdOrNull(testServiceConfiguration.id)).isNotNull
+
+      val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+      val attachmentName = "text-1.txt"
+      val attachmentKey = renderRequest.documentAttachmentKey(1, attachmentName)
+      val originalAttachmentContent = "This Is the Original Content"
+      val originalRendererHtml = "<html><body><h1>Existing ${testServiceConfiguration.label} Original</body></html>"
+
+      // Prepopulate the bucket with HTML and attachments with values differing values to those returned by the service.
+      addContentToBucket(renderRequest.documentHtmlKey(), originalRendererHtml)
+      addContentToBucket(attachmentKey, originalAttachmentContent)
+      assertServiceHtmlDocumentExists(renderRequest)
+      assertServiceAttachmentExists(renderRequest, 1, attachmentName)
+      assertBucketContentMatchesExpected(key = renderRequest.documentHtmlKey(), expectedContent = originalRendererHtml)
+      assertBucketContentMatchesExpected(key = attachmentKey, expectedContent = originalAttachmentContent)
+
+      // Set up the mocked hmpps service API to return different data and attachment data
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest, "${testServiceConfiguration.serviceName}-attachments")
+      hmppsServiceReturnsAttachmentForRequest(attachmentName, "text/plain")
+
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+
+      assertRenderTemplateSuccessResponse(response, renderRequest)
+
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
+      sarDataSourceApi.verifyGetAttachmentCalled(attachmentName)
+
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
+      assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString(testServiceConfiguration.serviceName))
+      assertUploadedAttachmentMatchesExpected(
+        renderRequest,
+        getResourceAsByteArray("/attachments/$attachmentName"),
+        AttachmentMetadata(
+          contentType = "text/plain",
+          filesize = 447,
+          filename = attachmentName,
+          attachmentNumber = "1",
+          name = "Test Text Attachment 1",
+        ),
+      )
+
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(SERVICE_DATA_RETURNED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_COMPLETED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_RENDERED_HTML_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_RENDERED_HTML_COMPLETED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_ATTACHMENT_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_ATTACHMENT_COMPLETE, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_ATTACHMENT_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(STORE_ATTACHMENT_COMPLETED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(REQUEST_COMPLETE, eventProperties(renderRequest)),
+      )
+    }
   }
 
   @Nested
