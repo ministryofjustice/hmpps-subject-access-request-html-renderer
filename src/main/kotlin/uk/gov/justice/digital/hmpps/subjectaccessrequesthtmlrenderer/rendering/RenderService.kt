@@ -57,6 +57,8 @@ class RenderService(
 
   suspend fun listCacheFilesWithPrefix(subjectAccessRequestId: UUID) = documentStore.list(subjectAccessRequestId)
 
+  suspend fun listAllFilesForId(subjectAccessRequestId: UUID) = documentStore.listAll(subjectAccessRequestId)
+
   private suspend fun getContentAndAttachmentsFromJsonData(
     renderRequest: RenderRequest,
   ): ServiceData {

@@ -107,8 +107,47 @@ class DeveloperController(private val renderService: RenderService) {
     ],
   )
   @GetMapping("/{subjectAccessRequestId}", produces = ["application/json"])
-  suspend fun listReportFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<FileSummary> = renderService
+  suspend fun listRequestHtmlFiles(@PathVariable subjectAccessRequestId: String): ResponseEntity<FileSummary> = renderService
     .listCacheFilesWithPrefix(UUID.fromString(subjectAccessRequestId))
+    ?.let { ResponseEntity(FileSummary(it), HttpHeaders(), HttpStatus.OK) }
+    ?: throw SubjectAccessRequestException(
+      message = "subject access request $subjectAccessRequestId not found",
+      errorCode = ErrorCode.NOT_FOUND,
+      subjectAccessRequestId = UUID.fromString(subjectAccessRequestId),
+    )
+
+  @Operation(
+    summary = "List all files generated for report ID",
+    description = "Return a list of the files that has been generated for the specified subject access request ID",
+    security = [SecurityRequirement(name = "subject-access-request-html-renderer-ui-role")],
+    responses = [
+      ApiResponse(
+        responseCode = "200",
+        description = "Success, returns list of files",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = FileSummary::class))],
+      ),
+      ApiResponse(
+        responseCode = "404",
+        description = "No files for the provided subject access request ID found",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "401",
+        description = "Unauthorized to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+      ApiResponse(
+        responseCode = "403",
+        description = "Forbidden to access this endpoint",
+        content = [Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))],
+      ),
+    ],
+  )
+  @GetMapping("/{subjectAccessRequestId}/all", produces = ["application/json"])
+  suspend fun listRequestAllFiles(
+    @PathVariable subjectAccessRequestId: String,
+  ): ResponseEntity<FileSummary> = renderService
+    .listAllFilesForId(UUID.fromString(subjectAccessRequestId))
     ?.let { ResponseEntity(FileSummary(it), HttpHeaders(), HttpStatus.OK) }
     ?: throw SubjectAccessRequestException(
       message = "subject access request $subjectAccessRequestId not found",
