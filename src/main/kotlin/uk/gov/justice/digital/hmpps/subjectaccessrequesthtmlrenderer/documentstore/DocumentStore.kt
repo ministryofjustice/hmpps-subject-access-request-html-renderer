@@ -125,4 +125,11 @@ class DocumentStore(
   }.contents
     ?.filter { StringUtils.isNotEmpty(it.key) && it.key!!.endsWith(suffix = ".html") }
     ?.map { FileInfo(key = it.key, lastModified = it.lastModified?.toJvmInstant(), size = it.size) }
+
+  suspend fun listAll(subjectAccessRequestId: UUID): List<FileInfo>? = s3.listObjectsV2 {
+    bucket = s3Properties.bucketName
+    prefix = subjectAccessRequestId.toString()
+  }.contents
+    ?.map { FileInfo(key = it.key, lastModified = it.lastModified?.toJvmInstant(), size = it.size) }
+    ?.sortedWith(compareBy { it.key })
 }

@@ -68,7 +68,7 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
   }
 
   @Nested
-  inner class ListFileSummary {
+  inner class ListFileHtmlSummary {
 
     @Test
     fun `should return status not found when subject access request ID does not exist in the bucket`(): Unit = runBlocking {
@@ -143,5 +143,47 @@ class DeveloperControllerEnabledIntTest : IntegrationTestBase() {
         .jsonPath("$.files[0].lastModified").isNotEmpty
         .jsonPath("$.files[0].size").isEqualTo(fileContent.toByteArray().size)
     }
+  }
+
+  @Nested
+  inner class ListAllFiles {
+
+    @Test
+    fun `should list all files under the provided ID`(): Unit = runBlocking {
+      val id = UUID.randomUUID()
+      val files = listOf("html", "txt", "json", "pdf")
+        .map { S3File("$id/service-xyz.$it") }
+        .toTypedArray()
+
+      s3TestUtil.addFilesToBucket(*files)
+      files.forEach { assertBucketContentMatchesExpected(it.key, it.content) }
+
+      webTestClient.get()
+        .uri("/subject-access-request/$id/all")
+        .headers(setAuthorisation(roles = listOf("ROLE_SAR_SUPPORT")))
+        .exchange()
+        .expectStatus()
+        .isOk
+        .expectBody()
+        .jsonPath("$.files").isArray
+        .jsonPath("$.files.length()").isEqualTo(4)
+        .jsonPath("$.files[0].key").isEqualTo("$id/service-xyz.html")
+        .jsonPath("$.files[0].lastModified").isNotEmpty
+        .jsonPath("$.files[0].size").isEqualTo(fileContent.toByteArray().size)
+        .jsonPath("$.files[1].key").isEqualTo("$id/service-xyz.json")
+        .jsonPath("$.files[1].lastModified").isNotEmpty
+        .jsonPath("$.files[1].size").isEqualTo(fileContent.toByteArray().size)
+        .jsonPath("$.files[2].key").isEqualTo("$id/service-xyz.pdf")
+        .jsonPath("$.files[2].lastModified").isNotEmpty
+        .jsonPath("$.files[2].size").isEqualTo(fileContent.toByteArray().size)
+        .jsonPath("$.files[3].key").isEqualTo("$id/service-xyz.txt")
+        .jsonPath("$.files[3].lastModified").isNotEmpty
+        .jsonPath("$.files[3].size").isEqualTo(fileContent.toByteArray().size)
+    }
+  }
+
+  private fun assertBucketContentMatchesExpected(key: String, expectedContent: String?) {
+    val s3Content = s3TestUtil.getFile(key)
+    assertThat(s3Content).isNotNull().isNotEmpty().isEqualTo(expectedContent)
   }
 }
