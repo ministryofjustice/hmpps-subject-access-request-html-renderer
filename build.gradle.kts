@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.2"
-  kotlin("plugin.spring") version "2.3.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.0.4"
+  kotlin("plugin.spring") version "2.3.10"
 }
 
 configurations {
@@ -15,22 +15,22 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0")
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.1")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.spullara.mustache.java:compiler:0.9.14")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.6.2")
+  implementation("aws.sdk.kotlin:s3:1.6.22")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.57.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.0.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.59.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.0.2")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.4.240")
-  runtimeOnly("org.postgresql:postgresql:42.7.8")
+  runtimeOnly("org.postgresql:postgresql:42.7.10")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.0")
