@@ -79,7 +79,8 @@ class TemplateVersionHealthServiceTest {
     fun `should create template version health status if entry does not already exists for service configuration Id`() {
       serviceConfigurationIsFound()
       templateVersionHealthStatusDoesNotExist()
-      whenever(templateVersionHealthStatusRepository.saveAndFlush(any())).thenReturn(TemplateVersionHealthStatus())
+      whenever(templateVersionHealthStatusRepository.saveAndFlush(any<TemplateVersionHealthStatus>()))
+        .thenReturn(TemplateVersionHealthStatus())
 
       val healthStatusCaptor = argumentCaptor<TemplateVersionHealthStatus>()
 

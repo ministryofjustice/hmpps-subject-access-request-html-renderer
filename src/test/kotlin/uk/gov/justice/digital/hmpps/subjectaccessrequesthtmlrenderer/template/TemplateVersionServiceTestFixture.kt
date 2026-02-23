@@ -161,7 +161,7 @@ abstract class TemplateVersionServiceTestFixture {
   }
 
   protected fun TemplateVersionRepository.mockSaveAndFlushException() {
-    whenever(this.saveAndFlush(any()))
+    whenever(this.saveAndFlush(any<TemplateVersion>()))
       .thenThrow(RuntimeException::class.java)
   }
 
