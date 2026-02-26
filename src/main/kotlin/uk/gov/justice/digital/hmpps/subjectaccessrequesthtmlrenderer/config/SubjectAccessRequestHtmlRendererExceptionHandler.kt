@@ -102,6 +102,7 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     ErrorCode.NOT_FOUND -> NOT_FOUND
     ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND -> NOT_FOUND
     ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH -> CONFLICT
+    ErrorCode.SERVICE_CONFIGURATION_SUSPENDED -> CONFLICT
     else -> INTERNAL_SERVER_ERROR
   }
 
