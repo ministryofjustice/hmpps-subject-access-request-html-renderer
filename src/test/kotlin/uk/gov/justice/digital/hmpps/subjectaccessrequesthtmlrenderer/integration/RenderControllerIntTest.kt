@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import org.junit.jupiter.api.fail
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.kotlin.any
@@ -28,6 +29,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_ERRORED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_CONFIGURATION_IN_SUSPENDED_STATE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_DATA_RETURNED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_ATTACHMENT_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.STORE_ATTACHMENT_STARTED
@@ -46,8 +48,10 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.User
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
+import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -893,6 +897,69 @@ class RenderControllerIntTest : IntegrationTestBase() {
         .jsonPath("$.errorCode").isEqualTo("1001")
 
       sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+    }
+  }
+
+  @Nested
+  inner class ServiceSuspended {
+
+    @BeforeEach
+    fun setup() {
+      serviceConfigurationRepository.updateSuspended("wiremock-test-service-api", true)
+    }
+
+    @AfterEach
+    fun tearDown() {
+      serviceConfigurationRepository.updateSuspended("wiremock-test-service-api", false)
+    }
+
+    private fun ServiceConfigurationRepository.updateSuspended(
+      serviceName: String,
+      suspended: Boolean,
+    ) {
+      findByServiceName(serviceName)?.let {
+        it.apply {
+          this.suspended = suspended
+          this.suspendedAt = if (suspended) Instant.now() else null
+        }
+        saveAndFlush(it)
+      } ?: fail("expected service configuration $serviceName not found")
+    }
+
+    @Test
+    fun `should return status 409 error when service is suspended`() {
+      val serviceConfiguration = serviceConfigurationRepository.findByServiceName("wiremock-test-service-api")
+      assertThat(serviceConfiguration).isNotNull
+      assertThat(serviceConfiguration!!.suspended).isTrue
+      assertThat(serviceConfiguration.suspendedAt).isNotNull
+
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+        .expectStatus().isEqualTo(409)
+        .expectBody()
+        .jsonPath("$.status").isEqualTo("409")
+        .jsonPath("$.errorCode").isEqualTo("2003")
+        .jsonPath("$.developerMessage").value { value: String ->
+          assertThat(value).startsWith("unable to process render request as service configuration has status suspended")
+        }
+        .jsonPath("$.userMessage").value { value: String ->
+          assertThat(value).startsWith("unable to process render request as service configuration has status suspended")
+        }
+
+      assertServiceHtmlDocumentDoesNotExists(renderRequest)
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
+
+      hmppsAuth.verifyGrantTokenIsNeverCalled()
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(SERVICE_CONFIGURATION_IN_SUSPENDED_STATE, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(REQUEST_ERRORED, eventProperties(renderRequest)),
+      )
     }
   }
 

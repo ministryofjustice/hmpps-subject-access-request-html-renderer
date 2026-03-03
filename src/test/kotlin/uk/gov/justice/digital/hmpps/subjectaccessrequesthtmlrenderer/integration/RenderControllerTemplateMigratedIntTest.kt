@@ -336,6 +336,46 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertTemplateVersionHealthStatusEquals(testServiceConfiguration, HealthStatusType.UNHEALTHY)
       assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
     }
+
+    @Test
+    fun `should return status 409 when service is suspended`() {
+      testServiceConfiguration.apply {
+        suspended = true
+        suspendedAt = Instant.now()
+      }
+      serviceConfigurationRepository.saveAndFlush(testServiceConfiguration)
+      templateVersionRepository.saveAndFlush(templateVersion1Published)
+
+      val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+
+      val initialTemplateHealthStatus = createTemplateVersionHealthStatus(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        status = HealthStatusType.HEALTHY,
+      )
+
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+        .expectStatus().isEqualTo(409)
+        .expectBody()
+        .jsonPath("$.errorCode").isEqualTo("2003")
+        .jsonPath("$.developerMessage").value { value: String ->
+          assertThat(value).startsWith("unable to process render request as service configuration has status suspended")
+        }
+
+      hmppsAuth.verifyGrantTokenIsNeverCalled()
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataNeverCalled()
+      sarDataSourceApi.verifyGetTemplateNeverCalled()
+
+      assertThatTemplateVersionHealthStatusHasNotUpdated(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        expected = initialTemplateHealthStatus,
+      )
+      assertBucketDoesNotContainServiceDataJsonFile(renderRequest)
+      assertUploadedHtmlDoesNotExist(renderRequest)
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
+    }
   }
 
   private fun assertTemplateVersionHealthStatusEquals(
@@ -460,6 +500,16 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(actual).isNotNull
     assertThat(actual!!.status).isEqualTo(expectedStatus)
     assertThat(actual.lastModified).isAfter(initialStatus.lastModified)
+  }
+
+  private fun assertThatTemplateVersionHealthStatusHasNotUpdated(
+    serviceConfiguration: ServiceConfiguration,
+    expected: TemplateVersionHealthStatus,
+  ) {
+    val actual = templateVersionHealthStatusRepository.findByServiceConfigurationId(serviceConfiguration.id)
+    assertThat(actual).isNotNull
+    assertThat(actual!!.status).isEqualTo(expected.status)
+    assertThat(actual.lastModified).isEqualTo(expected.lastModified)
   }
 
   private fun assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(request: RenderRequest) {

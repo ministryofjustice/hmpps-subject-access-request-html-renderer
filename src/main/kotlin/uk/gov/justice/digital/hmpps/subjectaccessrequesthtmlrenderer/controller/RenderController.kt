@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_RECEIVED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_CONFIGURATION_IN_SUSPENDED_STATE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderResponse
@@ -141,13 +142,17 @@ class RenderController(
 
   private fun getServiceConfiguration(
     request: RenderRequestEntity,
-  ): ServiceConfiguration = serviceConfigurationService.findByIdOrNull(request.serviceConfigurationId!!)
-    ?: throw SubjectAccessRequestException(
-      message = "service configuration id ${request.serviceConfigurationId} not found",
-      errorCode = ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND,
-      subjectAccessRequestId = request.id,
-      params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
-    )
+  ): ServiceConfiguration = serviceConfigurationService.findByIdOrNull(request.serviceConfigurationId!!)?.let {
+    if (it.suspended) {
+      throw serviceConfigurationSuspendedException(request = request, serviceConfiguration = it)
+    }
+    it
+  } ?: throw SubjectAccessRequestException(
+    message = "service configuration id ${request.serviceConfigurationId} not found",
+    errorCode = ErrorCode.SERVICE_CONFIGURATION_NOT_FOUND,
+    subjectAccessRequestId = request.id,
+    params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
+  )
 
   private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
     RenderResponse(
@@ -156,4 +161,24 @@ class RenderController(
     ),
     HttpStatus.CREATED,
   )
+
+  private fun serviceConfigurationSuspendedException(
+    request: RenderRequestEntity,
+    serviceConfiguration: ServiceConfiguration,
+  ) = SubjectAccessRequestException(
+    message = "unable to process render request as service configuration has status suspended",
+    errorCode = ErrorCode.SERVICE_CONFIGURATION_SUSPENDED,
+    subjectAccessRequestId = request.id,
+    params = mapOf(
+      "serviceName" to serviceConfiguration.serviceName,
+      "suspendedAt" to serviceConfiguration.suspendedAt,
+    ),
+  ).also {
+    telemetryClient.renderEvent(
+      SERVICE_CONFIGURATION_IN_SUSPENDED_STATE,
+      request.id,
+      Pair("serviceName", serviceConfiguration.serviceName),
+    )
+    log.error("rejecting render request: {}: service: {} is suspended", request.id, serviceConfiguration.serviceName)
+  }
 }
