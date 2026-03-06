@@ -26,7 +26,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestController
@@ -91,10 +90,10 @@ class RenderController(
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
-    val renderedHtml = renderService.renderServiceDataHtml(renderRequest).also {
+    val templateVersion = renderService.renderServiceDataHtml(renderRequest).also {
       telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
     }
-    return documentCreatedResponse(renderRequest, renderedHtml)
+    return documentCreatedResponse(renderRequest, templateVersion)
   }
 
   private fun validateRequest(request: RenderRequestEntity) {
@@ -155,11 +154,11 @@ class RenderController(
     params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
   )
 
-  private fun documentCreatedResponse(renderRequest: RenderRequest, renderedHtml: RenderedHtml) = ResponseEntity(
+  private fun documentCreatedResponse(renderRequest: RenderRequest, templateVersion: String) = ResponseEntity(
     RenderResponse(
       renderRequest.id!!,
       renderRequest.serviceConfiguration.serviceName,
-      renderedHtml.templateVersion,
+      templateVersion,
     ),
     HttpStatus.CREATED,
   )
