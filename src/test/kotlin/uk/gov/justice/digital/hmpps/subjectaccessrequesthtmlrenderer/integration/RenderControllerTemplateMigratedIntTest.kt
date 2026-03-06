@@ -120,7 +120,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, templateVersion1Published.version.toString())
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled()
@@ -160,7 +160,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, templateVersion3Pending.version.toString())
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled()
@@ -429,10 +429,12 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
   private fun assertRenderTemplateSuccessResponse(
     response: WebTestClient.ResponseSpec,
     renderRequest: RenderRequest,
+    expectedTemplateVersion: String,
   ) = response.expectStatus()
     .isEqualTo(HttpStatus.CREATED)
     .expectBody()
     .jsonPath("documentKey").isEqualTo("${renderRequest.id}/${renderRequest.serviceConfiguration.serviceName}.html")
+    .jsonPath("templateVersion").isEqualTo(expectedTemplateVersion)
 
   private fun hmppsServiceReturnsDataForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestData(
