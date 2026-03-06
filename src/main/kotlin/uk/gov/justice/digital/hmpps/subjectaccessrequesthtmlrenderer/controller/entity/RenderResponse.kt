@@ -2,8 +2,9 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller
 
 import java.util.UUID
 
-data class RenderResponse(val documentKey: String) {
-  constructor(subjectAccessRequestId: UUID, serviceName: String) : this(
+data class RenderResponse(val documentKey: String, val templateVersion: String) {
+  constructor(subjectAccessRequestId: UUID, serviceName: String, templateVersion: String) : this(
     documentKey = "$subjectAccessRequestId/$serviceName.html",
+    templateVersion = templateVersion,
   )
 }

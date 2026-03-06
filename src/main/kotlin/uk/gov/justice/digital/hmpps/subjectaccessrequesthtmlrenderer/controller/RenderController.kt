@@ -90,10 +90,10 @@ class RenderController(
     log.info("Rendering SAR HTML for sar.id={}, serviceName={}", renderRequest.id, serviceConfiguration.serviceName)
     telemetryClient.renderEvent(REQUEST_RECEIVED, renderRequest)
 
-    renderService.renderServiceDataHtml(renderRequest).also {
+    val templateVersion = renderService.renderServiceDataHtml(renderRequest).also {
       telemetryClient.renderEvent(REQUEST_COMPLETE, renderRequest)
     }
-    return documentCreatedResponse(renderRequest)
+    return documentCreatedResponse(renderRequest, templateVersion)
   }
 
   private fun validateRequest(request: RenderRequestEntity) {
@@ -154,10 +154,11 @@ class RenderController(
     params = mapOf("serviceConfigurationId" to request.serviceConfigurationId),
   )
 
-  private fun documentCreatedResponse(renderRequest: RenderRequest) = ResponseEntity(
+  private fun documentCreatedResponse(renderRequest: RenderRequest, templateVersion: String) = ResponseEntity(
     RenderResponse(
       renderRequest.id!!,
       renderRequest.serviceConfiguration.serviceName,
+      templateVersion,
     ),
     HttpStatus.CREATED,
   )
