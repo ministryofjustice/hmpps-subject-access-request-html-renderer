@@ -39,7 +39,7 @@ class RenderService(
     const val STATUS_IDENTIFIER_TYPE_NOT_SUPPORTED = 209
   }
 
-  suspend fun renderServiceDataHtml(renderRequest: RenderRequest) {
+  suspend fun renderServiceDataHtml(renderRequest: RenderRequest): RenderedHtml {
     log.info(
       "rendering html for request: {}, serviceName: {}",
       renderRequest.id,
@@ -51,6 +51,7 @@ class RenderService(
     storeRenderedHtml(renderRequest, renderedHtml)
 
     attachments?.forEach { attachment -> getAndStoreAttachment(renderRequest, attachment) }
+    return renderedHtml
   }
 
   suspend fun getRenderedHtml(documentKey: String): ByteArray? = documentStore.getByDocumentKey(documentKey)
