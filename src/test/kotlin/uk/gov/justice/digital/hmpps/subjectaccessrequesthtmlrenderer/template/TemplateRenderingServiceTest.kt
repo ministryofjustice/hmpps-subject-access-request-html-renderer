@@ -382,7 +382,7 @@ class TemplateRenderingServiceTest {
     assertThat(renderedTemplate).contains("</style>")
     assertThat(renderedTemplate).contains("<td class=\"data-column-35\">Event</td>")
     assertThat(renderedTemplate).contains("<td>Allocate primary POM</td>")
-    assertThat(renderedTemplate).contains("<td class=\"data-column-35\">Recommended POM type</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-35\">Recommended prison or probation offender manager type</td>")
     assertThat(renderedTemplate).contains("<td>Prison POM</td>")
 
     // Main sections
