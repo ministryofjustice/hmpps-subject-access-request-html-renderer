@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -337,6 +338,64 @@ class TemplateRenderingServiceTest {
   }
 
   @Test
+  fun `renderTemplate renders a template given a complexity of need template`() {
+    val actual = renderServiceDataHtml(
+      "hmpps-complexity-of-need",
+      loadServiceFixture("hmpps-complexity-of-need"),
+    )
+
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<h2>Complexity</h2>")
+    assertThat(renderedTemplate).contains("<tr><td>Level</td><td>low</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Active</td><td>Yes</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Creation</td><td>30 March 2021, 11:45:10 am</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Updated</td><td>30 March 2021, 7:54:46 pm</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Notes</td><td>string</td></tr>")
+  }
+
+  @Test
+  fun `renderTemplate renders a template given an offender management allocation manager template`() {
+    whenever(prisonDetailsRepository.findByPrisonId("LEI")).thenReturn(
+      PrisonDetail(
+        "LEI",
+        "Leeds (HMP)",
+      ),
+    )
+
+    val actual = renderServiceDataHtml(
+      "offender-management-allocation-manager",
+      loadServiceFixture("offender-management-allocation-manager"),
+    )
+
+    assertThat(actual).isNotNull()
+    assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+    assertThat(actual.data).isNotNull()
+    val renderedTemplate = actual.outputStreamToString()
+
+    assertThat(renderedTemplate).contains("<style>")
+    assertThat(renderedTemplate).contains("</style>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-35\">Event</td>")
+    assertThat(renderedTemplate).contains("<td>Allocate primary POM</td>")
+    assertThat(renderedTemplate).contains("<td class=\"data-column-35\">Recommended POM type</td>")
+    assertThat(renderedTemplate).contains("<td>Prison POM</td>")
+
+    // Main sections
+    assertThat(renderedTemplate).contains("<h3>Allocation history</h3>")
+    assertThat(renderedTemplate).contains("<h3>Calculated early allocation status</h3>")
+    assertThat(renderedTemplate).contains("<h3>Calculated handover date</h3>")
+    assertThat(renderedTemplate).contains("<h3>Case information</h3>")
+    assertThat(renderedTemplate).contains("<h3>Early allocations</h3>")
+    assertThat(renderedTemplate).contains("<h3>Handover progress checklist</h3>")
+    assertThat(renderedTemplate).contains("<h3>Responsibility</h3>")
+  }
+
+  @Test
   fun `renderTemplate throws exception when the specified service template does not exist`() {
     val actual = assertThrows<SubjectAccessRequestException> {
       templateRenderingService.renderServiceDataHtml(
@@ -370,6 +429,19 @@ class TemplateRenderingServiceTest {
   companion object {
     @JvmStatic
     fun serviceWithMandatoryTemplates() = listOf("GOne", "GTwo", "GThree")
+
+    private fun loadServiceFixture(serviceName: String): Any {
+      val resourcePath = "/integration-tests.service-response-stubs/$serviceName-response.json"
+      val stream = requireNotNull(TemplateRenderingServiceTest::class.java.getResourceAsStream(resourcePath)) {
+        "Fixture not found: $resourcePath"
+      }
+
+      @Suppress("UNCHECKED_CAST")
+      return stream.use {
+        val payload = ObjectMapper().readValue(it, Map::class.java) as Map<String, Any>
+        requireNotNull(payload["content"]) { "Fixture missing content field: $resourcePath" }
+      }
+    }
 
     private val testServiceTemplateData: ArrayList<Any> = arrayListOf(
       mapOf(

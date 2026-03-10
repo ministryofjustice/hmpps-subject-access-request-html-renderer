@@ -10,48 +10,36 @@
             <tr>
                 <td class="data-column-35">Prison name</td>
                 <td class="data-column-30">Allocated at tier</td>
-                <td class="data-column-35">Primary Prisoner Offender Manager</td>
+                <td class="data-column-35">Allocated at RoSH</td>
             </tr>
             <tr>
                 <td>{{ getPrisonName prison }}</td>
                 <td>{{ optionalValue allocatedAtTier }}</td>
-                <td>{{ optionalValue primaryPomLastName }}</td>
+                <td>{{ optionalValue allocatedAtRosh }}</td>
             </tr>
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-35">Secondary Prisoner Offender Manager</td>
-                <td class="data-column-30">Event</td>
-                <td class="data-column-35">Event trigger</td>
+                <td class="data-column-35">Event</td>
+                <td class="data-column-30">Event trigger</td>
+                <td class="data-column-35">Primary POM allocated at</td>
             </tr>
             <tr>
-                <td>{{ optionalValue secondaryPomLastName }}</td>
                 <td>{{ optionalValue event }}</td>
                 <td>{{ optionalValue eventTrigger }}</td>
-            </tr>
-        </table>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Primary POM allocated at</td>
-                <td class="data-column-30">Recommended POM type</td>
-                <td class="data-column-35">Created by</td>
-            </tr>
-            <tr>
                 <td>{{ optionalValue (formatDate primaryPomAllocatedAt) }}</td>
-                <td>{{ optionalValue recommendedPomType }}</td>
-                <td>{{ optionalValue createdByName }}</td>
             </tr>
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-35">Created at</td>
-                <td class="data-column-30">Updated at</td>
-                <td class="data-column-35"></td>
+                <td class="data-column-35">Recommended POM type</td>
+                <td class="data-column-30">Created at</td>
+                <td class="data-column-35">Updated at</td>
             </tr>
             <tr>
+                <td>{{ optionalValue recommendedPomType }}</td>
                 <td>{{ optionalValue (formatDate createdAt) }}</td>
                 <td>{{ optionalValue (formatDate updatedAt) }}</td>
-                <td></td>
             </tr>
         </table>
         <table class="data-table">
@@ -91,10 +79,10 @@
         <p>No Data Held</p>
     {{/allocationHistory}}
 
+    <br>
+    <h3>Calculated early allocation status</h3>
+    <br>
     {{#calculatedEarlyAllocationStatus}}
-        <br>
-        <h3>Calculated early allocation status</h3>
-        <br>
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Eligible</td>
@@ -108,21 +96,24 @@
             </tr>
         </table>
     {{/calculatedEarlyAllocationStatus}}
+    {{^calculatedEarlyAllocationStatus}}
+        <p>No Data Held</p>
+    {{/calculatedEarlyAllocationStatus}}
 
+    <br>
+    <h3>Calculated handover date</h3>
+    <br>
     {{#calculatedHandoverDate}}
-        <br>
-        <h3>Calculated handover date</h3>
-        <br>
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Start date</td>
                 <td class="data-column-30">Handover date</td>
-                <td class="data-column-35">Reason</td>
+                <td class="data-column-35">Responsibility</td>
             </tr>
             <tr>
                 <td>{{ optionalValue (formatDate startDate) }}</td>
                 <td>{{ optionalValue (formatDate handoverDate) }}</td>
-                <td>{{ optionalValue reason }}</td>
+                <td>{{ optionalValue responsibility }}</td>
             </tr>
         </table>
         <table class="data-table">
@@ -139,66 +130,76 @@
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-35">Responsibility</td>
+                <td class="data-column-100">Reason</td>
             </tr>
             <tr>
-                <td>{{ optionalValue responsibility }}</td>
+                <td>{{ optionalValue reason }}</td>
             </tr>
         </table>
     {{/calculatedHandoverDate}}
+    {{^calculatedHandoverDate}}
+        <p>No Data Held</p>
+    {{/calculatedHandoverDate}}
 
+    <br>
+    <h3>Case information</h3>
+    <br>
     {{#caseInformation}}
-        <br>
-        <h3>Case Information</h3>
-        <br>
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Tier</td>
-                <td class="data-column-30">Is manual entry</td>
-                <td class="data-column-35">Multi Agency Public Protection Arrangements level</td>
+                <td class="data-column-30">RoSH level</td>
+                <td class="data-column-35">Is manual entry</td>
             </tr>
             <tr>
                 <td>{{ optionalValue tier }}</td>
+                <td>{{ optionalValue roshLevel }}</td>
                 <td>{{ convertBoolean manualEntry }}</td>
-                <td>{{ optionalValue mappaLevel }}</td>
             </tr>
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-30">Created at</td>
-                <td class="data-column-35">Updated at</td>
+                <td class="data-column-35">Multi Agency Public Protection Arrangements level</td>
+                <td class="data-column-30">Enhanced resourcing</td>
                 <td class="data-column-35">Probation service</td>
             </tr>
             <tr>
-                <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ optionalValue mappaLevel }}</td>
+                <td>{{ convertBoolean enhancedResourcing }}</td>
                 <td>{{ optionalValue probationService }}</td>
             </tr>
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-30">COM name</td>
-                <td class="data-column-35">Team name</td>
-                <td class="data-column-35">Local delivery unit</td>
+                <td class="data-column-35">Created at</td>
+                <td class="data-column-30">Updated at</td>
+                <td class="data-column-35">Active Victims Liaison Officer</td>
             </tr>
             <tr>
-                <td>{{ optionalValue comName }}</td>
-                <td>{{ optionalValue teamName }}</td>
-                <td>{{ optionalValue localDeliveryUnit}}</td>
+                <td>{{ optionalValue (formatDate createdAt) }}</td>
+                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ convertBoolean activeVlo }}</td>
             </tr>
         </table>
         <table class="data-table">
-            <tr>
-                <td class="data-column-35">Active Victims Liaison Officer</td>
-                <td class="data-column-30">Enhanced resourcing</td>
-                <td class="data-column-35"></td>
-            </tr>
-            <tr>
-                <td>{{ convertBoolean activeVlo }}</td>
-                <td>{{ convertBoolean enhancedResourcing}}</td>
-                <td></td>
-            </tr>
+          <tr>
+            <td class="data-column-100">Team name</td>
+          </tr>
+          <tr>
+            <td>{{ optionalValue teamName }}</td>
+          </tr>
         </table>
+        <table class="data-table">
+          <tr>
+            <td class="data-column-100">Local delivery unit</td>
+          </tr>
+          <tr>
+            <td>{{ optionalValue localDeliveryUnit }}</td>
+          </tr>
+        </table>
+    {{/caseInformation}}
+    {{^caseInformation}}
+        <p>No Data Held</p>
     {{/caseInformation}}
 
     <br>
@@ -224,7 +225,7 @@
                 <td class="data-column-35">CPPC case</td>
             </tr>
             <tr>
-                <td>{{ convertBoolean seriousCrimePreventionOrder}}</td>
+                <td>{{ convertBoolean seriousCrimePreventionOrder }}</td>
                 <td>{{ convertBoolean mappaLevel3 }}</td>
                 <td>{{ convertBoolean cppcCase }}</td>
             </tr>
@@ -248,7 +249,7 @@
                 <td class="data-column-35">Due for release in less than 24 months</td>
             </tr>
             <tr>
-                <td>{{ optionalValue otherReason}}</td>
+                <td>{{ optionalValue otherReason }}</td>
                 <td>{{ convertBoolean extremismSeparation }}</td>
                 <td>{{ convertBoolean dueForReleaseInLessThan24months }}</td>
             </tr>
@@ -268,33 +269,25 @@
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Approved</td>
-                <td class="data-column-65">Reason</td>
+                <td class="data-column-30">Created within referral window</td>
+                <td class="data-column-35">Reason</td>
             </tr>
             <tr>
-                <td>{{ convertBoolean approved}}</td>
+                <td>{{ convertBoolean approved }}</td>
+                <td>{{ convertBoolean createdWithinReferralWindow }}</td>
                 <td>{{ optionalValue reason }}</td>
             </tr>
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-35">Created by last name</td>
-                <td class="data-column-30">Updated by last name</td>
-                <td class="data-column-35">Created within referral window</td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue createdByLastName }}</td>
-                <td>{{ optionalValue updatedByLastName }}</td>
-                <td>{{ convertBoolean createdWithinReferralWindow }}</td>
-            </tr>
-        </table>
-        <table class="data-table">
-            <tr>
                 <td class="data-column-35">Created at</td>
-                <td class="data-column-65">Updated at</td>
+                <td class="data-column-30">Updated at</td>
+                <td class="data-column-35"></td>
             </tr>
             <tr>
                 <td>{{ optionalValue (formatDate createdAt) }}</td>
                 <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td></td>
             </tr>
         </table>
     {{/earlyAllocations}}
@@ -303,44 +296,9 @@
     {{/earlyAllocations}}
 
     <br>
-    <h3>Email histories</h3>
+    <h3>Handover progress checklist</h3>
     <br>
-    {{#emailHistories}}
-        <h5>Email</h5>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Prison</td>
-                <td class="data-column-30">Name</td>
-                <td class="data-column-35">Email</td>
-            </tr>
-            <tr>
-                <td>{{ getPrisonName prison }}</td>
-                <td>{{ optionalValue name }}</td>
-                <td>{{ optionalValue email }}</td>
-            </tr>
-        </table>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Event</td>
-                <td class="data-column-30">Created at</td>
-                <td class="data-column-35">Updated at</td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue event }}</td>
-                <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
-            </tr>
-        </table>
-        <br>
-    {{/emailHistories}}
-    {{^emailHistories}}
-        <p>No Data Held</p>
-    {{/emailHistories}}
-
     {{#handoverProgressChecklist}}
-        <br>
-        <h3>Handover progress checklist</h3>
-        <br>
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Reviewed Offender Assessment System</td>
@@ -366,51 +324,14 @@
             </tr>
         </table>
     {{/handoverProgressChecklist}}
-
-    <br>
-    <h3>Offender email sent</h3>
-    <br>
-    {{#offenderEmailSent}}
-        <h5>Email</h5>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Offender email type</td>
-                <td class="data-column-30">Created at</td>
-                <td class="data-column-35">Updated at</td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue offenderEmailType }}</td>
-                <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
-            </tr>
-        </table>
-    {{/offenderEmailSent}}
-    {{^offenderEmailSent}}
+    {{^handoverProgressChecklist}}
         <p>No Data Held</p>
-    {{/offenderEmailSent}}
+    {{/handoverProgressChecklist}}
 
-    {{#paroleRecord}}
-        <br>
-        <h3>Parole record</h3>
-        <br>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Parole review date</td>
-                <td class="data-column-30">Created at</td>
-                <td class="data-column-35">Updated at</td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue (formatDate paroleReviewDate) }}</td>
-                <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
-            </tr>
-        </table>
-    {{/paroleRecord}}
-
+    <br>
+    <h3>Responsibility</h3>
+    <br>
     {{#responsibility}}
-        <br>
-        <h3>Responsibility</h3>
-        <br>
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Reason</td>
@@ -434,29 +355,10 @@
             </tr>
         </table>
     {{/responsibility}}
-
-    <br>
-    <h3>Victim liaison officers</h3>
-    <br>
-    {{#victimLiaisonOfficers}}
-        <h5>Officer</h5>
-        <table class="data-table">
-            <tr>
-                <td class="data-column-35">Last name</td>
-                <td class="data-column-30">Created at</td>
-                <td class="data-column-35">Updated at</td>
-            </tr>
-            <tr>
-                <td>{{ optionalValue lastName }}</td>
-                <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
-            </tr>
-        </table>
-    {{/victimLiaisonOfficers}}
-    {{^victimLiaisonOfficers}}
+    {{^responsibility}}
         <p>No Data Held</p>
-    {{/victimLiaisonOfficers}}
+    {{/responsibility}}
 {{/.}}
 {{^.}}
-    <p>No data held</p>
+    <p>No Data Held</p>
 {{/.}}
