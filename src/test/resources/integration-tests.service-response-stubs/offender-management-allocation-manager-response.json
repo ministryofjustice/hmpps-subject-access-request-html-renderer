@@ -3,141 +3,34 @@
     "nomsNumber": "G9979UV",
     "allocationHistory": [
       {
-        "prison": "MDI",
-        "allocatedAtTier": "A",
-        "overrideReasons": null,
-        "overrideDetail": null,
-        "message": "test",
-        "suitabilityDetail": null,
-        "createdByName": "Waylon Smithers",
-        "event": "Allocate primary POM",
-        "eventTrigger": "User",
-        "createdAt": "2023-07-26T12:59:57.966+01:00",
-        "updatedAt": "2024-04-09T10:56:47.696+01:00",
-        "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
-        "recommendedPomType": "prison",
-        "primaryPomLastName": "GREEN",
-        "secondaryPomLastName": null
-      },
-      {
         "prison": "LEI",
         "allocatedAtTier": "A",
+        "allocatedAtRosh": null,
         "overrideReasons": null,
         "overrideDetail": null,
         "message": "test",
         "suitabilityDetail": null,
-        "createdByName": "Waylon Smithers",
         "event": "Allocate primary POM",
         "eventTrigger": "User",
         "createdAt": "2023-07-26T12:59:57.966+01:00",
         "updatedAt": "2023-07-26T12:59:57.966+01:00",
         "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
-        "recommendedPomType": "prison",
-        "primaryPomLastName": "GREEN",
-        "secondaryPomLastName": null
+        "recommendedPomType": "Prison POM"
       },
       {
         "prison": "LEI",
         "allocatedAtTier": "A",
+        "allocatedAtRosh": null,
         "overrideReasons": null,
         "overrideDetail": null,
         "message": "test",
         "suitabilityDetail": null,
-        "createdByName": "Waylon Smithers",
         "event": "Allocate primary POM",
         "eventTrigger": "User",
         "createdAt": "2023-07-26T12:59:57.966+01:00",
         "updatedAt": "2024-04-09T10:45:20.840+01:00",
         "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
-        "recommendedPomType": "prison",
-        "primaryPomLastName": "GREEN",
-        "secondaryPomLastName": null
-      },
-      {
-        "prison": "LEI",
-        "allocatedAtTier": "A",
-        "overrideReasons": null,
-        "overrideDetail": null,
-        "message": "test",
-        "suitabilityDetail": null,
-        "createdByName": "Waylon Smithers",
-        "event": "Allocate primary POM",
-        "eventTrigger": "User",
-        "createdAt": "2023-07-26T12:59:57.966+01:00",
-        "updatedAt": "2024-04-09T10:46:38.212+01:00",
-        "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
-        "recommendedPomType": "prison",
-        "primaryPomLastName": "GREEN",
-        "secondaryPomLastName": null
-      }
-    ],
-    "auditEvents": [
-      {
-        "tags": [
-          "job",
-          "recalculate_handover_date",
-          "handover",
-          "changed"
-        ],
-        "publishedAt": "2023-07-14T07:34:20.882+01:00",
-        "systemEvent": true,
-        "username": null,
-        "userHumanName": null,
-        "createdAt": "2023-07-14T07:34:20.891+01:00",
-        "updatedAt": "2023-07-14T07:34:20.891+01:00"
-      },
-      {
-        "tags": [
-          "domain_event_published",
-          "allocation",
-          "changed"
-        ],
-        "publishedAt": "2024-04-09T10:45:20.979+01:00",
-        "systemEvent": true,
-        "username": null,
-        "userHumanName": null,
-        "createdAt": "2024-04-09T10:45:20.988+01:00",
-        "updatedAt": "2024-04-09T10:45:20.988+01:00"
-      },
-      {
-        "tags": [
-          "domain_event_published",
-          "allocation",
-          "changed"
-        ],
-        "publishedAt": "2024-04-09T10:46:38.258+01:00",
-        "systemEvent": true,
-        "username": null,
-        "userHumanName": null,
-        "createdAt": "2024-04-09T10:46:38.258+01:00",
-        "updatedAt": "2024-04-09T10:46:38.258+01:00"
-      },
-      {
-        "tags": [
-          "domain_event_published",
-          "allocation",
-          "changed"
-        ],
-        "publishedAt": "2024-04-09T10:56:47.734+01:00",
-        "systemEvent": true,
-        "username": null,
-        "userHumanName": null,
-        "createdAt": "2024-04-09T10:56:47.735+01:00",
-        "updatedAt": "2024-04-09T10:56:47.735+01:00"
-      },
-      {
-        "tags": [
-          "job",
-          "recalculate_handover_date",
-          "handover",
-          "changed"
-        ],
-        "publishedAt": "2024-10-17T07:48:33.598+01:00",
-        "systemEvent": true,
-        "username": null,
-        "userHumanName": null,
-        "createdAt": "2024-10-17T07:48:33.598+01:00",
-        "updatedAt": "2024-10-17T07:48:33.598+01:00"
+        "recommendedPomType": "Prison POM"
       }
     ],
     "calculatedEarlyAllocationStatus": {
@@ -156,14 +49,13 @@
     },
     "caseInformation": {
       "tier": "A",
+      "roshLevel": null,
       "mappaLevel": null,
       "manualEntry": true,
       "createdAt": "2023-07-13T18:02:56.998+01:00",
       "updatedAt": "2023-09-05T16:15:37.677+01:00",
       "probationService": "Wales",
-      "comName": "Fake COM 1",
       "teamName": "Fake Team 1",
-      "comEmail": "fake-com-1@example.org",
       "activeVlo": false,
       "enhancedResourcing": true,
       "localDeliveryUnit": "Swansea, Neath Port-Talbot"
@@ -188,27 +80,24 @@
         "updatedAt": "2023-09-05T16:18:30.617+01:00",
         "communityDecision": null,
         "prison": "MDI",
-        "createdByFirstname": "Asfand",
-        "createdByLastname": "Qazi",
-        "updatedByFirstname": null,
-        "updatedByLastname": null,
         "createdWithinReferralWindow": true,
         "outcome": "Eligible"
       }
     ],
-    "emailHistories": [
-      {
-        "prison": "MDI",
-        "name": "Swansea, Neath Port-Talbot",
-        "email": "test.user@digital.justice.gov.uk",
-        "event": "Auto early allocation",
-        "createdAt": "2023-09-05T16:18:31.791+01:00",
-        "updatedAt": "2023-09-05T16:18:31.791+01:00"
-      }
-    ],
-    "handoverProgressChecklist": null,
-    "offenderEmailSent": [],
-    "responsibility": null,
-    "victimLiaisonOfficers": []
+    "handoverProgressChecklist": {
+      "reviewedOasys": true,
+      "contactedCom": true,
+      "attendedHandoverMeeting": true,
+      "sentHandoverReport": true,
+      "createdAt": "2023-09-05T16:18:30.617+01:00",
+      "updatedAt": "2023-09-05T16:18:30.617+01:00"
+    },
+    "responsibility": {
+      "reason": "Other reason",
+      "reasonText": "Some explanation",
+      "value": "Probation",
+      "createdAt": "2023-09-05T16:18:30.617+01:00",
+      "updatedAt": "2023-09-05T16:18:30.617+01:00"
+    }
   }
 }
