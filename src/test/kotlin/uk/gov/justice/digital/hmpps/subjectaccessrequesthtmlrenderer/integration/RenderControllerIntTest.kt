@@ -156,7 +156,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
 
@@ -193,7 +193,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
@@ -236,7 +236,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
@@ -273,7 +273,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetAttachmentCalled("doc.pdf")
@@ -375,7 +375,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
@@ -464,7 +464,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
 
@@ -522,7 +522,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(1)
 
@@ -580,7 +580,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
 
@@ -820,7 +820,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
-      assertRenderTemplateSuccessResponse(response, renderRequest)
+      assertRenderTemplateSuccessResponse(response, renderRequest, "legacy")
     }
 
     @Test
@@ -1068,10 +1068,12 @@ class RenderControllerIntTest : IntegrationTestBase() {
   private fun assertRenderTemplateSuccessResponse(
     response: WebTestClient.ResponseSpec,
     renderRequest: RenderRequest,
+    templateVersion: String,
   ) = response.expectStatus()
     .isEqualTo(HttpStatus.CREATED)
     .expectBody()
     .jsonPath("documentKey").isEqualTo("${renderRequest.id}/${renderRequest.serviceConfiguration.serviceName}.html")
+    .jsonPath("templateVersion").isEqualTo(templateVersion)
 
   private fun sendRenderTemplateRequest(
     role: String = "ROLE_SAR_DATA_ACCESS",
