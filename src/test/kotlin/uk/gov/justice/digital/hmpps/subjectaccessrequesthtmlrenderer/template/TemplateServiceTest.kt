@@ -180,15 +180,6 @@ class TemplateServiceTest {
     verify(templateVersionService, times(1)).getTemplate(renderRequest)
   }
 
-  @Test
-  fun `should return style template`() {
-    val styleTemplate = templateService.getStyleTemplate()
-
-    assertThat(styleTemplate).isNotNull()
-    assertThat(styleTemplate).isNotEmpty()
-    assertThat(styleTemplate).contains("{{{ serviceTemplate }}}")
-  }
-
   @Nested
   inner class TemplatesNotFoundTest {
     private val incorrectTemplateDir = "/not_templates_dir"
@@ -221,11 +212,6 @@ class TemplateServiceTest {
       assertThat(actual.params).containsExactlyEntriesOf(
         mapOf("resource" to "$incorrectTemplateDir/template_no-exist-service.mustache"),
       )
-    }
-
-    @Test
-    fun `should return empty string if style template not found`() {
-      assertThat(templateService.getStyleTemplate()).isEmpty()
     }
 
     @Test

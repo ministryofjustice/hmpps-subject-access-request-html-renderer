@@ -14,8 +14,6 @@ class TemplateService(
   val templateVersionHealthService: TemplateVersionHealthService,
 ) {
 
-  fun getStyleTemplate(): String = getTemplateResourceOrNull("$templatesDirectory/main_stylesheet.mustache") ?: ""
-
   fun getRenderParameters(
     renderRequest: RenderRequest,
     data: Any?,
