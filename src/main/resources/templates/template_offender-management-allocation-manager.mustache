@@ -44,10 +44,14 @@
         </table>
         <table class="data-table">
             <tr>
-                <td class="data-column-100">Override reasons</td>
+                <td class="data-column-35">Override reasons</td>
+                <td class="data-column-30">Created by last name</td>
+                <td class="data-column-35"></td>
             </tr>
             <tr>
                 <td>{{ optionalValue overrideReasons }}</td>
+                <td>{{ optionalValue createdByLastname }}</td>
+                <td></td>
             </tr>
         </table>
         <table class="data-table">
@@ -281,14 +285,26 @@
         <table class="data-table">
             <tr>
                 <td class="data-column-35">Created at</td>
-                <td class="data-column-30">Updated at</td>
+                <td class="data-column-30">Created by last name</td>
                 <td class="data-column-35"></td>
             </tr>
             <tr>
                 <td>{{ optionalValue (formatDate createdAt) }}</td>
-                <td>{{ optionalValue (formatDate updatedAt) }}</td>
+                <td>{{ optionalValue createdByLastname }}</td>
                 <td></td>
             </tr>
+        </table>
+        <table class="data-table">
+          <tr>
+            <td class="data-column-35">Updated at</td>
+            <td class="data-column-30">Updated by last name</td>
+            <td class="data-column-35"></td>
+          </tr>
+          <tr>
+            <td>{{ optionalValue (formatDate updatedAt) }}</td>
+            <td>{{ optionalValue updatedByLastname }}</td>
+            <td></td>
+          </tr>
         </table>
     {{/earlyAllocations}}
     {{^earlyAllocations}}
