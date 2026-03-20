@@ -47,3 +47,9 @@ G2-api:
   url: http://localhost:9002
 G3-api:
   url: http://localhost:9003
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
