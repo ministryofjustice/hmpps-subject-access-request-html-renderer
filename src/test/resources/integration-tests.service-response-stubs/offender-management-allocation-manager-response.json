@@ -14,6 +14,7 @@
         "eventTrigger": "User",
         "createdAt": "2023-07-26T12:59:57.966+01:00",
         "updatedAt": "2023-07-26T12:59:57.966+01:00",
+        "createdByLastname": "SMITH",
         "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
         "recommendedPomType": "Prison POM"
       },
@@ -29,6 +30,7 @@
         "eventTrigger": "User",
         "createdAt": "2023-07-26T12:59:57.966+01:00",
         "updatedAt": "2024-04-09T10:45:20.840+01:00",
+        "createdByLastname": "SMITH",
         "primaryPomAllocatedAt": "2023-07-26T12:59:57.961+01:00",
         "recommendedPomType": "Prison POM"
       }
@@ -80,6 +82,8 @@
         "updatedAt": "2023-09-05T16:18:30.617+01:00",
         "communityDecision": null,
         "prison": "MDI",
+        "createdByLastname": "DOE",
+        "updatedByLastname": "DOE",
         "createdWithinReferralWindow": true,
         "outcome": "Eligible"
       }
