@@ -3,11 +3,16 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.MethodSource
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
@@ -72,8 +77,125 @@ class TemplateRenderingServiceTest {
     return actual
   }
 
+  @Nested
+  inner class ResolveUsername {
+
+    private fun renderTestServiceData(data: TestServiceData): String {
+      val actual = renderServiceDataHtml("test-service", data)
+
+      assertThat(actual).isNotNull()
+      assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+      assertThat(actual.data).isNotNull()
+
+      return actual.outputStreamToString()
+    }
+
+    @Test
+    fun `should resolve valid Id to username last name`() {
+      whenever(userDetailsRepository.findByUsername("742")).thenReturn(
+        UserDetail(
+          username = "Homer",
+          lastName = "Simpson",
+        ),
+      )
+
+      val actual = renderTestServiceData(TestServiceData(userId = "742"))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Username: </td><td>Simpson</td>")
+    }
+
+    @Test
+    fun `should resolve to Id when user not found`() {
+      whenever(userDetailsRepository.findByUsername("742")).thenReturn(null)
+
+      val actual = renderTestServiceData(TestServiceData(userId = "742"))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Username: </td><td>742</td>")
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "       | 'No Data Held'",
+        " ''    | 'No Data Held'",
+      ],
+      delimiter = '|',
+    )
+    fun `should use no data held when userId is empty null or`(id: String?) {
+      val actual = renderTestServiceData(TestServiceData(userId = id))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Prison: </td><td>No Data Held</td>")
+      verify(userDetailsRepository, never()).findByUsername(any())
+    }
+  }
+
+  @Nested
+  inner class ResolvePrisonCode {
+
+    private fun renderTestServiceData(data: TestServiceData): String {
+      val actual = renderServiceDataHtml("test-service", data)
+
+      assertThat(actual).isNotNull()
+      assertThat(actual.templateVersion).isEqualTo(expectedTemplateVersion)
+      assertThat(actual.data).isNotNull()
+
+      return actual.outputStreamToString()
+    }
+
+    @Test
+    fun `should resolve valid prison Id to prison name`() {
+      whenever(prisonDetailsRepository.findByPrisonId("SPT")).thenReturn(
+        PrisonDetail(
+          prisonId = "SPT",
+          prisonName = "Springfield Penitentiary",
+        ),
+      )
+
+      val actual = renderTestServiceData(TestServiceData(prisonCode = "SPT"))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Prison: </td><td>Springfield Penitentiary</td>")
+    }
+
+    @Test
+    fun `should use prisonId value when prison Id is not found`() {
+      whenever(prisonDetailsRepository.findByPrisonId("SPT")).thenReturn(null)
+
+      val actual = renderTestServiceData(TestServiceData(prisonCode = "SPT"))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Prison: </td><td>SPT</td>")
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+      value = [
+        "       | 'No Data Held'",
+        " ''    | 'No Data Held'",
+      ],
+      delimiter = '|',
+    )
+    fun `should use no data held when caseload is empty null or`(prisonCode: String?) {
+      val actual = renderTestServiceData(TestServiceData(prisonCode = prisonCode))
+
+      assertThat(actual).isNotEmpty()
+      assertThat(actual).contains("<td>Prison: </td><td>No Data Held</td>")
+      verify(prisonDetailsRepository, never()).findByPrisonId(any())
+    }
+  }
+
   @Test
   fun `renderTemplate renders a style template given a service template`() {
+    whenever(prisonDetailsRepository.findByPrisonId("SPT")).thenReturn(
+      PrisonDetail(
+        prisonId = "SPT",
+        prisonName = "Springfield Penitentiary",
+      ),
+    )
+
     val actual = renderServiceDataHtml("test-service", testServiceTemplateData)
 
     assertThat(actual).isNotNull()
@@ -86,6 +208,7 @@ class TemplateRenderingServiceTest {
     assertThat(renderedTemplate).contains("<style>")
     assertThat(renderedTemplate).contains("</style>")
     assertThat(renderedTemplate).contains("<td>Test Key:</td><td>testValue</td>")
+    assertThat(renderedTemplate).contains("<td>Prison: </td><td>Springfield Penitentiary</td>")
     assertThat(renderedTemplate).contains("<td>Nested Data:</td><td>nestedValue</td>")
     assertThat(renderedTemplate).contains("<td>Array Data:</td><td><ul><li>arrayValue1-1</li><li>arrayValue1-2</li></ul></td>")
     assertThat(renderedTemplate).contains("<td>Test Key:</td><td>testValue2</td>")
@@ -426,6 +549,14 @@ class TemplateRenderingServiceTest {
     assertThat(actual.errorCode).isEqualTo(ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND)
   }
 
+  private data class TestServiceData(
+    val testKey: String? = null,
+    val prisonCode: String? = null,
+    val userId: String? = null,
+    val moreData: Map<String, Any> = emptyMap(),
+    val arrayData: MutableList<String> = mutableListOf(),
+  )
+
   companion object {
     @JvmStatic
     fun serviceWithMandatoryTemplates() = listOf("GOne", "GTwo", "GThree")
@@ -446,6 +577,7 @@ class TemplateRenderingServiceTest {
     private val testServiceTemplateData: ArrayList<Any> = arrayListOf(
       mapOf(
         "testKey" to "testValue",
+        "prisonCode" to "SPT",
         "moreData" to mapOf(
           "nestedKey" to "nestedValue",
         ),

@@ -1,25 +1,28 @@
 <!-- Sample data:
 [
-  {
-    "testKey": "testValue",
-    "moreData": {
+    {
+      "prisonCode": "SPT",
+      "userId": "742",
+      "testKey": "testValue",
+      "moreData": {
         "nestedKey": "nestedValue"
-    },
-    "arrayData": [
+      },
+      "arrayData": [
         "arrayValue1-1",
-        "arrayValue1-2",
-    ]
-  },
-  {
-    "testKey": "testValue2",
-    "moreData": {
-        "nestedKey": "nestedValue2"
+        "arrayValue1-2"
+      ]
     },
-    "arrayData": [
+    {
+      "prisonCode": "SPT",
+      "testKey": "testValue2",
+      "moreData": {
+        "nestedKey": "nestedValue2"
+      },
+      "arrayData": [
         "arrayValue2-1",
-        "arrayValue2-2",
-    ]
-  }
+        "arrayValue2-2"
+      ]
+    }
 ]
 -->
 
@@ -28,6 +31,8 @@
 
     <table>
         <tr><td>Test Key:</td><td>{{testKey}}</td></tr>
+        <tr><td>Username: </td><td>{{getUserLastName userId}}</td></tr>
+        <tr><td>Prison: </td><td>{{ getPrisonName prisonCode }}</td></tr>
         <tr><td>Nested Data:</td><td>{{moreData.nestedKey}}</td></tr>
         <tr><td>Array Data:</td><td><ul>{{#arrayData}}<li>{{.}}</li>{{/arrayData}}</ul></td></tr>
     </table>

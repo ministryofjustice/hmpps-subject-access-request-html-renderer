@@ -351,6 +351,15 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
     @Test
     fun `should overwrite attachment and html content in S3 bucket if files already exist`() {
+      whenever(userDetailsRepository.findByUsername(any())).doAnswer {
+        (UserDetail(it.arguments[0] as String, "Simpson"))
+      }
+
+      whenever(prisonDetailsRepository.findByPrisonId(any())).doAnswer {
+        val id = it.arguments[0] as String
+        PrisonDetail(id, "Springfield Penitentiary")
+      }
+
       assertThat(serviceConfigurationRepository.findByIdOrNull(testServiceConfiguration.id)).isNotNull
 
       val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
