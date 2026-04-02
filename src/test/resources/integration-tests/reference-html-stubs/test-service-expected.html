@@ -223,26 +223,29 @@
 
 <!-- Sample data:
 [
-  {
-    "testKey": "testValue",
-    "moreData": {
+    {
+      "prisonCode": "SPT",
+      "userId": "742",
+      "testKey": "testValue",
+      "moreData": {
         "nestedKey": "nestedValue"
-    },
-    "arrayData": [
+      },
+      "arrayData": [
         "arrayValue1-1",
-        "arrayValue1-2",
-    ]
-  },
-  {
-    "testKey": "testValue2",
-    "moreData": {
-        "nestedKey": "nestedValue2"
+        "arrayValue1-2"
+      ]
     },
-    "arrayData": [
+    {
+      "prisonCode": "SPT",
+      "testKey": "testValue2",
+      "moreData": {
+        "nestedKey": "nestedValue2"
+      },
+      "arrayData": [
         "arrayValue2-1",
-        "arrayValue2-2",
-    ]
-  }
+        "arrayValue2-2"
+      ]
+    }
 ]
 -->
 
@@ -251,6 +254,8 @@
 
     <table>
         <tr><td>Test Key:</td><td>testValue</td></tr>
+        <tr><td>Username: </td><td>Simpson</td></tr>
+        <tr><td>Prison: </td><td>Springfield Penitentiary</td></tr>
         <tr><td>Nested Data:</td><td>nestedValue</td></tr>
         <tr><td>Array Data:</td><td><ul><li>arrayValue1-1</li><li>arrayValue1-2</li></ul></td></tr>
     </table>
@@ -259,6 +264,8 @@
 
     <table>
         <tr><td>Test Key:</td><td>testValue2</td></tr>
+        <tr><td>Username: </td><td>No Data Held</td></tr>
+        <tr><td>Prison: </td><td>No Data Held</td></tr>
         <tr><td>Nested Data:</td><td>nestedValue2</td></tr>
         <tr><td>Array Data:</td><td><ul><li>arrayValue2-1</li><li>arrayValue2-2</li></ul></td></tr>
     </table>

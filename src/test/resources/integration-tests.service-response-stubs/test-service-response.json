@@ -1,6 +1,8 @@
 {
   "content": [
     {
+      "prisonCode": "SPT",
+      "userId": "742",
       "testKey": "testValue",
       "moreData": {
         "nestedKey": "nestedValue"
@@ -11,6 +13,7 @@
       ]
     },
     {
+      "prisonCode": "SPT",
       "testKey": "testValue2",
       "moreData": {
         "nestedKey": "nestedValue2"
