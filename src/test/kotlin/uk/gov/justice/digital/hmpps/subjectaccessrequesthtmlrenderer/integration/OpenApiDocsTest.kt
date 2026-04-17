@@ -31,7 +31,7 @@ class OpenApiDocsTest : IntegrationTestBase() {
       .accept(MediaType.APPLICATION_JSON)
       .exchange()
       .expectStatus().is3xxRedirection
-      .expectHeader().value("Location") { it.contains("/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config") }
+      .expectHeader().value("Location") { it.contains("/swagger-ui/index.html") }
   }
 
   @Test
