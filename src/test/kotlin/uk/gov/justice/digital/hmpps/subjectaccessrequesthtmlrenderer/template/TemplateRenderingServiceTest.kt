@@ -334,7 +334,7 @@ class TemplateRenderingServiceTest {
     assertThat(renderedTemplate).contains("<h3>Categorisation form</h3>")
     assertThat(renderedTemplate).contains("<tr><td>Text</td><td>previous terrorism offences text - talking about bombs</td></tr>")
     assertThat(renderedTemplate).contains("<h5>Ratings</h5>")
-    assertThat(renderedTemplate).contains("<tr><td>Risk information last updated</td><td>27 July 2021, 2:17:48 am</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Risk information last updated</td><td>27 July 2021, 3:17:48 am</td></tr>")
   }
 
   @Test
@@ -354,8 +354,8 @@ class TemplateRenderingServiceTest {
     assertThat(renderedTemplate).contains("<h2>Complexity</h2>")
     assertThat(renderedTemplate).contains("<tr><td>Level</td><td>low</td></tr>")
     assertThat(renderedTemplate).contains("<tr><td>Active</td><td>Yes</td></tr>")
-    assertThat(renderedTemplate).contains("<tr><td>Creation</td><td>30 March 2021, 11:45:10 am</td></tr>")
-    assertThat(renderedTemplate).contains("<tr><td>Updated</td><td>30 March 2021, 7:54:46 pm</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Creation</td><td>30 March 2021, 12:45:10 pm</td></tr>")
+    assertThat(renderedTemplate).contains("<tr><td>Updated</td><td>30 March 2021, 8:54:46 pm</td></tr>")
     assertThat(renderedTemplate).contains("<tr><td>Notes</td><td>string</td></tr>")
   }
 
