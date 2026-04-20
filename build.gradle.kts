@@ -1,5 +1,7 @@
 plugins {
+
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
+
   kotlin("plugin.spring") version "2.3.20"
 }
 
@@ -19,12 +21,14 @@ dependencies {
   constraints {
     implementation("org.webjars:swagger-ui:5.32.2")
   }
+
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("aws.sdk.kotlin:s3:1.6.58")
+
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.61.0")
