@@ -1,5 +1,7 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.2"
+
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
+
   kotlin("plugin.spring") version "2.3.20"
 }
 
@@ -16,15 +18,20 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
+  constraints {
+    implementation("org.webjars:swagger-ui:5.32.2")
+  }
+
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.6.56")
+  implementation("aws.sdk.kotlin:s3:1.6.58")
+
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.60.1")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.61.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.2.0-beta")
 
   runtimeOnly("org.flywaydb:flyway-core")
@@ -32,12 +39,12 @@ dependencies {
   runtimeOnly("org.postgresql:postgresql:42.7.10")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.0.0")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.1.0")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.wiremock:wiremock-standalone:3.13.2")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.40") {
     exclude(group = "io.swagger.core.v3")
   }
 }
