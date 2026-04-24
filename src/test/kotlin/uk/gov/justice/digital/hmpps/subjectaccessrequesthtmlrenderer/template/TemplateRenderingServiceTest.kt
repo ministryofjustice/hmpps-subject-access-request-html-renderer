@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -11,6 +12,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
@@ -30,6 +32,7 @@ class TemplateRenderingServiceTest {
   private val locationDetailsRepository: LocationDetailsRepository = mock()
   private val locationsApiClient: LocationsApiClient = mock()
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
+  private val dynamicServicesClient: DynamicServicesClient = mock()
   private val telemetryClient: TelemetryClient = mock()
   private val templateVersionService: TemplateVersionService = mock()
   private val templateVersionHealthService: TemplateVersionHealthService = mock()
@@ -41,8 +44,9 @@ class TemplateRenderingServiceTest {
     locationDetailsRepository,
     locationsApiClient,
     nomisMappingApiClient,
+    dynamicServicesClient,
   )
-  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
+  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade, jacksonObjectMapper())
   private val templateRenderService = TemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
     templateRenderService,

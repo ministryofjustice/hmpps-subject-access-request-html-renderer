@@ -4,7 +4,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.InlineAttachment
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.InlineAttachmentHeader
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient.LocationDetailsResponse
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
@@ -15,6 +20,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.User
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import java.util.UUID
 
 private const val LOCATION_DPS_ID = "28953d06-d379-450c-9ec4-b5993ce5cd4f"
 private const val LOCATION_NOMIS_ID = 4324567
@@ -26,8 +32,16 @@ class TemplateDataFetcherFacadeImplTest {
   private val locationDetailsRepository: LocationDetailsRepository = mock()
   private val locationsApiClient: LocationsApiClient = mock()
   private val nomisMappingApiClient: NomisMappingApiClient = mock()
+  private val dynamicServicesClient: DynamicServicesClient = mock()
 
-  private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(prisonDetailsRepository, userDetailsRepository, locationDetailsRepository, locationsApiClient, nomisMappingApiClient)
+  private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
+    prisonDetailsRepository,
+    userDetailsRepository,
+    locationDetailsRepository,
+    locationsApiClient,
+    nomisMappingApiClient,
+    dynamicServicesClient,
+  )
 
   @Nested
   inner class GetPrisonNameTest {
@@ -137,6 +151,71 @@ class TemplateDataFetcherFacadeImplTest {
       whenever(nomisMappingApiClient.getNomisLocationMapping(LOCATION_NOMIS_ID)).thenReturn(null)
       val response = templateDataFetcherFacade.findLocationNameByNomisId(LOCATION_NOMIS_ID)
       assertThat(response).isNull()
+    }
+  }
+
+  @Nested
+  inner class GetRenderableAttachment {
+    @Test
+    fun `getRenderableAttachment returns attachment bytes with headers`() {
+      val attachmentBytes = "attachment-content".toByteArray()
+      val attachment = InlineAttachment(
+        url = "http://example.com/file.pdf",
+        contentType = "application/pdf",
+        filesize = 12345,
+        headers = listOf(
+          InlineAttachmentHeader(name = "X-TestHeader", value = "Header one"),
+          InlineAttachmentHeader(name = "X-Other", value = "abc-123"),
+        ),
+      )
+      val renderRequestInfo = RenderRequestInfo(UUID.randomUUID(), "service-one")
+      whenever(
+        dynamicServicesClient.getAttachment(
+          renderRequestInfo,
+          attachment.url,
+          attachment.contentType,
+          attachment.filesize,
+          mapOf("X-TestHeader" to "Header one", "X-Other" to "abc-123"),
+        ),
+      ).thenReturn(attachmentBytes)
+
+      val response = templateDataFetcherFacade.getRenderableAttachment(attachment, renderRequestInfo)
+
+      assertThat(response).isEqualTo(attachmentBytes)
+      verify(dynamicServicesClient).getAttachment(
+        renderRequestInfo,
+        attachment.url,
+        attachment.contentType,
+        attachment.filesize,
+        mapOf("X-TestHeader" to "Header one", "X-Other" to "abc-123"),
+      )
+    }
+
+    @Test
+    fun `getRenderableAttachment passes empty headers map when headers are null`() {
+      val attachmentBytes = byteArrayOf(1, 2, 3)
+      val attachment = InlineAttachment(url = "http://example.com/image.png", contentType = "image/png", filesize = 42)
+      val renderRequestInfo = RenderRequestInfo(UUID.randomUUID(), "service-one")
+      whenever(
+        dynamicServicesClient.getAttachment(
+          renderRequestInfo,
+          attachment.url,
+          attachment.contentType,
+          attachment.filesize,
+          emptyMap(),
+        ),
+      ).thenReturn(attachmentBytes)
+
+      val response = templateDataFetcherFacade.getRenderableAttachment(attachment, renderRequestInfo)
+
+      assertThat(response).isEqualTo(attachmentBytes)
+      verify(dynamicServicesClient).getAttachment(
+        renderRequestInfo,
+        attachment.url,
+        attachment.contentType,
+        attachment.filesize,
+        emptyMap(),
+      )
     }
   }
 }

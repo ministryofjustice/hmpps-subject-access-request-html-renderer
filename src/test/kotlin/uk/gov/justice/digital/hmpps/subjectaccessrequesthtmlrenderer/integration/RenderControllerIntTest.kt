@@ -153,6 +153,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
+      hmppsServiceReturnsAttachmentForRequest("small.jpg", "image/jpeg")
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
@@ -750,6 +751,36 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetAttachmentCalled("doc.pdf", 3)
       sarDataSourceApi.verifyGetAttachmentNeverCalled("map.jpg")
     }
+
+    @Test
+    fun `should return internal server error when download inline attachment unavailable after retries maxed`() {
+      val serviceName = "wiremock-test-service-api"
+      val serviceConfiguration = getServiceConfiguration(serviceName)
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest, serviceName)
+      hmppsServiceReturnsErrorForAttachmentRequest("small.jpg", "image/jpeg", HttpStatus.INTERNAL_SERVER_ERROR)
+
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+        .expectStatus().isEqualTo(500)
+
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(SERVICE_DATA_RETURNED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_STARTED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_ATTACHMENT_RETRY, getAttachmentRetryEventProperties(renderRequest, "small.jpg", 0)),
+        ExpectedTelemetryEvent(GET_ATTACHMENT_RETRY, getAttachmentRetryEventProperties(renderRequest, "small.jpg", 1)),
+        ExpectedTelemetryEvent(REQUEST_ERRORED, mapOf("id" to renderRequest.id.toString())),
+      )
+
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
+      sarDataSourceApi.verifyGetAttachmentCalled("small.jpg", 3)
+    }
   }
 
   @Nested
@@ -1030,26 +1061,6 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   private fun hmppsServiceReturnsIdentifierNotSupportedForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestIdentifierNotSupported(request.toGetSubjectAccessRequestDataParams())
-
-  private fun hmppsServiceReturnsAttachmentForRequest(
-    filename: String,
-    contentType: String,
-  ) = hmppsServiceReturnsAttachmentForRequest(
-    filename,
-    contentType,
-    getResourceAsByteArray("/attachments/$filename"),
-  )
-
-  private fun hmppsServiceReturnsAttachmentForRequest(
-    filename: String,
-    contentType: String,
-    content: ByteArray,
-  ) = sarDataSourceApi
-    .stubGetAttachment(
-      contentType = contentType,
-      content = content,
-      filename = filename,
-    )
 
   private fun hmppsServiceReturnsErrorForAttachmentRequest(
     filename: String,

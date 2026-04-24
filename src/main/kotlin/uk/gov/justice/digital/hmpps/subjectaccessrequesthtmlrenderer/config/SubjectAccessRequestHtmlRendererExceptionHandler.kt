@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.resource.NoResourceFoundException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @RestControllerAdvice
@@ -122,7 +123,7 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
     } else {
       telemetryClient.renderEvent(
         event = RenderEvent.REQUEST_ERRORED,
-        request = null,
+        request = null as RenderRequest?,
         "error" to (e.message ?: ""),
         "status" to status.value().toString(),
       )

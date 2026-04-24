@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering
 
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import java.time.LocalDate
@@ -30,6 +31,8 @@ data class RenderRequest(
     attachmentNumber: Int,
     filename: String,
   ): String = "$id/${serviceConfiguration.serviceName}/attachments/$attachmentNumber-$filename"
+
+  fun toRenderRequestInfo(): RenderRequestInfo = RenderRequestInfo(id, serviceConfiguration.serviceName)
 
   override fun toString(): String = "RenderRequest(id=$id, nomisId=$nomisId, ndeliusId=$ndeliusId, " +
     "dateFrom=$dateFrom, dateTo=$dateTo, sarCaseReferenceNumber=$sarCaseReferenceNumber, serviceConfigurationId=${serviceConfiguration.id})"

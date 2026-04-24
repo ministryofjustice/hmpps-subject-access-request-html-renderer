@@ -6,7 +6,12 @@
         "filename": "map.jpg",
         "fileType": "image/jpeg",
         "fileSize": 27566,
-        "description": "Map image"
+        "description": "Map image",
+        "attachment": {
+          "contentType": "image/jpeg",
+          "url": "http://localhost:8092/attachments/small.jpg",
+          "filesize": 82643
+        }
       },
       {
         "attachmentRef": "Attachment 2",

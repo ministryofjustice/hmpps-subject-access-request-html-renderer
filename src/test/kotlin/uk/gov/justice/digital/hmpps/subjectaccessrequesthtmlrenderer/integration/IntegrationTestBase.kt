@@ -279,6 +279,26 @@ abstract class IntegrationTestBase {
     return serviceConfig!!
   }
 
+  protected fun hmppsServiceReturnsAttachmentForRequest(
+    filename: String,
+    contentType: String,
+  ) = hmppsServiceReturnsAttachmentForRequest(
+    filename,
+    contentType,
+    getResourceAsByteArray("/attachments/$filename"),
+  )
+
+  protected fun hmppsServiceReturnsAttachmentForRequest(
+    filename: String,
+    contentType: String,
+    content: ByteArray,
+  ) = sarDataSourceApi
+    .stubGetAttachment(
+      contentType = contentType,
+      content = content,
+      filename = filename,
+    )
+
   data class S3File(val key: String, val content: String = fileContent)
 
   data class ExpectedTelemetryEvent(val event: RenderEvent, val properties: Map<String, String> = emptyMap())
