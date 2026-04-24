@@ -10,6 +10,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import reactor.util.retry.RetryBackoffSpec
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.WebClientConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
@@ -40,6 +41,12 @@ class WebClientRetriesSpec(
     renderRequest: RenderRequest? = null,
     renderEvent: RenderEvent,
     vararg params: Pair<String, Any>,
+  ): RetryBackoffSpec = retry5xxAndClientRequestErrors(renderRequest?.toRenderRequestInfo(), renderEvent, *params)
+
+  fun retry5xxAndClientRequestErrors(
+    renderRequestInfo: RenderRequestInfo? = null,
+    renderEvent: RenderEvent,
+    vararg params: Pair<String, Any>,
   ): RetryBackoffSpec = Retry
     .backoff(maxRetries, backOff)
     .filter { err -> is5xxOrClientRequestError(err) || err is IsStatus5xxException }
@@ -53,12 +60,12 @@ class WebClientRetriesSpec(
       )
       telemetryClient.renderEvent(
         renderEvent,
-        renderRequest,
+        renderRequestInfo,
         *properties.map { Pair(it.first, it.second.toString()) }.toTypedArray(),
       )
       log.error(
         "render request id={} failed with error={}, attempting retry after backoff: {}. {}",
-        renderRequest?.id,
+        renderRequestInfo?.id,
         signal.failure().message,
         backOff,
         properties.joinToString(","),
@@ -68,7 +75,7 @@ class WebClientRetriesSpec(
       SubjectAccessRequestRetryExhaustedException(
         retryAttempts = signal.totalRetries(),
         cause = signal.failure(),
-        subjectAccessRequestId = renderRequest?.id,
+        subjectAccessRequestId = renderRequestInfo?.id,
         params = params.toMap(),
       )
     }

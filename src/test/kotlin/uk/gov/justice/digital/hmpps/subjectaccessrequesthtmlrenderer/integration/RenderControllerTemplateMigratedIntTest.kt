@@ -39,7 +39,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     "/integration-tests.service-response-stubs/hmpps-test-service-migrated-template-response.json"
 
   private val templateV1Path = "/templates/hmpps-test-service-migrated-template-v1.mustache"
-  private val templateV1Hash = "6dce3e24130bdefd8a683c020711585dea53c99dec763cc2655023d6be55bfef"
+  private val templateV1Hash = "7d52ac99b51d31c69373894c6076259acfacc7b4a45070941e9efc327839d27d"
 
   private val templateV2Path = "/templates/hmpps-test-service-migrated-template-v2.mustache"
   private val templateV2Hash = "b8d6be8b37d1f2c07c243b09a6863f31bfa4ce53cb5c9e5cf1ba14dec18befc5"
@@ -117,6 +117,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
       hmppsServiceReturnServiceTemplate(getResourceAsString(templateV1Path))
+      hmppsServiceReturnsAttachmentForRequest("small.jpg", "image/jpeg")
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 

@@ -111,10 +111,11 @@ class RenderService(
       renderRequest.serviceConfiguration.serviceName,
     )
     val attachmentData = dynamicServicesClient.getAttachment(
-      renderRequest,
+      renderRequest.toRenderRequestInfo(),
       attachment.url,
       attachment.contentType,
       attachment.filesize,
+      attachment.headers?.associate { it.name to it.value } ?: emptyMap(),
     )
     telemetryClient.renderEvent(GET_ATTACHMENT_COMPLETE, renderRequest)
     storeAttachment(renderRequest, attachment, attachmentData)

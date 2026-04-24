@@ -7,6 +7,11 @@
       "staffMember": {
         "firstName": "HOMER",
         "lastName": "SIMPSON"
+      },
+      "attachment": {
+        "contentType": "image/jpeg",
+        "url": "http://localhost:8092/attachments/small.jpg",
+        "filesize": 82643
       }
     }
   ]

@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config
 import com.microsoft.applicationinsights.TelemetryClient
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import java.util.UUID
 
@@ -33,11 +34,19 @@ fun TelemetryClient.renderEvent(
   request: RenderRequest? = null,
   vararg kvPairs: Pair<String, String> = emptyArray(),
 ) {
+  this.renderEvent(event, request?.toRenderRequestInfo(), *kvPairs)
+}
+
+fun TelemetryClient.renderEvent(
+  event: RenderEvent,
+  request: RenderRequestInfo? = null,
+  vararg kvPairs: Pair<String, String> = emptyArray(),
+) {
   this.trackEvent(
     event.name,
     mapOf(
       "id" to request?.id.toString(),
-      "serviceName" to request?.serviceConfiguration?.serviceName,
+      "serviceName" to request?.serviceName,
       *kvPairs,
     ),
     null,

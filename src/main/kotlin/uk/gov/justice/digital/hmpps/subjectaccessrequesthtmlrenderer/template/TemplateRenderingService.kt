@@ -30,14 +30,15 @@ class TemplateRenderingService(
     )
 
     val renderParameters = templateService.getRenderParameters(renderRequest, data)
-    val outputStream = templateRenderService.renderServiceTemplate(renderParameters).also {
-      telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
-      log.info(
-        "completed html render for id={}, service={}",
-        renderRequest.serviceNameMap(),
-        renderRequest.serviceConfiguration.serviceName,
-      )
-    }
+    val outputStream =
+      templateRenderService.renderServiceTemplate(renderParameters, renderRequest.toRenderRequestInfo()).also {
+        telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
+        log.info(
+          "completed html render for id={}, service={}",
+          renderRequest.serviceNameMap(),
+          renderRequest.serviceConfiguration.serviceName,
+        )
+      }
 
     return RenderedHtml(
       data = outputStream,

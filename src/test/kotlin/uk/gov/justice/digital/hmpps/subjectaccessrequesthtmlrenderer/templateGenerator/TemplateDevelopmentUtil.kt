@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.templateGenerator
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -45,7 +46,7 @@ class TemplateGeneratorUtil {
     templateVersionHealthService = templateVersionHealthService,
   )
 
-  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade)
+  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade, jacksonObjectMapper())
 
   private val templateRenderService: TemplateRenderService = TemplateRenderService(templateHelpers)
 
@@ -94,7 +95,10 @@ class TemplateGeneratorUtil {
   private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
     val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
 
-    return templateRenderingService.renderServiceDataHtml(renderRequest = renderRequest, data = data).data
+    return templateRenderingService.renderServiceDataHtml(
+      renderRequest = renderRequest,
+      data = data,
+    ).data
       ?: throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
   }
 

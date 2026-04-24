@@ -230,17 +230,18 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
 
     @Test
     fun `should return attachment bytes when exist`() {
-      val renderRequest = createRenderRequest()
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
       val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
 
       hmppsAuth.stubGrantToken()
       sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
 
       val body = dynamicServicesClient.getAttachment(
-        renderRequest,
+        renderRequestInfo,
         "http://localhost:8092/attachments/map.jpg",
         "image/jpeg",
         683919,
+        emptyMap(),
       )
       assertThat(body).isEqualTo(attachmentContent)
 
@@ -248,8 +249,32 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
     }
 
     @Test
+    fun `should return attachment bytes when using headers`() {
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
+      val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
+
+      val body = dynamicServicesClient.getAttachment(
+        renderRequestInfo,
+        "http://localhost:8092/attachments/map.jpg",
+        "image/jpeg",
+        683919,
+        mapOf("X-Header" to "header-one", "X-Test" to "header-two"),
+      )
+      assertThat(body).isEqualTo(attachmentContent)
+
+      sarDataSourceApi.verify(
+        getRequestedFor(urlPathEqualTo("/attachments/map.jpg"))
+          .withHeader("X-Header", equalTo("header-one"))
+          .withHeader("X-Test", equalTo("header-two")),
+      )
+    }
+
+    @Test
     fun `should retry get attachment bytes when filesize does not match`() {
-      val renderRequest = createRenderRequest()
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
       val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
 
       hmppsAuth.stubGrantToken()
@@ -257,10 +282,11 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
 
       assertThrows<SubjectAccessRequestRetryExhaustedException> {
         dynamicServicesClient.getAttachment(
-          renderRequest,
+          renderRequestInfo,
           "http://localhost:8092/attachments/map.jpg",
           "image/jpeg",
           100,
+          emptyMap(),
         )
       }
 

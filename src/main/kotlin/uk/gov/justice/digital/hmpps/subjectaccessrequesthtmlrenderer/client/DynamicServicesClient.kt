@@ -17,6 +17,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientRequestException
 import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
@@ -110,17 +111,19 @@ class DynamicServicesClient(
   }
 
   fun getAttachment(
-    renderRequest: RenderRequest,
+    renderRequestInfo: RenderRequestInfo,
     url: String,
     contentType: String,
     expectedSize: Int,
+    headers: Map<String, String>,
   ): ByteArray = dynamicApiWebClient.mutate().baseUrl(url).build()
     .get()
     .header(CONTENT_TYPE, contentType)
+    .headers { headers.forEach { (name, value) -> it.add(name, value) } }
     .retrieve()
     .onStatus(
       webClientRetriesSpec.is4xxStatus(),
-      webClientRetriesSpec.throw4xxStatusFatalError(renderRequest.id!!),
+      webClientRetriesSpec.throw4xxStatusFatalError(renderRequestInfo.id),
     )
     .bodyToMono(ByteArray::class.java)
     .flatMap { bytes ->
@@ -139,9 +142,9 @@ class DynamicServicesClient(
     }
     .retryWhen(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
-        renderRequest = renderRequest,
+        renderRequestInfo = renderRequestInfo,
         renderEvent = GET_ATTACHMENT_RETRY,
-        "serviceName" to renderRequest.serviceConfiguration.serviceName,
+        "serviceName" to renderRequestInfo.serviceName,
         "uri" to url,
       ),
     ).block()!!
@@ -275,6 +278,7 @@ data class ServiceData(
         url = it.url,
         filesize = it.filesize,
         filename = sanitizeText(it.filename),
+        headers = it.headers,
       )
     },
   )
@@ -287,6 +291,12 @@ data class Attachment(
   val url: String,
   val filesize: Int,
   val filename: String,
+  val headers: List<AttachmentHeader>?,
+)
+
+data class AttachmentHeader(
+  val name: String,
+  val value: String,
 )
 
 private fun sanitizeText(input: String): String {
