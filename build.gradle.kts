@@ -1,8 +1,8 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.2.3"
 
-  kotlin("plugin.spring") version "2.3.20"
+  kotlin("plugin.spring") version "2.3.21"
 }
 
 configurations {
@@ -13,11 +13,11 @@ configurations {
 ext["kotlin-coroutines.version"] = "1.10.2"
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.1.1")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
   constraints {
     implementation("org.webjars:swagger-ui:5.32.2")
   }
@@ -27,7 +27,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.0")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.6.58")
+  implementation("aws.sdk.kotlin:s3:1.6.65")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.10.2")
