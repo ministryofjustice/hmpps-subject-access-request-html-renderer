@@ -17,7 +17,7 @@ VALUES
     ('hmpps-non-associations-api', 'Non-associations', 'https://non-associations-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
     ('hmpps-manage-adjudications-api', 'Manage Adjudications', 'https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
     ('hmpps-uof-data-api', 'Use of Force', 'https://hmpps-uof-data-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
-    ('hmpps-restricted-patients-api', 'Restricted Patients', 'https://restricted-patients-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
+    ('hmpps-restricted-patients-api', 'Restricted Patients', 'https://restricted-patients-api-dev.prison.service.justice.gov.uk', 'PRISON'),
     ('launchpad-auth', 'Launchpad', 'https://launchpad-auth-dev.hmpps.service.justice.gov.uk', 'PRISON'),
     ('hmpps-education-and-work-plan-api', 'Personal Learning Plan', 'https://learningandworkprogress-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
     ('hmpps-education-employment-api', 'Work Readiness', 'https://education-employment-api-dev.hmpps.service.justice.gov.uk', 'PRISON'),
