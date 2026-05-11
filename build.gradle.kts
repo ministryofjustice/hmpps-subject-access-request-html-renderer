@@ -29,8 +29,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("aws.sdk.kotlin:s3:1.6.72")
 
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.11.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.61.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.4.1")
 
