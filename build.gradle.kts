@@ -31,7 +31,7 @@ dependencies {
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.11.0")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.62.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.61.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.4.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
