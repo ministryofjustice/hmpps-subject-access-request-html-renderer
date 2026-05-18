@@ -8,6 +8,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.http.HttpHeader
+import com.github.tomakehurst.wiremock.http.HttpHeaders
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -72,13 +74,13 @@ class SarDataSourceApiMockServer : WireMockServer(8092) {
     )
   }
 
-  fun stubGetAttachment(contentType: String, content: ByteArray, filename: String) {
+  fun stubGetAttachment(contentType: String, content: ByteArray, filename: String, vararg responseHeaders: HttpHeader = emptyArray()) {
     stubGetAttachment(
       contentType,
       filename,
       aResponse()
         .withStatus(200)
-        .withHeader(CONTENT_TYPE, contentType)
+        .withHeaders(HttpHeaders(listOf(HttpHeader(CONTENT_TYPE, contentType)) + responseHeaders.toList()))
         .withBody(content),
     )
   }

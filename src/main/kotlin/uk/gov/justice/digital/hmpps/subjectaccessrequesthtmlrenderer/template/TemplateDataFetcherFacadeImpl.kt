@@ -39,5 +39,5 @@ class TemplateDataFetcherFacadeImpl(
     attachment.contentType,
     attachment.filesize,
     attachment.headers?.associate { it.name to it.value } ?: emptyMap(),
-  )
+  ).bytes
 }
