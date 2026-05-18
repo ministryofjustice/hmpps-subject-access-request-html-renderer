@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.ServiceData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
@@ -186,7 +187,7 @@ class RenderService(
     )
   }
 
-  private suspend fun storeAttachment(renderRequest: RenderRequest, attachment: Attachment, attachmentData: ByteArray) {
+  private suspend fun storeAttachment(renderRequest: RenderRequest, attachment: Attachment, attachmentData: AttachmentData) {
     telemetryClient.renderEvent(STORE_ATTACHMENT_STARTED, renderRequest)
     log.info(
       "storing attachment {} for id={}, service={}",

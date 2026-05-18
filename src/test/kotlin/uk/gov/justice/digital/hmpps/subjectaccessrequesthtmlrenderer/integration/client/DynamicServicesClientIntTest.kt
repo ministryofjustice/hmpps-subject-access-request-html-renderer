@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import com.github.tomakehurst.wiremock.http.HttpHeader
 import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
@@ -11,8 +12,21 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
+import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.ExchangeFunction
+import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.WebClientRetriesSpec
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
@@ -20,6 +34,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.S
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -28,6 +43,12 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
 
   @Autowired
   private lateinit var dynamicServicesClient: DynamicServicesClient
+
+  @Autowired
+  private lateinit var webClientRetriesSpec: WebClientRetriesSpec
+
+  @Autowired
+  private lateinit var serviceConfigurationService: ServiceConfigurationService
 
   private val successResponse = ResponseDefinitionBuilder
     .responseDefinition()
@@ -229,7 +250,27 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
   inner class GetAttachmentTest {
 
     @Test
-    fun `should return attachment bytes when exist`() {
+    fun `should return attachment bytes when exist and content length header returned`() {
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
+      val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg", HttpHeader("Content-Length", "683919"))
+
+      val body = dynamicServicesClient.getAttachment(
+        renderRequestInfo,
+        "http://localhost:8092/attachments/map.jpg",
+        "image/jpeg",
+        0,
+        emptyMap(),
+      )
+      assertThat(body).isEqualTo(AttachmentData(attachmentContent, 683919))
+
+      sarDataSourceApi.verify(getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
+    }
+
+    @Test
+    fun `should return attachment bytes when exist and no content length header returned`() {
       val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
       val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
 
@@ -243,7 +284,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
         683919,
         emptyMap(),
       )
-      assertThat(body).isEqualTo(attachmentContent)
+      assertThat(body).isEqualTo(AttachmentData(attachmentContent, 683919))
 
       sarDataSourceApi.verify(getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
     }
@@ -263,7 +304,7 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
         683919,
         mapOf("X-Header" to "header-one", "X-Test" to "header-two"),
       )
-      assertThat(body).isEqualTo(attachmentContent)
+      assertThat(body).isEqualTo(AttachmentData(attachmentContent, 683919))
 
       sarDataSourceApi.verify(
         getRequestedFor(urlPathEqualTo("/attachments/map.jpg"))
@@ -273,7 +314,39 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
     }
 
     @Test
-    fun `should retry get attachment bytes when filesize does not match`() {
+    fun `should retry get attachment bytes when content length header and filesize does not match`() {
+      // This test uses a mocked exchange function for the WebClient instead of the real WebClient instance and Wiremock
+      // to stub the calls because Wiremock is not able to return a response body different to the Content-Length header
+      // value (it either strips or pads the body content to match the Content-Length value)
+      val mockExchangeFunction: ExchangeFunction = mock()
+      val webClient = WebClient.builder().exchangeFunction(mockExchangeFunction).build()
+      val dynamicServicesClientStubbed =
+        DynamicServicesClient(webClient, webClientRetriesSpec, serviceConfigurationService, telemetryClient)
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
+      whenever(mockExchangeFunction.exchange(any())).thenReturn(
+        Mono.just(
+          ClientResponse.create(HttpStatus.OK)
+            .header("Content-Length", "100")
+            .body("body-content")
+            .build(),
+        ),
+      )
+
+      assertThrows<SubjectAccessRequestRetryExhaustedException> {
+        dynamicServicesClientStubbed.getAttachment(
+          renderRequestInfo,
+          "http://localhost:8092/attachments/map.jpg",
+          "image/jpeg",
+          null,
+          emptyMap(),
+        )
+      }
+
+      verify(mockExchangeFunction, times(3)).exchange(argThat { request -> request.url().toString().endsWith("/attachments/map.jpg") })
+    }
+
+    @Test
+    fun `should retry get attachment bytes when no content length header and filesize does not match`() {
       val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
       val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
 
@@ -286,6 +359,27 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
           "http://localhost:8092/attachments/map.jpg",
           "image/jpeg",
           100,
+          emptyMap(),
+        )
+      }
+
+      sarDataSourceApi.verify(3, getRequestedFor(urlPathEqualTo("/attachments/map.jpg")))
+    }
+
+    @Test
+    fun `should retry get attachment bytes when no content length header and no expected filesize supplied`() {
+      val renderRequestInfo = createRenderRequest().toRenderRequestInfo()
+      val attachmentContent = getResourceAsByteArray("/attachments/map.jpg")
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetAttachment("image/jpeg", attachmentContent, "map.jpg")
+
+      assertThrows<SubjectAccessRequestRetryExhaustedException> {
+        dynamicServicesClient.getAttachment(
+          renderRequestInfo,
+          "http://localhost:8092/attachments/map.jpg",
+          "image/jpeg",
+          null,
           emptyMap(),
         )
       }

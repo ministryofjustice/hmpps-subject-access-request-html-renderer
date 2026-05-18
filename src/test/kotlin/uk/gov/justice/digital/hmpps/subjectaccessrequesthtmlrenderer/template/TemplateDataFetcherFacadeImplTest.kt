@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.rendering.RenderRequestInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.InlineAttachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.InlineAttachmentHeader
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient.LocationDetailsResponse
@@ -177,7 +178,7 @@ class TemplateDataFetcherFacadeImplTest {
           attachment.filesize,
           mapOf("X-TestHeader" to "Header one", "X-Other" to "abc-123"),
         ),
-      ).thenReturn(attachmentBytes)
+      ).thenReturn(AttachmentData(attachmentBytes, 12345))
 
       val response = templateDataFetcherFacade.getRenderableAttachment(attachment, renderRequestInfo)
 
@@ -204,7 +205,7 @@ class TemplateDataFetcherFacadeImplTest {
           attachment.filesize,
           emptyMap(),
         ),
-      ).thenReturn(attachmentBytes)
+      ).thenReturn(AttachmentData(attachmentBytes, 42))
 
       val response = templateDataFetcherFacade.getRenderableAttachment(attachment, renderRequestInfo)
 

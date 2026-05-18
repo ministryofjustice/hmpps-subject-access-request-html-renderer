@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.FileInfo
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED
@@ -73,19 +74,19 @@ class DocumentStore(
     }
   }
 
-  suspend fun addAttachment(renderRequest: RenderRequest, attachment: Attachment, data: ByteArray) {
+  suspend fun addAttachment(renderRequest: RenderRequest, attachment: Attachment, attachmentData: AttachmentData) {
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
         key = renderRequest.documentAttachmentKey(attachment.attachmentNumber, attachment.filename)
         contentType = attachment.contentType
-        contentLength = attachment.filesize.toLong()
+        contentLength = attachmentData.filesize
         metadata = mapOf(
           "x-amz-meta-filename" to attachment.filename,
           "x-amz-meta-attachment-number" to attachment.attachmentNumber.toString(),
           "x-amz-meta-name" to attachment.name,
         )
-        body = ByteStream.fromBytes(data)
+        body = ByteStream.fromBytes(attachmentData.bytes)
       }
 
       log.info("adding attachment to document store.... ${renderRequest.documentHtmlKey()}")

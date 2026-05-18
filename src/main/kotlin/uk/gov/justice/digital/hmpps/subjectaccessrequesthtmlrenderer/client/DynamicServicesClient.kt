@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_TEMPLATE_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.INTERNAL_SERVER_ERROR
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.FatalSubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -114,9 +115,9 @@ class DynamicServicesClient(
     renderRequestInfo: RenderRequestInfo,
     url: String,
     contentType: String,
-    expectedSize: Int,
+    expectedFilesize: Int?,
     headers: Map<String, String>,
-  ): ByteArray = dynamicApiWebClient.mutate().baseUrl(url).build()
+  ): AttachmentData = dynamicApiWebClient.mutate().baseUrl(url).build()
     .get()
     .header(CONTENT_TYPE, contentType)
     .headers { headers.forEach { (name, value) -> it.add(name, value) } }
@@ -125,20 +126,42 @@ class DynamicServicesClient(
       webClientRetriesSpec.is4xxStatus(),
       webClientRetriesSpec.throw4xxStatusFatalError(renderRequestInfo.id),
     )
-    .bodyToMono(ByteArray::class.java)
-    .flatMap { bytes ->
-      if (bytes.size != expectedSize) {
-        Mono.error(
+    .toEntity(ByteArray::class.java)
+    .flatMap { responseEntity ->
+
+      val expectedLength = responseEntity.headers.contentLength.takeIf { it >= 0 }
+        ?: expectedFilesize?.toLong()
+        ?: return@flatMap Mono.error(
           WebClientRequestException(
-            IllegalStateException("Attachment GET $url expected filesize $expectedSize does not match retrieved data size ${bytes.size}"),
+            IllegalStateException("Attachment GET $url has no Content-Length header and no expectedSize provided"),
             HttpMethod.GET,
             URI(url),
             HttpHeaders(),
           ),
         )
-      } else {
-        Mono.just(bytes)
+
+      val bytes = responseEntity.body
+        ?: return@flatMap Mono.error(
+          WebClientRequestException(
+            IllegalStateException("Attachment GET $url returned empty body"),
+            HttpMethod.GET,
+            URI(url),
+            HttpHeaders(),
+          ),
+        )
+
+      if (bytes.size.toLong() != expectedLength) {
+        return@flatMap Mono.error(
+          WebClientRequestException(
+            IllegalStateException("Attachment GET $url expected filesize $expectedLength does not match retrieved data size ${bytes.size}"),
+            HttpMethod.GET,
+            URI(url),
+            HttpHeaders(),
+          ),
+        )
       }
+
+      Mono.just(AttachmentData(bytes, expectedLength))
     }
     .retryWhen(
       webClientRetriesSpec.retry5xxAndClientRequestErrors(
@@ -219,7 +242,7 @@ class DynamicServicesClient(
           SubjectAccessRequestException(
             subjectAccessRequestId = renderRequest.id,
             message = "Get Service template request returned error status",
-            errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
+            errorCode = INTERNAL_SERVER_ERROR,
             params = mapOf(
               "service" to renderRequest.serviceConfiguration.serviceName,
               "status" to response.statusCode().value(),
@@ -289,7 +312,7 @@ data class Attachment(
   val name: String,
   val contentType: String,
   val url: String,
-  val filesize: Int,
+  val filesize: Int?,
   val filename: String,
   val headers: List<AttachmentHeader>?,
 )
@@ -298,6 +321,29 @@ data class AttachmentHeader(
   val name: String,
   val value: String,
 )
+
+data class AttachmentData(
+  val bytes: ByteArray,
+  val filesize: Long,
+) {
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (javaClass != other?.javaClass) return false
+
+    other as AttachmentData
+
+    if (filesize != other.filesize) return false
+    if (!bytes.contentEquals(other.bytes)) return false
+
+    return true
+  }
+
+  override fun hashCode(): Int {
+    var result = filesize.hashCode()
+    result = 31 * result + bytes.contentHashCode()
+    return result
+  }
+}
 
 private fun sanitizeText(input: String): String {
   var text = StringEscapeUtils.unescapeHtml4(input) // Decode HTML entities
