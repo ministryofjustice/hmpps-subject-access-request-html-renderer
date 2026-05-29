@@ -5,6 +5,12 @@
         <tr><td>Discharge time</td><td>{{ formatDate dischargeTime }}</td></tr>
         <tr><td>Hospital location</td><td>{{ hospitalLocationDescription }}</td></tr>
         <tr><td>Supporting prison</td><td>{{ getPrisonName supportingPrisonId }}</td></tr>
+        <tr><td>From location</td><td>{{ optionalValue fromLocationName }}</td></tr>
+        <tr><td>Comment</td><td>{{ optionalValue commentText }}</td></tr>
+        <tr><td>Created date</td><td>{{ formatDate createdDate }}</td></tr>
+        <tr><td>Created by</td><td>{{ optionalValue createdUserSurname }}</td></tr>
+        <tr><td>Modified date</td><td>{{ formatDate modifiedDate }}</td></tr>
+        <tr><td>Modified by</td><td>{{ optionalValue modifiedUserSurname }}</td></tr>
     </table>
 {{/.}}
 {{^.}}

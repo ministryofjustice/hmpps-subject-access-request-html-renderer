@@ -3,6 +3,12 @@
     "prisonerNumber": "A1234AA",
     "supportingPrisonId": "EXI",
     "hospitalLocationDescription": "Weston Park Hospital",
-    "dischargeTime": "2024-09-05T08:50:44.19812"
+    "dischargeTime": "2024-09-05T08:50:44.19812",
+    "fromLocationName": "Moorland (HMP & YOI)",
+    "commentText": "Prisoner was released to hospital",
+    "createdDate": "2024-09-04T10:00:00",
+    "createdUserSurname": "Smith",
+    "modifiedDate": "2024-09-10T11:22:33",
+    "modifiedUserSurname": "Jones"
   }
 }
