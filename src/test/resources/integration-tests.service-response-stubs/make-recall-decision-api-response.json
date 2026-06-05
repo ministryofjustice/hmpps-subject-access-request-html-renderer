@@ -72,6 +72,7 @@
         "thoughtsLeadingToRecall": null,
         "triggerLeadingToRecall": "Test",
         "whatLedToRecall": "test",
+        "sentenceGroup": "ADULT_SDS",
         "isThisAnEmergencyRecall": false,
         "isIndeterminateSentence": false,
         "isExtendedSentence": false,
@@ -590,6 +591,15 @@
         "isSentenceUnder12Months": null,
         "isSentence12MonthsOrOver": false,
         "hasBeenConvictedOfSeriousOffence": false,
+        "isChargedWithOffence": true,
+        "isServingTerroristOrNationalSecurityOffence": false,
+        "isAtRiskOfInvolvedInForeignPowerThreat": false,
+        "wasReferredToParoleBoard244ZB": false,
+        "wasRepatriatedForMurder": false,
+        "isServingSOPCSentence": true,
+        "isServingDCRSentence": false,
+        "isYouthSentenceOver12Months": null,
+        "isYouthChargedWithSeriousOffence": null,
         "userNamePartACompletedBy": null,
         "userEmailPartACompletedBy": null,
         "lastPartADownloadDateTime": null,
@@ -667,6 +677,7 @@
         "thoughtsLeadingToRecall": null,
         "triggerLeadingToRecall": "I want to",
         "whatLedToRecall": "recommendation",
+        "sentenceGroup": "INDETERMINATE",
         "isThisAnEmergencyRecall": true,
         "isIndeterminateSentence": true,
         "isExtendedSentence": false,
@@ -988,6 +999,10 @@
               "text": "{{ fullName }} has shown behaviour that could lead to a sexual or violent offence"
             },
             {
+              "value": "BEHAVIOUR_LIKELY_TO_RESULT_SEXUAL_OR_VIOLENT_OFFENCE",
+              "text": "{{ fullName }} has shown behaviour likely to result in a sexual or violent offence"
+            },
+            {
               "value": "OUT_OF_TOUCH",
               "text": "{{ fullName }} is out of touch"
             }
@@ -1120,6 +1135,15 @@
         "isSentenceUnder12Months": null,
         "isSentence12MonthsOrOver": null,
         "hasBeenConvictedOfSeriousOffence": null,
+        "isChargedWithOffence": false,
+        "isServingTerroristOrNationalSecurityOffence": true,
+        "isAtRiskOfInvolvedInForeignPowerThreat": true,
+        "wasReferredToParoleBoard244ZB": true,
+        "wasRepatriatedForMurder": false,
+        "isServingSOPCSentence": false,
+        "isServingDCRSentence": true,
+        "isYouthSentenceOver12Months": null,
+        "isYouthChargedWithSeriousOffence": null,
         "userNamePartACompletedBy": null,
         "userEmailPartACompletedBy": null,
         "lastPartADownloadDateTime": null,
