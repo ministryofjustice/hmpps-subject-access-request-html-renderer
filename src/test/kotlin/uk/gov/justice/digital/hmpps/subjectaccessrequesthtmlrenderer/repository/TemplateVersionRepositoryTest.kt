@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest
 import org.springframework.data.repository.findByIdOrNull
@@ -20,45 +22,203 @@ class TemplateVersionRepositoryTest @Autowired constructor(
   val serviceConfigurationRepository: ServiceConfigurationRepository,
 ) {
 
-  private val templateHashV1 = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
-  private val templateHashV2 = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
+  companion object {
 
-  private val serviceConfiguration = ServiceConfiguration(
-    id = UUID.randomUUID(),
-    serviceName = "example-service",
-    label = "Example",
-    enabled = true,
-    templateMigrated = true,
-    url = "https://example.com/",
-    category = ServiceCategory.PRISON,
-  )
+    data class FindLatestTestCase(
+      val desc: String,
+      val templateVersions: List<TemplateVersion>,
+      val serviceConfigId: UUID,
+      val expected: TemplateVersion?,
+    ) {
+      override fun toString(): String = desc
+    }
 
-  private val templateV1Published = TemplateVersion(
-    id = UUID.randomUUID(),
-    version = 1,
-    status = TemplateVersionStatus.PUBLISHED,
-    fileHash = templateHashV1,
-    createdAt = LocalDateTime.of(2025, 1, 1, 10, 0, 0),
-    serviceConfiguration = serviceConfiguration,
-  )
+    private val templateHashV1 = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
+    private val templateHashV2 = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
 
-  private val templateV2Published = TemplateVersion(
-    id = UUID.randomUUID(),
-    version = 1,
-    status = TemplateVersionStatus.PUBLISHED,
-    fileHash = templateHashV1,
-    createdAt = LocalDateTime.of(2025, 1, 2, 10, 0, 0),
-    serviceConfiguration = serviceConfiguration,
-  )
+    private val serviceConfiguration = ServiceConfiguration(
+      id = UUID.randomUUID(),
+      serviceName = "example-service",
+      label = "Example",
+      enabled = true,
+      templateMigrated = true,
+      url = "https://example.com/",
+      category = ServiceCategory.PRISON,
+    )
 
-  private val templateV3Pending = TemplateVersion(
-    id = UUID.randomUUID(),
-    version = 1,
-    status = TemplateVersionStatus.PENDING,
-    fileHash = templateHashV2,
-    createdAt = LocalDateTime.of(2025, 1, 2, 10, 5, 0),
-    serviceConfiguration = serviceConfiguration,
-  )
+    private val templateV1Published = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = templateHashV1,
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 0, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    private val templateV2Published = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = templateHashV1,
+      createdAt = LocalDateTime.of(2025, 1, 2, 10, 0, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    private val templateV3Pending = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PENDING,
+      fileHash = templateHashV2,
+      createdAt = LocalDateTime.of(2025, 1, 2, 10, 5, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+
+
+
+    val v1Published = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = "v1-published-hash",
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 1, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    val v1Pending = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PENDING,
+      fileHash = "v1-pending-hash",
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 1, 30),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    val v2Published = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = "v2-published-hash",
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 2, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    val v2Pending = TemplateVersion(
+      id = serviceConfiguration.id,
+      version = 1,
+      status = TemplateVersionStatus.PUBLISHED,
+      fileHash = "v2-published-hash",
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 2, 30),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    val v3Pending = TemplateVersion(
+      id = UUID.randomUUID(),
+      version = 1,
+      status = TemplateVersionStatus.PENDING,
+      fileHash = "v3-pending-hash",
+      createdAt = LocalDateTime.of(2025, 1, 1, 10, 3, 0),
+      serviceConfiguration = serviceConfiguration,
+    )
+
+    @JvmStatic
+    fun findLatestPublishedTestCases() = listOf(
+      FindLatestTestCase(
+        desc = "no template versions exist",
+        templateVersions = emptyList(),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "not version exist for service config id",
+        templateVersions = listOf(v1Published, v2Published),
+        serviceConfigId = UUID.randomUUID(),
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "a single template version exist",
+        templateVersions = listOf(v1Published),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v1Published,
+      ),
+      FindLatestTestCase(
+        desc = "multiple published versions exist",
+        templateVersions = listOf(v1Published, v2Published),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v2Published,
+      ),
+      FindLatestTestCase(
+        desc = "a published version exist and a pending version exists",
+        templateVersions = listOf(v1Published, v3Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v1Published,
+      ),
+      FindLatestTestCase(
+        desc = "multiple published versions exist and a pending version exists",
+        templateVersions = listOf(v1Published, v2Published, v3Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v2Published,
+      ),
+      FindLatestTestCase(
+        desc = "only a pending version exists",
+        templateVersions = listOf(v3Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+    )
+
+    @JvmStatic
+    fun findLatestPendingTestCases() = listOf(
+      FindLatestTestCase(
+        desc = "no template versions exist",
+        templateVersions = emptyList(),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "only a published version exist",
+        templateVersions = listOf(v1Published),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "a pending version exists created after latest published version",
+        templateVersions = listOf(v1Published, v1Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v1Pending,
+      ),
+      FindLatestTestCase(
+        desc = "multiple pending versions exist",
+        templateVersions = listOf(v1Published, v1Pending, v2Published, v3Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v3Pending,
+      ),
+      FindLatestTestCase(
+        desc = "latest pending has been superseded",
+        templateVersions = listOf(v1Published, v1Pending, v2Published),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "there is no published version",
+        templateVersions = listOf(v1Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v1Pending,
+      ),
+      FindLatestTestCase(
+        desc = "multiple published versions",
+        templateVersions = listOf(v1Published, v2Published),
+        serviceConfigId = serviceConfiguration.id,
+        expected = null,
+      ),
+      FindLatestTestCase(
+        desc = "multiple pending versions no published versions",
+        templateVersions = listOf(v1Pending, v2Pending, v3Pending),
+        serviceConfigId = serviceConfiguration.id,
+        expected = v3Pending,
+      ),
+    )
+  }
 
   @BeforeEach
   fun setUp() {
@@ -83,6 +243,31 @@ class TemplateVersionRepositoryTest @Autowired constructor(
 
     templateVersionRepository.delete(templateV1Published)
     assertThat(templateVersionRepository.findByIdOrNull(templateV1Published.id)).isNull()
+  }
+
+  @Nested
+  inner class FindLatestByServiceConfigurationIdAndStatus {
+
+    @ParameterizedTest
+    @MethodSource("uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepositoryTest#findLatestPublishedTestCases")
+    fun `should return the expected published template value`(tc: FindLatestTestCase) {
+      templateVersionRepository.saveAll(tc.templateVersions)
+
+      val actual = templateVersionRepository.findLatestPublishedByServiceConfigurationId(tc.serviceConfigId)
+      assertThat(actual).isEqualTo(tc.expected)
+    }
+  }
+
+  @Nested
+  inner class FindLatestPendingByServiceConfigurationId {
+    @ParameterizedTest
+    @MethodSource("uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepositoryTest#findLatestPendingTestCases")
+    fun `should return the expected pending template value`(tc: FindLatestTestCase) {
+      templateVersionRepository.saveAll(tc.templateVersions)
+
+      val actual = templateVersionRepository.findLatestPendingByServiceConfigurationId(tc.serviceConfigId)
+      assertThat(actual).isEqualTo(tc.expected)
+    }
   }
 
   @Nested

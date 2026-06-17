@@ -60,8 +60,9 @@ class TemplateVersionService(
 
     val serviceConfiguration = getServiceConfiguration(renderRequest)
     val serviceTemplateHash = getSha256HashValue(serviceTemplate)
+    val serviceConfigId = serviceConfiguration.id
 
-    return templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
+    return templateVersionRepository.findLatestPublishedByServiceConfigurationId(serviceConfigId)
       ?.takeIf { it.fileHash == serviceTemplateHash }
       ?.let {
         log.info(
@@ -71,9 +72,16 @@ class TemplateVersionService(
           it.status,
           serviceConfiguration.serviceName,
         )
-        if (TemplateVersionStatus.PENDING == it.status) {
-          publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
-        }
+        templateVersionHealthService.updateHealthStatusIfChanged(
+          serviceConfiguration = serviceConfiguration,
+          newStatus = HEALTHY,
+        )
+        it
+      } ?: run {
+      templateVersionRepository.findLatestPendingByServiceConfigurationId(serviceConfigId)
+        ?.takeIf { it.fileHash == serviceTemplateHash }
+        ?.let {
+        publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
 
         templateVersionHealthService.updateHealthStatusIfChanged(
           serviceConfiguration = serviceConfiguration,
@@ -81,15 +89,22 @@ class TemplateVersionService(
         )
         it
       } ?: run {
-      templateVersionHealthService.updateHealthStatusIfChanged(
-        serviceConfiguration = serviceConfiguration,
-        newStatus = UNHEALTHY,
-      )
+        log.error(
+          "service template hash mismatch: serviceName={}, serviceTemplateHash={}",
+          serviceConfiguration.serviceName,
+          serviceTemplateHash,
+        )
 
-      throw templateHashMatchFailureException(
-        renderRequest = renderRequest,
-        serviceTemplateHash = serviceTemplateHash,
-      )
+        templateVersionHealthService.updateHealthStatusIfChanged(
+          serviceConfiguration = serviceConfiguration,
+          newStatus = UNHEALTHY,
+        )
+
+        throw templateHashMatchFailureException(
+          renderRequest = renderRequest,
+          serviceTemplateHash = serviceTemplateHash,
+        )
+      }
     }
   }
 
