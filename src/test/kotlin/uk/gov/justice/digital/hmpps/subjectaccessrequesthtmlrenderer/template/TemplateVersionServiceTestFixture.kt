@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.KArgumentCaptor
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Dyna
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
@@ -35,11 +37,14 @@ abstract class TemplateVersionServiceTestFixture {
   protected val templateVersionHealthService: TemplateVersionHealthService = mock()
   protected val telemetryClient: TelemetryClient = mock()
 
-  protected val publishedTemplateBody = "<h1>HMPPS Test Service</h1>"
-  protected val publishedTemplateHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
+  protected val v1PublishedBody = "<h1>HMPPS Test Service</h1>"
+  protected val v1PublishedHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
 
-  protected val pendingTemplateBody = "<h1>HMPPS Test Service V2</h1>"
-  protected val pendingTemplateHash = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
+  protected val v2PendingBody = "<h1>HMPPS Test Service V2</h1>"
+  protected val v2PendingHash = "ab5dfcf36828754c50e61b440a7b30acef43956579e02230f2d29c837a42a4cc"
+
+  protected val v3UnregisteredBody = "<h1>HMPPS Test Service V3 not registered</h1>"
+  protected val v3UnregisteredHash = "005e3d7b859fc308cded9f017ed34fc25bde05e298a74b4a5023e096a9b45058"
 
   protected val telemetryEventTypeCaptor = argumentCaptor<String>()
   protected val telemetryPropertiesCaptor = argumentCaptor<Map<String, String>>()
@@ -55,24 +60,24 @@ abstract class TemplateVersionServiceTestFixture {
     category = ServiceCategory.PRISON,
   )
 
-  protected val publishedTemplateVersion = TemplateVersion(
+  protected val v1Published = TemplateVersion(
     id = UUID.randomUUID(),
     serviceConfiguration = serviceConfig,
     status = TemplateVersionStatus.PUBLISHED,
     version = 1,
     createdAt = LocalDateTime.of(2025, 10, 11, 0, 0, 0),
     publishedAt = LocalDateTime.of(2025, 10, 11, 10, 0, 0),
-    fileHash = publishedTemplateHash,
+    fileHash = v1PublishedHash,
   )
 
-  protected val pendingTemplateVersion = TemplateVersion(
+  protected val v2Pending = TemplateVersion(
     id = UUID.randomUUID(),
     serviceConfiguration = serviceConfig,
     status = TemplateVersionStatus.PENDING,
     version = 2,
     createdAt = LocalDateTime.of(2025, 11, 11, 0, 0, 0),
-    publishedAt = LocalDateTime.of(2025, 11, 11, 10, 0, 0),
-    fileHash = pendingTemplateHash,
+    publishedAt = null,
+    fileHash = v2PendingHash,
   )
 
   protected val renderRequest = RenderRequest(
@@ -114,17 +119,46 @@ abstract class TemplateVersionServiceTestFixture {
     )
   }
 
-  protected fun TemplateVersionRepository.mockFindLatestByServiceConfigurationId(
+  protected fun TemplateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(
     returnValue: TemplateVersion?,
   ) {
-    whenever(this.findLatestByServiceConfigurationId(serviceConfig.id)).thenReturn(returnValue)
+    whenever(this.findLatestPublishedByServiceConfigurationId(serviceConfig.id))
+      .thenReturn(returnValue)
   }
 
-  protected fun TemplateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(
+  protected fun TemplateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(
     times: Int = 1,
     serviceConfigurationId: UUID = serviceConfig.id,
   ) {
-    verify(this, times(times)).findLatestByServiceConfigurationId(serviceConfigurationId)
+    verify(this, times(times))
+      .findLatestPublishedByServiceConfigurationId(serviceConfigurationId)
+  }
+
+  protected fun TemplateVersionRepository.mockFindLatestPendingByServiceConfigurationId(
+    returnValue: TemplateVersion?,
+  ) {
+    whenever(this.findLatestPendingByServiceConfigurationId(serviceConfig.id))
+      .thenReturn(returnValue)
+  }
+
+  protected fun TemplateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(
+    times: Int = 1,
+    serviceConfigurationId: UUID = serviceConfig.id,
+  ) {
+    verify(this, times(times))
+      .findLatestPendingByServiceConfigurationId(serviceConfigurationId)
+  }
+
+  protected fun TemplateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdNeverCalled() {
+    verify(this, never()).findLatestPendingByServiceConfigurationId(serviceConfig.id)
+  }
+
+  protected fun TemplateVersionHealthService.verifyUpdateHealthStatusIfChangedIsCalled(
+    times: Int = 1,
+    serviceConfiguration: ServiceConfiguration,
+    status: HealthStatusType,
+  ) {
+    verify(this, times(times)).updateHealthStatusIfChanged(serviceConfiguration, status)
   }
 
   protected fun TemplateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(

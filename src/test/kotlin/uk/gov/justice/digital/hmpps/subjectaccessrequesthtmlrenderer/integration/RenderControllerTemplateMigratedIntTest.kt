@@ -44,6 +44,9 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
   private val templateV2Path = "/templates/hmpps-test-service-migrated-template-v2.mustache"
   private val templateV2Hash = "b8d6be8b37d1f2c07c243b09a6863f31bfa4ce53cb5c9e5cf1ba14dec18befc5"
 
+  private val templateV3Path = "/templates/hmpps-test-service-migrated-template-v3.mustache"
+  private val templateV3Hash = "ec192b13b63c6d297ad6f249e7d2742546cdbb45dbf90a6bf3b714471b63021f"
+
   private val serviceName = "hmpps-test-service-migrated-template"
   private val serviceLabel = "HMPPS Test Service Template Migrated"
 
@@ -81,7 +84,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     version = 3,
     createdAt = LocalDateTime.now().minusHours(12),
     publishedAt = null,
-    fileHash = templateV2Hash,
+    fileHash = templateV3Hash,
   )
 
   @Autowired
@@ -140,7 +143,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `should return success get service template hash matches the PENDING template version`() {
+    fun `should return success when get service template hash matches the PENDING template version`() {
       templateVersionRepository.saveAll(
         listOf(
           templateVersion1Published,
@@ -157,7 +160,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
-      hmppsServiceReturnServiceTemplate(getResourceAsString(templateV2Path))
+      hmppsServiceReturnServiceTemplate(getResourceAsString(templateV3Path))
 
       val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
 
@@ -169,10 +172,52 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
       assertUploadedHtmlMatchesExpected(
         renderRequest,
-        getExpectedHtmlString("hmpps-test-service-migrated-template-v2"),
+        getExpectedHtmlString("hmpps-test-service-migrated-template-v3"),
       )
       assertThatTemplateVersionIsPublished(templateVersion3Pending.id)
       assertStoredTemplateVersionMatchesExpected(renderRequest, "v3")
+
+      assertTemplateVersionHealthStatusEquals(
+        serviceConfiguration = renderRequest.serviceConfiguration,
+        expectedStatus = HealthStatusType.HEALTHY,
+      )
+    }
+
+    @Test
+    fun `should return success when service template hash matches v1 PUBLISHED template version and there is a v2 PENDING template version created afterward`() {
+      templateVersionRepository.saveAll(
+        listOf(
+          templateVersion1Published,
+          templateVersion3Pending,
+        ),
+      )
+
+      assertThatTemplateVersionIsPending(templateVersion3Pending.id)
+
+      val renderRequestEntity = newRenderRequestFor(testServiceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, testServiceConfiguration)
+
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsDataForRequest(renderRequest)
+      hmppsServiceReturnServiceTemplate(getResourceAsString(templateV1Path))
+      hmppsServiceReturnsAttachmentForRequest("small.jpg", "image/jpeg")
+
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+
+      assertRenderTemplateSuccessResponse(response, renderRequest, templateVersion1Published.version.toString())
+      hmppsAuth.verifyGrantTokenIsCalled(1)
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
+      sarDataSourceApi.verifyGetTemplateCalled()
+
+      assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(renderRequest)
+      assertUploadedHtmlMatchesExpected(
+        renderRequest,
+        getExpectedHtmlString("hmpps-test-service-migrated-template-v1"),
+      )
+      assertThatTemplateVersionIsPublished(templateVersion1Published.id)
+      assertThatTemplateVersionIsPending(templateVersion3Pending.id)
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1")
 
       assertTemplateVersionHealthStatusEquals(
         serviceConfiguration = renderRequest.serviceConfiguration,

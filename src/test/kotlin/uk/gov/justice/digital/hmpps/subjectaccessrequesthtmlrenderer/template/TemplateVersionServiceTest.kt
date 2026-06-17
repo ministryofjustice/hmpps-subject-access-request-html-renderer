@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestRetryExhaustedException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersion
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
 
@@ -28,8 +29,8 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
 
     @Test
     fun `should return expected SHA-256 value`() {
-      assertThat(templateVersionService.getSha256HashValue(publishedTemplateBody))
-        .isEqualTo(publishedTemplateHash)
+      assertThat(templateVersionService.getSha256HashValue(v1PublishedBody))
+        .isEqualTo(v1PublishedHash)
     }
   }
 
@@ -77,7 +78,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
     @Test
     fun `should throw exception when service configuration does not exist`() {
       dynamicServicesClient.mockGetServiceTemplate(
-        returnValue = ResponseEntity.ok(publishedTemplateBody),
+        returnValue = ResponseEntity.ok(v1PublishedBody),
       )
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = null,
@@ -107,12 +108,13 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
     @Test
     fun `should throw exception when service template does not match any registered template versions`() {
       dynamicServicesClient.mockGetServiceTemplate(
-        returnValue = ResponseEntity.ok(publishedTemplateBody),
+        returnValue = ResponseEntity.ok(v3UnregisteredBody),
       )
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = null)
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = v1Published)
+      templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = v2Pending)
 
       val actual = assertThrows<SubjectAccessRequestException> {
         templateVersionService.getTemplate(renderRequest)
@@ -124,20 +126,70 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         errorCode = ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH,
         params = mapOf(
           "serviceConfigurationId" to serviceConfig.id,
-          "serviceTemplateHash" to publishedTemplateHash,
+          "serviceTemplateHash" to v3UnregisteredHash,
         ),
       )
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionHealthService.verifyUpdateHealthStatusIfChangedIsCalled(
+        times = 1,
+        serviceConfiguration = serviceConfig,
+        HealthStatusType.UNHEALTHY,
+      )
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
       verifyTelemetryEventsCaptures(
         event = SERVICE_TEMPLATE_HASH_MISMATCH,
         subjectAccessRequestId = renderRequest.id,
         "serviceName" to serviceConfig.serviceName,
         "serviceConfigurationId" to serviceConfig.id.toString(),
-        "serviceTemplateHash" to publishedTemplateHash,
+        "serviceTemplateHash" to v3UnregisteredHash,
+      )
+    }
+
+    @Test
+    fun `should throw exception when no template version exists for status PENDING or PUBLISHED`() {
+      dynamicServicesClient.mockGetServiceTemplate(
+        returnValue = ResponseEntity.ok(v3UnregisteredBody),
+      )
+      serviceConfigurationService.mockGetConfigurationById(
+        returnValue = serviceConfig,
+      )
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = null)
+      templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = null)
+
+      val actual = assertThrows<SubjectAccessRequestException> {
+        templateVersionService.getTemplate(renderRequest)
+      }
+
+      assertIsExpectedException(
+        actual = actual,
+        message = "service template file hash does not match registered template versions",
+        errorCode = ErrorCode.SERVICE_TEMPLATE_HASH_MISMATCH,
+        params = mapOf(
+          "serviceConfigurationId" to serviceConfig.id,
+          "serviceTemplateHash" to v3UnregisteredHash,
+        ),
+      )
+
+      dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
+      serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionHealthService.verifyUpdateHealthStatusIfChangedIsCalled(
+        times = 1,
+        serviceConfiguration = serviceConfig,
+        HealthStatusType.UNHEALTHY,
+      )
+      verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
+      verifyTelemetryEventsCaptures(
+        event = SERVICE_TEMPLATE_HASH_MISMATCH,
+        subjectAccessRequestId = renderRequest.id,
+        "serviceName" to serviceConfig.serviceName,
+        "serviceConfigurationId" to serviceConfig.id.toString(),
+        "serviceTemplateHash" to v3UnregisteredHash,
       )
     }
 
@@ -145,14 +197,15 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
     fun `should throw exception if error is thrown when updating a template status from PENDING to PUBLISHED`() {
       val saveCaptor = argumentCaptor<TemplateVersion>()
 
-      dynamicServicesClient.mockGetServiceTemplate(returnValue = ResponseEntity.ok(pendingTemplateBody))
+      dynamicServicesClient.mockGetServiceTemplate(returnValue = ResponseEntity.ok(v2PendingBody))
       serviceConfigurationService.mockGetConfigurationById(returnValue = serviceConfig)
-      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = pendingTemplateVersion)
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = null)
+      templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = v2Pending)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
-        id = pendingTemplateVersion.id,
-        version = pendingTemplateVersion.version,
-        fileHash = pendingTemplateHash,
-        returnValue = pendingTemplateVersion,
+        id = v2Pending.id,
+        version = v2Pending.version,
+        fileHash = v2PendingHash,
+        returnValue = v2Pending,
       )
 
       templateVersionRepository.mockSaveAndFlushException()
@@ -167,35 +220,36 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         errorCode = ErrorCode.SERVICE_TEMPLATE_PUBLISH_FAILURE,
         params = mapOf(
           "serviceName" to serviceConfig.serviceName,
-          "version" to pendingTemplateVersion.version,
-          "templateVersionId" to pendingTemplateVersion.id,
+          "version" to v2Pending.version,
+          "templateVersionId" to v2Pending.id,
         ),
       )
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(times = 1)
       templateVersionRepository.verifyFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDescIsCalled(
         times = 1,
-        templateVersionId = pendingTemplateVersion.id,
+        templateVersionId = v2Pending.id,
         version = 2,
         status = TemplateVersionStatus.PENDING,
-        fileHash = pendingTemplateHash,
+        fileHash = v2PendingHash,
       )
       templateVersionRepository.verifySaveAndFlushIsCalled(
         times = 1,
-        templateVersionId = pendingTemplateVersion.id,
+        templateVersionId = v2Pending.id,
         version = 2,
         status = TemplateVersionStatus.PUBLISHED,
-        fileHash = pendingTemplateHash,
+        fileHash = v2PendingHash,
         captor = saveCaptor,
       )
       verifyTelemetryEventsCaptures(
         event = SERVICE_TEMPLATE_PUBLISH_ERROR,
         subjectAccessRequestId = renderRequest.id,
         "serviceName" to serviceConfig.serviceName,
-        "version" to pendingTemplateVersion.version.toString(),
-        "templateVersionId" to pendingTemplateVersion.id.toString(),
+        "version" to v2Pending.version.toString(),
+        "templateVersionId" to v2Pending.id.toString(),
       )
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
@@ -207,18 +261,24 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
     @Test
     fun `should succeed when service template hash matches PUBLISHED template version hash`() {
       dynamicServicesClient.mockGetServiceTemplate(
-        returnValue = ResponseEntity.ok(publishedTemplateBody),
+        returnValue = ResponseEntity.ok(v1PublishedBody),
       )
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = publishedTemplateVersion)
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = v1Published)
 
       templateVersionService.getTemplate(renderRequest)
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdNeverCalled()
+      templateVersionHealthService.verifyUpdateHealthStatusIfChangedIsCalled(
+        times = 1,
+        serviceConfiguration = serviceConfig,
+        HealthStatusType.HEALTHY,
+      )
 
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
@@ -228,44 +288,46 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       val saveCaptor = argumentCaptor<TemplateVersion>()
 
       dynamicServicesClient.mockGetServiceTemplate(
-        returnValue = ResponseEntity.ok(pendingTemplateBody),
+        returnValue = ResponseEntity.ok(v2PendingBody),
       )
       serviceConfigurationService.mockGetConfigurationById(
         returnValue = serviceConfig,
       )
-      templateVersionRepository.mockFindLatestByServiceConfigurationId(returnValue = pendingTemplateVersion)
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = null)
+      templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = v2Pending)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
-        id = pendingTemplateVersion.id,
+        id = v2Pending.id,
         version = 2,
-        fileHash = pendingTemplateHash,
+        fileHash = v2PendingHash,
         status = TemplateVersionStatus.PENDING,
-        returnValue = pendingTemplateVersion,
+        returnValue = v2Pending,
       )
 
       templateVersionService.getTemplate(renderRequest)
 
       dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
       serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
-      templateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(times = 1)
       templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
-        id = pendingTemplateVersion.id,
-        version = pendingTemplateVersion.version,
-        fileHash = pendingTemplateHash,
-        returnValue = pendingTemplateVersion,
+        id = v2Pending.id,
+        version = v2Pending.version,
+        fileHash = v2PendingHash,
+        returnValue = v2Pending,
       )
       templateVersionRepository.verifyFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDescIsCalled(
         times = 1,
-        templateVersionId = pendingTemplateVersion.id,
+        templateVersionId = v2Pending.id,
         version = 2,
         status = TemplateVersionStatus.PENDING,
-        fileHash = pendingTemplateHash,
+        fileHash = v2PendingHash,
       )
       templateVersionRepository.verifySaveAndFlushIsCalled(
         times = 1,
-        templateVersionId = pendingTemplateVersion.id,
+        templateVersionId = v2Pending.id,
         version = 2,
         status = TemplateVersionStatus.PUBLISHED,
-        fileHash = pendingTemplateHash,
+        fileHash = v2PendingHash,
         captor = saveCaptor,
       )
 
@@ -273,10 +335,83 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
         event = SERVICE_TEMPLATE_PUBLISHED,
         subjectAccessRequestId = renderRequest.id,
         "serviceName" to serviceConfig.serviceName,
-        "version" to pendingTemplateVersion.version.toString(),
+        "version" to v2Pending.version.toString(),
       )
 
       verifyNoMoreInteractions(templateVersionRepository, serviceConfigurationService)
+    }
+
+    @Test
+    fun `should succeed when service template matches PUBLISHED template and there is a PENDING template created after the PUBLISHED template`() {
+      dynamicServicesClient.mockGetServiceTemplate(
+        returnValue = ResponseEntity.ok(v1PublishedBody),
+      )
+      serviceConfigurationService.mockGetConfigurationById(
+        returnValue = serviceConfig,
+      )
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = v1Published)
+
+      val actual = templateVersionService.getTemplate(renderRequest)
+      assertThat(actual).isNotNull
+      assertThat(actual).isEqualTo(TemplateDetails(version = "1", body = v1PublishedBody))
+
+      dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
+      serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdNeverCalled()
+
+      verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
+    }
+
+    @Test
+    fun `should succeed when service template matches PENDING template created after a previous PUBLISHED template`() {
+      val saveCaptor = argumentCaptor<TemplateVersion>()
+      dynamicServicesClient.mockGetServiceTemplate(
+        returnValue = ResponseEntity.ok(v2PendingBody),
+      )
+      serviceConfigurationService.mockGetConfigurationById(
+        returnValue = serviceConfig,
+      )
+      templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = v1Published)
+      templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = v2Pending)
+      templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
+        id = v2Pending.id,
+        version = 2,
+        status = TemplateVersionStatus.PENDING,
+        fileHash = v2PendingHash,
+        returnValue = v2Pending,
+      )
+
+      val actual = templateVersionService.getTemplate(renderRequest)
+      assertThat(actual).isNotNull
+      assertThat(actual).isEqualTo(TemplateDetails(version = "2", body = v2PendingBody))
+
+      dynamicServicesClient.verifyGetServiceTemplateIsCalled(times = 1)
+      serviceConfigurationService.verifyGetServiceConfigurationIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPublishedByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindLatestPendingByServiceConfigurationIdIsCalled(times = 1)
+      templateVersionRepository.verifyFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDescIsCalled(
+        times = 1,
+        templateVersionId = v2Pending.id,
+        version = 2,
+        status = TemplateVersionStatus.PENDING,
+        fileHash = v2PendingHash,
+      )
+      templateVersionRepository.verifySaveAndFlushIsCalled(
+        times = 1,
+        templateVersionId = v2Pending.id,
+        version = 2,
+        status = TemplateVersionStatus.PUBLISHED,
+        fileHash = v2PendingHash,
+        captor = saveCaptor,
+      )
+      templateVersionHealthService.verifyUpdateHealthStatusIfChangedIsCalled(
+        times = 1,
+        serviceConfiguration = serviceConfig,
+        HealthStatusType.HEALTHY,
+      )
+
+      verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
   }
 }
