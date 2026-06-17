@@ -363,7 +363,6 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       verifyNoMoreInteractions(dynamicServicesClient, templateVersionRepository, serviceConfigurationService)
     }
 
-
     @Test
     fun `should succeed when service template matches PENDING template created after a previous PUBLISHED template`() {
       val saveCaptor = argumentCaptor<TemplateVersion>()
@@ -375,7 +374,7 @@ class TemplateVersionServiceTest : TemplateVersionServiceTestFixture() {
       )
       templateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(returnValue = v1Published)
       templateVersionRepository.mockFindLatestPendingByServiceConfigurationId(returnValue = v2Pending)
-      templateVersionRepository. mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
+      templateVersionRepository.mockFindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
         id = v2Pending.id,
         version = 2,
         status = TemplateVersionStatus.PENDING,

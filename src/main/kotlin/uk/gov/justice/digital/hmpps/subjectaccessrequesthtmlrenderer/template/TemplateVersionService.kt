@@ -81,14 +81,14 @@ class TemplateVersionService(
       templateVersionRepository.findLatestPendingByServiceConfigurationId(serviceConfigId)
         ?.takeIf { it.fileHash == serviceTemplateHash }
         ?.let {
-        publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
+          publishPendingTemplateVersion(it, renderRequest, serviceTemplateHash)
 
-        templateVersionHealthService.updateHealthStatusIfChanged(
-          serviceConfiguration = serviceConfiguration,
-          newStatus = HEALTHY,
-        )
-        it
-      } ?: run {
+          templateVersionHealthService.updateHealthStatusIfChanged(
+            serviceConfiguration = serviceConfiguration,
+            newStatus = HEALTHY,
+          )
+          it
+        } ?: run {
         log.error(
           "service template hash mismatch: serviceName={}, serviceTemplateHash={}",
           serviceConfiguration.serviceName,

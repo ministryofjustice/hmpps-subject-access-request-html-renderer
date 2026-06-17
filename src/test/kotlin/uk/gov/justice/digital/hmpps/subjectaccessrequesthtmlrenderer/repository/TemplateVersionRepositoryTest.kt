@@ -46,36 +46,6 @@ class TemplateVersionRepositoryTest @Autowired constructor(
       category = ServiceCategory.PRISON,
     )
 
-    private val templateV1Published = TemplateVersion(
-      id = UUID.randomUUID(),
-      version = 1,
-      status = TemplateVersionStatus.PUBLISHED,
-      fileHash = templateHashV1,
-      createdAt = LocalDateTime.of(2025, 1, 1, 10, 0, 0),
-      serviceConfiguration = serviceConfiguration,
-    )
-
-    private val templateV2Published = TemplateVersion(
-      id = UUID.randomUUID(),
-      version = 1,
-      status = TemplateVersionStatus.PUBLISHED,
-      fileHash = templateHashV1,
-      createdAt = LocalDateTime.of(2025, 1, 2, 10, 0, 0),
-      serviceConfiguration = serviceConfiguration,
-    )
-
-    private val templateV3Pending = TemplateVersion(
-      id = UUID.randomUUID(),
-      version = 1,
-      status = TemplateVersionStatus.PENDING,
-      fileHash = templateHashV2,
-      createdAt = LocalDateTime.of(2025, 1, 2, 10, 5, 0),
-      serviceConfiguration = serviceConfiguration,
-    )
-
-
-
-
     val v1Published = TemplateVersion(
       id = UUID.randomUUID(),
       version = 1,
@@ -231,18 +201,18 @@ class TemplateVersionRepositoryTest @Autowired constructor(
   fun `should save template version`() {
     assertThat(templateVersionRepository.findAll()).isEmpty()
 
-    templateVersionRepository.save(templateV1Published)
+    templateVersionRepository.save(v1Published)
 
-    assertThat(templateVersionRepository.findByIdOrNull(templateV1Published.id)).isEqualTo(templateV1Published)
+    assertThat(templateVersionRepository.findByIdOrNull(v1Published.id)).isEqualTo(v1Published)
   }
 
   @Test
   fun `should delete template version`() {
-    templateVersionRepository.save(templateV1Published)
-    assertThat(templateVersionRepository.findByIdOrNull(templateV1Published.id)).isEqualTo(templateV1Published)
+    templateVersionRepository.save(v1Published)
+    assertThat(templateVersionRepository.findByIdOrNull(v1Published.id)).isEqualTo(v1Published)
 
-    templateVersionRepository.delete(templateV1Published)
-    assertThat(templateVersionRepository.findByIdOrNull(templateV1Published.id)).isNull()
+    templateVersionRepository.delete(v1Published)
+    assertThat(templateVersionRepository.findByIdOrNull(v1Published.id)).isNull()
   }
 
   @Nested
@@ -271,58 +241,6 @@ class TemplateVersionRepositoryTest @Autowired constructor(
   }
 
   @Nested
-  inner class FindLatestByServiceConfigurationId {
-
-    @Test
-    fun `should return null if no data exists`() {
-      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
-      assertThat(actual).isNull()
-    }
-
-    @Test
-    fun `should return latest template version if only 1 exists`() {
-      templateVersionRepository.save(templateV1Published)
-
-      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
-      assertThat(actual).isEqualTo(templateV1Published)
-    }
-
-    @Test
-    fun `should return expected template version when multiple versions exist`() {
-      templateVersionRepository.saveAll(listOf(templateV1Published, templateV2Published, templateV3Pending))
-
-      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
-      assertThat(actual).isEqualTo(templateV3Pending)
-    }
-
-    @Test
-    fun `should return value with higher version number when createdAt fields are equal`() {
-      // template V2 has the same createdAt value as V1
-      val v1 = TemplateVersion(
-        id = UUID.randomUUID(),
-        serviceConfiguration = serviceConfiguration,
-        status = TemplateVersionStatus.PUBLISHED,
-        version = 1,
-        createdAt = LocalDateTime.now(),
-        fileHash = templateHashV1,
-      )
-      val v2 = TemplateVersion(
-        id = UUID.randomUUID(),
-        serviceConfiguration = serviceConfiguration,
-        status = TemplateVersionStatus.PUBLISHED,
-        version = 2,
-        createdAt = v1.createdAt,
-        fileHash = templateHashV1,
-      )
-      templateVersionRepository.saveAll(listOf(v1, v2))
-
-      val actual = templateVersionRepository.findLatestByServiceConfigurationId(serviceConfiguration.id)
-
-      assertThat(actual).isEqualTo(v2)
-    }
-  }
-
-  @Nested
   inner class FindFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc {
 
     @Test
@@ -339,16 +257,16 @@ class TemplateVersionRepositoryTest @Autowired constructor(
 
     @Test
     fun `should return expected value when records exist`() {
-      templateVersionRepository.saveAll(listOf(templateV1Published, templateV2Published, templateV3Pending))
+      templateVersionRepository.saveAll(listOf(v1Published, v2Published, v3Pending))
 
       val actual = templateVersionRepository.findFirstByIdAndVersionAndFileHashAndStatusOrderByVersionDesc(
-        id = templateV3Pending.id,
-        version = templateV3Pending.version,
-        fileHash = templateV3Pending.fileHash!!,
+        id = v3Pending.id,
+        version = v3Pending.version,
+        fileHash = v3Pending.fileHash!!,
         status = TemplateVersionStatus.PENDING,
       )
 
-      assertThat(actual).isEqualTo(templateV3Pending)
+      assertThat(actual).isEqualTo(v3Pending)
     }
   }
 }

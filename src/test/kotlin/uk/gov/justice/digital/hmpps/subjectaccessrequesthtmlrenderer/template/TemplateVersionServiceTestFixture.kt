@@ -119,21 +119,8 @@ abstract class TemplateVersionServiceTestFixture {
     )
   }
 
-  protected fun TemplateVersionRepository.mockFindLatestByServiceConfigurationId(
-    returnValue: TemplateVersion?,
-  ) {
-    whenever(this.findLatestByServiceConfigurationId(serviceConfig.id)).thenReturn(returnValue)
-  }
-
-  protected fun TemplateVersionRepository.verifyFindLatestByServiceConfigurationIdIsCalled(
-    times: Int = 1,
-    serviceConfigurationId: UUID = serviceConfig.id,
-  ) {
-    verify(this, times(times)).findLatestByServiceConfigurationId(serviceConfigurationId)
-  }
-
   protected fun TemplateVersionRepository.mockFindLatestPublishedByServiceConfigurationId(
-    returnValue: TemplateVersion?
+    returnValue: TemplateVersion?,
   ) {
     whenever(this.findLatestPublishedByServiceConfigurationId(serviceConfig.id))
       .thenReturn(returnValue)
@@ -148,7 +135,7 @@ abstract class TemplateVersionServiceTestFixture {
   }
 
   protected fun TemplateVersionRepository.mockFindLatestPendingByServiceConfigurationId(
-    returnValue: TemplateVersion?
+    returnValue: TemplateVersion?,
   ) {
     whenever(this.findLatestPendingByServiceConfigurationId(serviceConfig.id))
       .thenReturn(returnValue)
