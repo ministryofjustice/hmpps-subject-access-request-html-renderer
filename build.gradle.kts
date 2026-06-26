@@ -1,9 +1,11 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.3"
 
   kotlin("plugin.spring") version "2.4.0"
 }
+
+val springDocVersion = "3.0.2"
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
@@ -17,7 +19,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
   constraints {
     implementation("org.webjars:swagger-ui:5.32.2")
   }
@@ -27,7 +29,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.2")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.6.100")
+  implementation("aws.sdk.kotlin:s3:1.6.102")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
