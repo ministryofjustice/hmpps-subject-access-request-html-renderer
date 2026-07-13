@@ -29,12 +29,12 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.3")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.8.2")
+  implementation("aws.sdk.kotlin:s3:1.8.3")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.63.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.6.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.6.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.4.240")
