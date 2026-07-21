@@ -1,7 +1,7 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.0-beta2"
-  kotlin("plugin.spring") version "2.4.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
+  kotlin("plugin.spring") version "2.4.10"
 }
 
 val springDocVersion = "3.0.2"
@@ -14,7 +14,7 @@ configurations {
 ext["kotlin-coroutines.version"] = "1.11.0"
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0-beta2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -28,11 +28,11 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.3")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.8.7")
+  implementation("aws.sdk.kotlin:s3:1.8.10")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.63.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.64.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.6.2")
 
   runtimeOnly("org.flywaydb:flyway-core")
