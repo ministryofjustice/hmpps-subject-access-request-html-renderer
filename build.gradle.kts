@@ -1,6 +1,6 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.5"
   kotlin("plugin.spring") version "2.4.10"
 }
 
@@ -20,20 +20,20 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
   constraints {
-    implementation("org.webjars:swagger-ui:5.32.2")
+    implementation("org.webjars:swagger-ui:5.32.11")
   }
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.1")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
-  implementation("com.github.jknack:handlebars:4.5.3")
+  implementation("com.github.jknack:handlebars:4.5.4")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.8.10")
+  implementation("aws.sdk.kotlin:s3:1.8.33")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.64.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.6.2")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.65.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.4.240")
