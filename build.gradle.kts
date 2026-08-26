@@ -1,6 +1,6 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.5"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.6"
   kotlin("plugin.spring") version "2.4.10"
 }
 
@@ -28,12 +28,12 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.4")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.8.33")
+  implementation("aws.sdk.kotlin:s3:1.8.37")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.65.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.4.240")
