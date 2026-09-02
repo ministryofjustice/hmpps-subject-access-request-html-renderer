@@ -80,7 +80,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
     clearAuthorizedClientsCache("sar-html-renderer-client", "anonymousUser")
     s3TestUtil.clearBucket()
 
-    whenever(userDetailsRepository.findByUsername(any())).doAnswer {
+    whenever(userDetailsRepository.findByUsernameIgnoreCase(any())).doAnswer {
       (UserDetail(it.arguments[0] as String, "Homer Simpson"))
     }
 

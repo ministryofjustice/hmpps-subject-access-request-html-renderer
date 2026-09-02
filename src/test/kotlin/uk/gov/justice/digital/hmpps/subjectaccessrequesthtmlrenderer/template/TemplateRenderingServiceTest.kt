@@ -202,7 +202,7 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a Use of Force template`() {
-    whenever(userDetailsRepository.findByUsername("ZANDYUSER_ADM")).thenReturn(
+    whenever(userDetailsRepository.findByUsernameIgnoreCase("ZANDYUSER_ADM")).thenReturn(
       UserDetail(
         "ZANDYUSER_ADM",
         "Lee",
