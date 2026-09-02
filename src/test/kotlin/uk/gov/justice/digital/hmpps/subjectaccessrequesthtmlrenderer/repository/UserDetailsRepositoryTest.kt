@@ -12,18 +12,28 @@ class UserDetailsRepositoryTest @Autowired constructor(
 ) {
 
   @Test
-  fun `findByUsername returns user detail for valid username`() {
+  fun `findByUsernameIgnoreCase returns user detail for valid username`() {
     val userDetail = UserDetail(username = "AZ123PO", lastName = "Smith")
     userDetailsRepository.save(userDetail)
 
-    val foundUserDetail = userDetailsRepository.findByUsername("AZ123PO")
+    val foundUserDetail = userDetailsRepository.findByUsernameIgnoreCase("AZ123PO")
     assertThat(foundUserDetail).isNotNull
     assertThat(foundUserDetail?.lastName).isEqualTo("Smith")
   }
 
   @Test
-  fun `findByUsername returns null for invalid username`() {
-    val foundUserDetail = userDetailsRepository.findByUsername("INVALID_USERNAME")
+  fun `findByUsernameIgnoreCase returns user detail for username with different case`() {
+    val userDetail = UserDetail(username = "az123po", lastName = "Smith")
+    userDetailsRepository.save(userDetail)
+
+    val foundUserDetail = userDetailsRepository.findByUsernameIgnoreCase("AZ123PO")
+    assertThat(foundUserDetail).isNotNull
+    assertThat(foundUserDetail?.lastName).isEqualTo("Smith")
+  }
+
+  @Test
+  fun `findByUsernameIgnoreCase returns null for invalid username`() {
+    val foundUserDetail = userDetailsRepository.findByUsernameIgnoreCase("INVALID_USERNAME")
     assertThat(foundUserDetail).isNull()
   }
 }

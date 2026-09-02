@@ -25,7 +25,7 @@ class TemplateDataFetcherFacadeImpl(
     .findByPrisonId(prisonId)?.prisonName
 
   override fun findUserLastNameByUsername(userId: String): String? = userDetailsRepository
-    .findByUsername(userId)?.lastName
+    .findByUsernameIgnoreCase(userId)?.lastName
 
   override fun findLocationNameByNomisId(nomisId: Int): String? = locationDetailsRepository.findByNomisId(nomisId)?.name
     ?: nomisMappingApiClient.getNomisLocationMapping(nomisId)?.let { findLocationNameByDpsId(it.dpsLocationId) }

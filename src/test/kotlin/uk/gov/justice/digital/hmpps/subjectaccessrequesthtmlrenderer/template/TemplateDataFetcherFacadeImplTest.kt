@@ -64,7 +64,7 @@ class TemplateDataFetcherFacadeImplTest {
   inner class FindUserLastNameByUsernameTest {
     @Test
     fun `findUserLastNameByUsername returns user last name`() {
-      whenever(userDetailsRepository.findByUsername("AQ987Z")).thenReturn(UserDetail("AQ987Z", "Johnson"))
+      whenever(userDetailsRepository.findByUsernameIgnoreCase("AQ987Z")).thenReturn(UserDetail("AQ987Z", "Johnson"))
       val response = templateDataFetcherFacade.findUserLastNameByUsername("AQ987Z")
       assertThat(response).isEqualTo("Johnson")
     }
