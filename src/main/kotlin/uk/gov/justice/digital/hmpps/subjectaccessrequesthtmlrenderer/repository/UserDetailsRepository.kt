@@ -6,5 +6,5 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.User
 
 @Repository
 interface UserDetailsRepository : JpaRepository<UserDetail, String> {
-  fun findByUsernameIgnoreCase(username: String): UserDetail?
+  fun findFirstByUsernameIgnoreCaseOrderByUsernameAsc(username: String): UserDetail?
 }
