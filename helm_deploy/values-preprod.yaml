@@ -6,6 +6,10 @@ generic-service:
 
   ingress:
     host: subject-access-request-html-renderer-preprod.hmpps.service.justice.gov.uk
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "180"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
