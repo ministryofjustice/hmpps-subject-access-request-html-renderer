@@ -7,9 +7,9 @@ generic-service:
   ingress:
     host: subject-access-request-html-renderer-preprod.hmpps.service.justice.gov.uk
     annotations:
-      nginx.ingress.kubernetes.io/proxy-connect-timeout: "180"
-      nginx.ingress.kubernetes.io/proxy-send-timeout: "180"
-      nginx.ingress.kubernetes.io/proxy-read-timeout: "180"
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
@@ -17,6 +17,7 @@ generic-service:
     LOCATIONS_API_URL: "https://locations-inside-prison-api-preprod.hmpps.service.justice.gov.uk"
     NOMIS_MAPPINGS_API_URL: "https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk"
     DEVELOPER_ENDPOINT_ENABLED: false
+    WEB_CLIENT_CONFIGURATION_BACK_OFF: "PT2M"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
