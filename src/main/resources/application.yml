@@ -91,6 +91,10 @@ web-client:
 api:
   timeout: 60s
 
+template-helper-cache:
+  maximum-size: 10000
+  expire-after-minutes: 10
+
 template-resources:
   directory: /templates
 

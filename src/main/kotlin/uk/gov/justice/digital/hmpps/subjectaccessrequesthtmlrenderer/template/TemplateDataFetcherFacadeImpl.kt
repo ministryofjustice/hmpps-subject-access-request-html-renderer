@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
-@Service
+@Service("templateDataFetcherFacadeImpl")
 class TemplateDataFetcherFacadeImpl(
   private val prisonDetailsRepository: PrisonDetailsRepository,
   private val userDetailsRepository: UserDetailsRepository,
