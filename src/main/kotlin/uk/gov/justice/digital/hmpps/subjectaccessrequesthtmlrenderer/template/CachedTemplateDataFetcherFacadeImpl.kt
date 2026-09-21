@@ -12,8 +12,8 @@ import java.util.Optional
 @Service("CachedTemplateDataFetcherFacadeImpl")
 class CachedTemplateDataFetcherFacadeImpl(
   @Qualifier("templateDataFetcherFacadeCacheBuilder") private val templateDataFetcherFacadeCacheBuilder: Caffeine<Any, Any>,
-  @Qualifier("templateDataFetcherFacadeImpl") private val templateDataFetcherFacade: TemplateDataFetcherFacade
-): TemplateDataFetcherFacade {
+  @Qualifier("templateDataFetcherFacadeImpl") private val templateDataFetcherFacade: TemplateDataFetcherFacade,
+) : TemplateDataFetcherFacade {
 
   private val prisonNameCache: LoadingCache<String, Optional<String>> = templateDataFetcherFacadeCacheBuilder.build { prisonId: String ->
     Optional.ofNullable(templateDataFetcherFacade.findPrisonNameByPrisonId(prisonId))
