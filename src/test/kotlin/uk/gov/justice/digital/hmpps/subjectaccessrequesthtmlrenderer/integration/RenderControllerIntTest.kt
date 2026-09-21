@@ -50,6 +50,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.CachedTemplateDataFetcherFacadeImpl
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
 import java.time.Instant
 import java.time.LocalDate
@@ -73,6 +74,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   @Autowired
   private lateinit var templateVersionService: TemplateVersionService
+
+  @Autowired
+  private lateinit var cachedTemplateDataFetcherFacadeImpl: CachedTemplateDataFetcherFacadeImpl
 
   @BeforeEach
   fun setup() {
@@ -103,6 +107,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
   @AfterEach
   fun tearDown() {
     s3TestUtil.clearBucket()
+    cachedTemplateDataFetcherFacadeImpl.invalidateAll()
   }
 
   @Nested
