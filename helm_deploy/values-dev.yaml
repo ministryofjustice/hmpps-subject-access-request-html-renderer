@@ -7,6 +7,10 @@ generic-service:
   ingress:
     host: subject-access-request-html-renderer-dev.hmpps.service.justice.gov.uk
     className: default-non-prod
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-connect-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+      nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
@@ -16,6 +20,7 @@ generic-service:
     DEVELOPER_ENDPOINT_ENABLED: true
     SPRINGDOC_API-DOCS_ENABLED: "true"
     SPRINGDOC_SWAGGER-UI_ENABLED: "true"
+    API_TIMEOUT: "300s"
 
 # CloudPlatform AlertManager receiver to route prometheus alerts to slack
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
