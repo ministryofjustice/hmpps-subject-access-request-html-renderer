@@ -11,6 +11,9 @@ locations-api:
   url: "http://localhost:8085"
 nomis-mappings-api:
   url: "http://localhost:8086"
+subject-access-request-api:
+  url: "http://localhost:8093"
+  notification-timeout: 2s
 
 web-client:
   configuration:

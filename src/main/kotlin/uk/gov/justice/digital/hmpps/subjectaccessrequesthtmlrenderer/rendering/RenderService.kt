@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType.ATTACHMENTS
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType.SAR_DATA
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.ServiceData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_COMPLETE
@@ -23,6 +25,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.documentstore.DocumentStore
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceCallFailureNotificationService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
 import java.util.UUID
@@ -33,6 +36,7 @@ class RenderService(
   private val documentStore: DocumentStore,
   private val templateRenderingService: TemplateRenderingService,
   private val telemetryClient: TelemetryClient,
+  private val serviceCallFailureNotificationService: ServiceCallFailureNotificationService,
 ) {
 
   companion object {
@@ -72,14 +76,18 @@ class RenderService(
     )
 
     try {
-      val response: ResponseEntity<ServiceData> = dynamicServicesClient.getSubjectAccessRequestData(renderRequest)
-        ?: throw SubjectAccessRequestException(
-          message = "api response data was null",
-          cause = null,
-          errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
-          subjectAccessRequestId = renderRequest.id,
-          params = mapOf("serviceUrl" to renderRequest.serviceConfiguration.url),
-        )
+      val response: ResponseEntity<ServiceData> = try {
+        dynamicServicesClient.getSubjectAccessRequestData(renderRequest)
+      } catch (ex: SubjectAccessRequestException) {
+        serviceCallFailureNotificationService.notifyServiceCallFailure(renderRequest, SAR_DATA, ex)
+        throw ex
+      } ?: throw SubjectAccessRequestException(
+        message = "api response data was null",
+        cause = null,
+        errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
+        subjectAccessRequestId = renderRequest.id,
+        params = mapOf("serviceUrl" to renderRequest.serviceConfiguration.url),
+      )
 
       log.info("get {} data response status: {}", renderRequest.serviceConfiguration.serviceName, response.statusCode)
       return extractResponseBody(response, renderRequest).sanitize()
@@ -111,13 +119,18 @@ class RenderService(
       documentAttachmentKey,
       renderRequest.serviceConfiguration.serviceName,
     )
-    val attachmentData = dynamicServicesClient.getAttachment(
-      renderRequest.toRenderRequestInfo(),
-      attachment.url,
-      attachment.contentType,
-      attachment.filesize,
-      attachment.headers?.associate { it.name to it.value } ?: emptyMap(),
-    )
+    val attachmentData = try {
+      dynamicServicesClient.getAttachment(
+        renderRequest.toRenderRequestInfo(),
+        attachment.url,
+        attachment.contentType,
+        attachment.filesize,
+        attachment.headers?.associate { it.name to it.value } ?: emptyMap(),
+      )
+    } catch (ex: SubjectAccessRequestException) {
+      serviceCallFailureNotificationService.notifyServiceCallFailure(renderRequest, ATTACHMENTS, ex)
+      throw ex
+    }
     telemetryClient.renderEvent(GET_ATTACHMENT_COMPLETE, renderRequest)
     storeAttachment(renderRequest, attachment, attachmentData)
   }

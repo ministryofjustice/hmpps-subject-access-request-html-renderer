@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.reactive.server.WebTestClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.S3TestUtil.AttachmentMetadata
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_ATTACHMENT_STARTED
@@ -40,6 +41,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.E
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SubjectAccessRequestApiExtension.Companion.subjectAccessRequestApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.LocationDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.PrisonDetail
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
@@ -644,6 +646,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsErrorForRequest(renderRequest, HttpStatus.INTERNAL_SERVER_ERROR)
+      subjectAccessRequestApi.stubReportServiceError()
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
@@ -658,6 +661,13 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(3)
+      subjectAccessRequestApi.verifyReportServiceErrorCalled(
+        subjectAccessRequestId = renderRequest.id!!,
+        serviceName = renderRequest.serviceConfiguration.serviceName,
+        failureType = RendererServiceFailureType.SAR_DATA,
+        statusCode = 500,
+        message = retryExhaustedErrorMessage(renderRequest, 500),
+      )
     }
 
     @Test
@@ -673,6 +683,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest, "$serviceName-attachments")
       hmppsServiceReturnsErrorForAttachmentRequest("doc.pdf", "application/pdf", HttpStatus.INTERNAL_SERVER_ERROR)
+      subjectAccessRequestApi.stubReportServiceError()
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
@@ -697,6 +708,16 @@ class RenderControllerIntTest : IntegrationTestBase() {
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetAttachmentCalled("doc.pdf", 3)
       sarDataSourceApi.verifyGetAttachmentNeverCalled("map.jpg")
+      subjectAccessRequestApi.verifyReportServiceErrorCalled(
+        subjectAccessRequestId = renderRequest.id!!,
+        serviceName = renderRequest.serviceConfiguration.serviceName,
+        failureType = RendererServiceFailureType.ATTACHMENTS,
+        statusCode = 500,
+        message = retryExhaustedErrorMessage(
+          renderRequest,
+          "http://localhost:${sarDataSourceApi.port()}/attachments/doc.pdf",
+        ),
+      )
     }
 
     @Test

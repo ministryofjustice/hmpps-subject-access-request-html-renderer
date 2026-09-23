@@ -13,6 +13,7 @@ generic-service:
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     LOCATIONS_API_URL: "https://locations-inside-prison-api.hmpps.service.justice.gov.uk"
     NOMIS_MAPPINGS_API_URL: "https://nomis-sync-prisoner-mapping.hmpps.service.justice.gov.uk"
+    SUBJECT_ACCESS_REQUEST_API_URL: "https://subject-access-request-api.hmpps.service.justice.gov.uk"
     WEB_CLIENT_CONFIGURATION_BACK_OFF: "PT1M"
     API_TIMEOUT: "600s"
     TEMPLATE_HELPER_CACHE_MAXIMUM_SIZE: 50000

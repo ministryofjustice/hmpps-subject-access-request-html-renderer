@@ -90,6 +90,9 @@ web-client:
 
 api:
   timeout: 60s
+subject-access-request-api:
+  url: ${SUBJECT_ACCESS_REQUEST_API_URL}
+  notification-timeout: 2s
 
 template-helper-cache:
   maximum-size: 50000
