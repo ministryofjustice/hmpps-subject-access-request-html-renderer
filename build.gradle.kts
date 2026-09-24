@@ -1,7 +1,7 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.8"
-  kotlin("plugin.spring") version "2.4.10"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.9"
+  kotlin("plugin.spring") version "2.4.20"
 }
 
 configurations {
@@ -12,24 +12,24 @@ configurations {
 ext["kotlin-coroutines.version"] = "1.11.0"
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1")
 
-  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.2")
+  implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.3")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
-  implementation("com.github.jknack:handlebars:4.5.4")
+  implementation("com.github.jknack:handlebars:4.5.5")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.8.47")
+  implementation("aws.sdk.kotlin:s3:1.9.7")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.65.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.66.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.1")
-  implementation("com.github.ben-manes.caffeine:caffeine:3.2.2")
+  implementation("com.github.ben-manes.caffeine:caffeine:3.3.0")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.5.250")
