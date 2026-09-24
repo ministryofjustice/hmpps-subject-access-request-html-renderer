@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.test.web.reactive.server.WebTestClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.controller.entity.RenderRequestEntity
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SubjectAccessRequestApiExtension.Companion.subjectAccessRequestApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.HealthStatusType
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
@@ -242,6 +244,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
       hmppsServiceReturnServiceTemplateNotFoundError()
+      subjectAccessRequestApi.stubReportServiceError()
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
@@ -254,6 +257,13 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled(1)
+      subjectAccessRequestApi.verifyReportServiceErrorCalled(
+        subjectAccessRequestId = renderRequest.id!!,
+        serviceName = renderRequest.serviceConfiguration.serviceName,
+        failureType = RendererServiceFailureType.TEMPLATE,
+        statusCode = 404,
+        message = "Get Service template request returned status not found, errorCode=3003, id=${renderRequest.id}, service=${renderRequest.serviceConfiguration.serviceName}, status=404",
+      )
 
       // Template state should not update since error happens before hash check
       assertTemplateVersionHealthStatusEqualTo(
@@ -278,6 +288,7 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuthReturnsValidAuthToken()
       hmppsServiceReturnsDataForRequest(renderRequest)
       hmppsServiceReturnServiceTemplateError()
+      subjectAccessRequestApi.stubReportServiceError()
 
       sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
         .expectStatus().isEqualTo(500)
@@ -297,6 +308,13 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
       hmppsAuth.verifyGrantTokenIsCalled(1)
       sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled()
       sarDataSourceApi.verifyGetTemplateCalled(times = 3)
+      subjectAccessRequestApi.verifyReportServiceErrorCalled(
+        subjectAccessRequestId = renderRequest.id!!,
+        serviceName = renderRequest.serviceConfiguration.serviceName,
+        failureType = RendererServiceFailureType.TEMPLATE,
+        statusCode = 500,
+        message = "request failed and max retry attempts (${webClientConfiguration.maxRetries}) exhausted, cause=GET http://localhost:${sarDataSourceApi.port()}/subject-access-request/template, status: 500, errorCode=2000, id=${renderRequest.id}, serviceName=${renderRequest.serviceConfiguration.serviceName}, uri=${renderRequest.serviceConfiguration.url}",
+      )
     }
 
     @Test

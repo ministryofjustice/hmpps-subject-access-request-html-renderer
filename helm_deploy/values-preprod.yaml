@@ -16,6 +16,7 @@ generic-service:
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     LOCATIONS_API_URL: "https://locations-inside-prison-api-preprod.hmpps.service.justice.gov.uk"
     NOMIS_MAPPINGS_API_URL: "https://nomis-sync-prisoner-mapping-preprod.hmpps.service.justice.gov.uk"
+    SUBJECT_ACCESS_REQUEST_API_URL: "https://subject-access-request-api-preprod.hmpps.service.justice.gov.uk"
     DEVELOPER_ENDPOINT_ENABLED: false
     WEB_CLIENT_CONFIGURATION_BACK_OFF: "PT1M"
     API_TIMEOUT: "600s"

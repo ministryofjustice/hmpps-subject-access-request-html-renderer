@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType.TEMPLATE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_CONFIGURATION_NOT_FOUND
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_EMPTY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.SERVICE_TEMPLATE_HASH_MISMATCH
@@ -20,6 +21,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Temp
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceCallFailureNotificationService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.security.MessageDigest
 import java.time.LocalDateTime
@@ -31,6 +33,7 @@ class TemplateVersionService(
   val dynamicServicesClient: DynamicServicesClient,
   val templateVersionHealthService: TemplateVersionHealthService,
   val telemetryClient: TelemetryClient,
+  val serviceCallFailureNotificationService: ServiceCallFailureNotificationService,
 ) {
 
   companion object {
@@ -110,7 +113,12 @@ class TemplateVersionService(
 
   private fun getServiceTemplate(
     renderRequest: RenderRequest,
-  ): String = dynamicServicesClient.getServiceTemplate(renderRequest)?.body?.takeIf { it.isNotBlank() }
+  ): String = try {
+    dynamicServicesClient.getServiceTemplate(renderRequest)
+  } catch (ex: SubjectAccessRequestException) {
+    serviceCallFailureNotificationService.notifyServiceCallFailure(renderRequest, TEMPLATE, ex)
+    throw ex
+  }?.body?.takeIf { it.isNotBlank() }
     ?: throw serviceTemplateBlankException(renderRequest = renderRequest)
 
   private fun assertServiceTemplateIsNotEmpty(renderRequest: RenderRequest, serviceTemplate: String) {

@@ -89,11 +89,16 @@ class DynamicServicesClient(
       }
 
       response.statusCode().is4xxClientError -> {
+        val request = response.request()
         Mono.error(
           FatalSubjectAccessRequestException(
             message = "response status: ${response.statusCode().value()} not retryable",
             subjectAccessRequestId = subjectAccessRequestId,
-            params = mapOf("service" to serviceName),
+            params = mapOf(
+              "service" to serviceName,
+              "uri" to request.uri.toString(),
+              "httpStatus" to response.statusCode(),
+            ),
           ),
         )
       }

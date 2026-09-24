@@ -24,6 +24,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Temp
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.TemplateVersionStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.TemplateVersionRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceCallFailureNotificationService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceConfigurationService
 import java.time.LocalDateTime
 import java.util.UUID
@@ -36,6 +37,7 @@ abstract class TemplateVersionServiceTestFixture {
   protected val dynamicServicesClient: DynamicServicesClient = mock()
   protected val templateVersionHealthService: TemplateVersionHealthService = mock()
   protected val telemetryClient: TelemetryClient = mock()
+  protected val serviceCallFailureNotificationService: ServiceCallFailureNotificationService = mock()
 
   protected val v1PublishedBody = "<h1>HMPPS Test Service</h1>"
   protected val v1PublishedHash = "2340d53311fcf9aeaadeb6c90020d5ec77db229b342b0e0d088c7dce30eef24c"
@@ -91,6 +93,7 @@ abstract class TemplateVersionServiceTestFixture {
     templateVersionHealthService = templateVersionHealthService,
     dynamicServicesClient = dynamicServicesClient,
     telemetryClient = telemetryClient,
+    serviceCallFailureNotificationService = serviceCallFailureNotificationService,
   )
 
   protected fun ServiceConfigurationService.mockGetConfigurationById(
