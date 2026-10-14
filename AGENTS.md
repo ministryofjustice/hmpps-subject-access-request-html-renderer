@@ -11,6 +11,7 @@ subject access request document store, applies Handlebars/Mustache templates, an
 
 ## Tech stack
 
+- JAVA 25
 - Kotlin, Spring Boot (webflux + webmvc), built with Gradle (`gradlew`)
 - JVM toolchain 25
 - Flyway migrations, PostgreSQL (runtime) / H2 (tests), Spring Data JPA
@@ -73,3 +74,24 @@ Veracode security scans. Keep changes passing `./gradlew check` before consideri
 - Keep changes scoped and consistent with the HMPPS Kotlin template conventions.
 - Update Flyway migrations additively (new versioned migration files) rather than editing already-applied
   migrations.
+
+## Dependency injection
+
+Prefer constructor injection over field injection in Spring components, including test classes.
+
+- In production code, declare dependencies as constructor parameters (e.g. `private val fooRepository: FooRepository`) rather than using `@Autowired` on a field.
+- In integration test classes, pass `@Autowired` repositories/beans as primary constructor parameters instead of using `@Autowired` on a `lateinit var` field.
+
+## Tests
+
+Prefer `@BeforeAll`/`@AfterAll` over `@BeforeEach`/`@AfterEach` where possible in nested integration test classes.
+
+- Use `@TestInstance(TestInstance.Lifecycle.PER_CLASS)` on the nested test class so that `@BeforeAll`/`@AfterAll` can be non-static (instance) methods.
+- Build shared fixture data once in `@BeforeAll` and clean it up once in `@AfterAll`, rather than rebuilding it before every test, when the fixture is not mutated in a way that would leak between tests.
+- When copying or adapting an integration test, preserve the full nested test structure, including `Security`, `Validation`, and `HappyPath` scenarios for each endpoint.
+- Place each `@AfterAll` method immediately after the corresponding `@BeforeAll` setup method.
+- OAuth2 propagation tests must verify the exact WireMock header value with `equalTo("Bearer ABCDE")`; do not weaken this assertion to a regex or non-empty-header matcher.
+
+## Linting
+
+Do not run `ktlintCheck` (or any ktlint gradle task) in this repository. Skip ktlint validation entirely.
