@@ -34,19 +34,20 @@ subject access request document store, applies Handlebars/Mustache templates, an
 
 Always use the Gradle wrapper (`./gradlew`), not a system-installed Gradle.
 
-- Build and run all checks (what CI runs): `./gradlew assemble check`
+- Build the project: `./gradlew assemble`
 - Run tests only: `./gradlew test`
 - Run a single test class: `./gradlew test --tests "uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.SomeTestClass"`
 - Generate a sample report HTML for manual inspection: `./gradlew generateReport --service=<service-name> [--noData]`
 
 CI (`.github/workflows/pipeline.yml`) runs `./gradlew assemble check`, plus CodeQL, Snyk, OWASP, and
-Veracode security scans. Keep changes passing `./gradlew check` before considering work complete.
+Veracode security scans. Do not run `check` locally because it includes ktlint validation; use
+`assemble` and the relevant tests for local verification.
 
 ## Coding conventions
 
 - Follow existing Kotlin style in the codebase; formatting/lint rules come from the
-  `uk.gov.justice.hmpps.gradle-spring-boot` plugin (ktlint under the hood) — run `./gradlew check` to catch
-  violations rather than hand-formatting.
+  `uk.gov.justice.hmpps.gradle-spring-boot` plugin (ktlint under the hood). Do not run Gradle ktlint
+  tasks, including `ktlintFormat` and `ktlintCheck`; preserve existing style when making changes.
 - Mirror the existing package structure: new main classes go in the matching
   `src/main/kotlin/.../subjectaccessrequesthtmlrenderer/<package>` folder, and tests go in the equivalent
   `src/test/kotlin/...` package.
@@ -59,7 +60,8 @@ Veracode security scans. Keep changes passing `./gradlew check` before consideri
   (`src/test/kotlin/.../integration/wiremock`) and reference HTML fixtures
   (`src/test/resources/integration-tests/reference-html-stubs`) — update these fixtures when template
   output intentionally changes.
-- Run `./gradlew test` (or `./gradlew check`) after changes and before declaring work complete.
+- Run `./gradlew test` after changes and before declaring work complete. Do not run `./gradlew check`
+  because it includes ktlint validation.
 
 ## Security and secrets
 
@@ -94,4 +96,5 @@ Prefer `@BeforeAll`/`@AfterAll` over `@BeforeEach`/`@AfterEach` where possible i
 
 ## Linting
 
-Do not run `ktlintCheck` (or any ktlint gradle task) in this repository. Skip ktlint validation entirely.
+Do not run any Gradle ktlint task in this repository, including `ktlintFormat` and `ktlintCheck`.
+Skip ktlint formatting and validation entirely.
