@@ -18,7 +18,3 @@ generic-service:
     API_TIMEOUT: "600s"
     TEMPLATE_HELPER_CACHE_MAXIMUM_SIZE: 50000
     TEMPLATE_HELPER_CACHE_EXPIRE_AFTER_MINUTES: 50
-
-# CloudPlatform AlertManager receiver to route prometheus alerts to slack
-# See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
-generic-prometheus-alerts:
