@@ -36,6 +36,8 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.NomisMappingsApiExtension.Companion.nomisMappingsApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SarDataSourceApiExtension.Companion.sarDataSourceApi
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SubjectAccessRequestApiExtension
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration.wiremock.SubjectAccessRequestApiExtension.Companion.subjectAccessRequestApi
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -49,6 +51,7 @@ import java.util.UUID
   SarDataSourceApiExtension::class,
   LocationsApiExtension::class,
   NomisMappingsApiExtension::class,
+  SubjectAccessRequestApiExtension::class,
   MockitoExtension::class,
 )
 @SpringBootTest(webEnvironment = RANDOM_PORT)
@@ -110,6 +113,7 @@ abstract class IntegrationTestBase {
     locationsApi.stubHealthPing(status)
     nomisMappingsApi.stubHealthPing(status)
     sarDataSourceApi.stubHealthPing(status)
+    subjectAccessRequestApi.stubHealthPing(status)
   }
 
   protected fun clearAuthorizedClientsCache(clientId: String, principalName: String) = oAuth2AuthorizedClientService

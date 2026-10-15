@@ -14,6 +14,8 @@ class WebClientConfiguration(
   @param:Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
   @param:Value("\${locations-api.url}") val locationsApiBaseUri: String,
   @param:Value("\${nomis-mappings-api.url}") val nomisMappingsApiBaseUri: String,
+  @param:Value("\${subject-access-request-api.url}") val subjectAccessRequestApiBaseUri: String,
+  @param:Value("\${subject-access-request-api.notification-timeout:2s}") val subjectAccessRequestApiNotificationTimeout: Duration,
   @param:Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
   @param:Value("\${api.timeout:20s}") val timeout: Duration,
   @param:Value("\${web-client.configuration.max-retries:0}") val maxRetries: Long,
@@ -50,6 +52,14 @@ class WebClientConfiguration(
 
   @Bean
   fun nomisMappingsApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient = builder.authorisedWebClient(authorizedClientManager, registrationId = "sar-html-renderer-client", url = nomisMappingsApiBaseUri, timeout)
+
+  @Bean
+  fun subjectAccessRequestApiNotificationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager, builder: WebClient.Builder): WebClient = builder.authorisedWebClient(
+    authorizedClientManager,
+    registrationId = "sar-html-renderer-client",
+    url = subjectAccessRequestApiBaseUri,
+    timeout = subjectAccessRequestApiNotificationTimeout,
+  )
 
   private var backOffDuration: Duration = Duration.parse(backOff)
 

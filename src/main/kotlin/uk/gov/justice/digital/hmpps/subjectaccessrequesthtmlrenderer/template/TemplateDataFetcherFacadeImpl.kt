@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 
-@Service
+@Service("templateDataFetcherFacadeImpl")
 class TemplateDataFetcherFacadeImpl(
   private val prisonDetailsRepository: PrisonDetailsRepository,
   private val userDetailsRepository: UserDetailsRepository,
@@ -25,7 +25,7 @@ class TemplateDataFetcherFacadeImpl(
     .findByPrisonId(prisonId)?.prisonName
 
   override fun findUserLastNameByUsername(userId: String): String? = userDetailsRepository
-    .findByUsername(userId)?.lastName
+    .findFirstByUsernameIgnoreCaseOrderByUsernameAsc(userId)?.lastName
 
   override fun findLocationNameByNomisId(nomisId: Int): String? = locationDetailsRepository.findByNomisId(nomisId)?.name
     ?: nomisMappingApiClient.getNomisLocationMapping(nomisId)?.let { findLocationNameByDpsId(it.dpsLocationId) }

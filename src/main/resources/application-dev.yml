@@ -5,6 +5,9 @@ locations-api:
   url: http://localhost:8085
 nomis-mappings-api:
   url: http://localhost:8086
+subject-access-request-api:
+  url: http://localhost:8092
+  notification-timeout: 2s
 
 spring:
   datasource:

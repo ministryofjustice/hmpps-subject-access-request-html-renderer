@@ -90,6 +90,13 @@ web-client:
 
 api:
   timeout: 60s
+subject-access-request-api:
+  url: ${SUBJECT_ACCESS_REQUEST_API_URL}
+  notification-timeout: 2s
+
+template-helper-cache:
+  maximum-size: 50000
+  expire-after-minutes: 10
 
 template-resources:
   directory: /templates
@@ -115,4 +122,3 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
-    version: 5.32.11
