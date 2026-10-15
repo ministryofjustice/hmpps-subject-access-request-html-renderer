@@ -11,6 +11,7 @@ subject access request document store, applies Handlebars/Mustache templates, an
 
 ## Tech stack
 
+- JAVA 25
 - Kotlin, Spring Boot (webflux + webmvc), built with Gradle (`gradlew`)
 - JVM toolchain 25
 - Flyway migrations, PostgreSQL (runtime) / H2 (tests), Spring Data JPA
@@ -33,19 +34,20 @@ subject access request document store, applies Handlebars/Mustache templates, an
 
 Always use the Gradle wrapper (`./gradlew`), not a system-installed Gradle.
 
-- Build and run all checks (what CI runs): `./gradlew assemble check`
+- Build the project: `./gradlew assemble`
 - Run tests only: `./gradlew test`
 - Run a single test class: `./gradlew test --tests "uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.SomeTestClass"`
 - Generate a sample report HTML for manual inspection: `./gradlew generateReport --service=<service-name> [--noData]`
 
 CI (`.github/workflows/pipeline.yml`) runs `./gradlew assemble check`, plus CodeQL, Snyk, OWASP, and
-Veracode security scans. Keep changes passing `./gradlew check` before considering work complete.
+Veracode security scans. Do not run `check` locally because it includes ktlint validation; use
+`assemble` and the relevant tests for local verification.
 
 ## Coding conventions
 
 - Follow existing Kotlin style in the codebase; formatting/lint rules come from the
-  `uk.gov.justice.hmpps.gradle-spring-boot` plugin (ktlint under the hood) — run `./gradlew check` to catch
-  violations rather than hand-formatting.
+  `uk.gov.justice.hmpps.gradle-spring-boot` plugin (ktlint under the hood). Do not run Gradle ktlint
+  tasks, including `ktlintFormat` and `ktlintCheck`; preserve existing style when making changes.
 - Mirror the existing package structure: new main classes go in the matching
   `src/main/kotlin/.../subjectaccessrequesthtmlrenderer/<package>` folder, and tests go in the equivalent
   `src/test/kotlin/...` package.
@@ -58,7 +60,8 @@ Veracode security scans. Keep changes passing `./gradlew check` before consideri
   (`src/test/kotlin/.../integration/wiremock`) and reference HTML fixtures
   (`src/test/resources/integration-tests/reference-html-stubs`) — update these fixtures when template
   output intentionally changes.
-- Run `./gradlew test` (or `./gradlew check`) after changes and before declaring work complete.
+- Run `./gradlew test` after changes and before declaring work complete. Do not run `./gradlew check`
+  because it includes ktlint validation.
 
 ## Security and secrets
 
@@ -73,3 +76,25 @@ Veracode security scans. Keep changes passing `./gradlew check` before consideri
 - Keep changes scoped and consistent with the HMPPS Kotlin template conventions.
 - Update Flyway migrations additively (new versioned migration files) rather than editing already-applied
   migrations.
+
+## Dependency injection
+
+Prefer constructor injection over field injection in Spring components, including test classes.
+
+- In production code, declare dependencies as constructor parameters (e.g. `private val fooRepository: FooRepository`) rather than using `@Autowired` on a field.
+- In integration test classes, pass `@Autowired` repositories/beans as primary constructor parameters instead of using `@Autowired` on a `lateinit var` field.
+
+## Tests
+
+Prefer `@BeforeAll`/`@AfterAll` over `@BeforeEach`/`@AfterEach` where possible in nested integration test classes.
+
+- Use `@TestInstance(TestInstance.Lifecycle.PER_CLASS)` on the nested test class so that `@BeforeAll`/`@AfterAll` can be non-static (instance) methods.
+- Build shared fixture data once in `@BeforeAll` and clean it up once in `@AfterAll`, rather than rebuilding it before every test, when the fixture is not mutated in a way that would leak between tests.
+- When copying or adapting an integration test, preserve the full nested test structure, including `Security`, `Validation`, and `HappyPath` scenarios for each endpoint.
+- Place each `@AfterAll` method immediately after the corresponding `@BeforeAll` setup method.
+- OAuth2 propagation tests must verify the exact WireMock header value with `equalTo("Bearer ABCDE")`; do not weaken this assertion to a regex or non-empty-header matcher.
+
+## Linting
+
+Do not run any Gradle ktlint task in this repository, including `ktlintFormat` and `ktlintCheck`.
+Skip ktlint formatting and validation entirely.

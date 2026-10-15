@@ -1,6 +1,6 @@
 plugins {
 
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
   kotlin("plugin.spring") version "2.4.20"
 }
 
@@ -12,7 +12,7 @@ configurations {
 ext["kotlin-coroutines.version"] = "1.11.0"
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
@@ -23,20 +23,20 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-jackson2")
   implementation("com.github.jknack:handlebars:4.5.5")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.9.7")
+  implementation("aws.sdk.kotlin:s3:1.9.19")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.66.0")
+  implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.67.0")
   implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.4")
-  implementation("com.github.ben-manes.caffeine:caffeine:3.3.0")
+  implementation("com.github.ben-manes.caffeine:caffeine:3.3.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
-  runtimeOnly("com.h2database:h2:2.5.250")
-  runtimeOnly("org.postgresql:postgresql:42.7.13")
+  runtimeOnly("com.h2database:h2:2.5.252")
+  runtimeOnly("org.postgresql:postgresql:42.7.14")
   runtimeOnly("org.flywaydb:flyway-database-postgresql")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.2")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webclient-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
