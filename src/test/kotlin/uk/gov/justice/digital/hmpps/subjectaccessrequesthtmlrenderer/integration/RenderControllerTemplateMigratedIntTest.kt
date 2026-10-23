@@ -1,6 +1,9 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
+import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -110,6 +113,48 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
 
   @Nested
   inner class Success {
+
+    @Test
+    fun `should request OMIC filtered data and store rendered HTML for OMIC case notes`() {
+      val omicServiceConfiguration = serviceConfigurationRepository.saveAndFlush(
+        testServiceConfiguration.copy(
+          serviceName = "offender-case-notes-omic",
+          label = "Case notes - OMIC",
+        ),
+      )
+      templateVersionRepository.save(
+        templateVersion1Published.copy(serviceConfiguration = omicServiceConfiguration),
+      )
+      val renderRequestEntity = newRenderRequestFor(omicServiceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, omicServiceConfiguration)
+
+      assertServiceHtmlDocumentDoesNotAlreadyExist(renderRequest)
+      hmppsAuthReturnsValidAuthToken()
+      sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(
+        responseDefinition = ResponseDefinitionBuilder()
+          .withStatus(200)
+          .withHeader("Content-Type", "application/json")
+          .withBody(getResourceAsString(sarDataJsonFilePath)),
+        expectedQueryParams = mapOf("filter" to equalTo("omic")),
+      )
+      hmppsServiceReturnServiceTemplate(getResourceAsString(templateV1Path))
+      hmppsServiceReturnsAttachmentForRequest("small.jpg", "image/jpeg")
+
+      val response = sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+
+      assertRenderTemplateSuccessResponse(response, renderRequest, templateVersion1Published.version.toString())
+      sarDataSourceApi.verify(
+        1,
+        getRequestedFor(urlPathEqualTo("/subject-access-request"))
+          .withQueryParam("filter", equalTo("omic"))
+          .withQueryParam("prn", equalTo(renderRequest.nomisId))
+          .withQueryParam("fromDate", equalTo(renderRequest.dateFrom.toString()))
+          .withQueryParam("toDate", equalTo(renderRequest.dateTo.toString())),
+      )
+      sarDataSourceApi.verifyGetTemplateCalled()
+      assertUploadedHtmlMatchesExpected(renderRequest, getExpectedHtmlString("hmpps-test-service-migrated-template-v1"))
+      assertStoredTemplateVersionMatchesExpected(renderRequest, "v1")
+    }
 
     @Test
     fun `should generate expected HTML for service with template migrated true`() {

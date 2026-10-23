@@ -81,6 +81,44 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
   @Nested
   inner class OptionalQueryParametersTest {
 
+    @ParameterizedTest
+    @CsvSource(
+      "offender-case-notes-omic, Case notes - OMIC, true",
+      "OFFENDER-CASE-NOTES-OMIC, case notes - omic, true",
+      "' offender-case-notes-omic ', ' Case notes - OMIC ', true",
+      "' OFFENDER-CASE-NOTES-OMIC ', ' case notes - omic ', true",
+      "offender-case-notes-omic, Case notes, false",
+      "offender-case-notes, Case notes - OMIC, false",
+      "offender-case-notes, Case notes, false",
+    )
+    fun `should only send omic filter when service name and label match`(
+      serviceName: String,
+      serviceLabel: String,
+      expectOmicFilter: Boolean,
+    ) {
+      val request = createRenderRequest(serviceName = serviceName, serviceLabel = serviceLabel)
+
+      hmppsAuth.stubGrantToken()
+      sarDataSourceApi.stubGetSubjectAccessRequestDataSuccess(successResponse, request.expectedQueryParameters())
+
+      val body = dynamicServicesClient.getSubjectAccessRequestData(request)
+      assertThat(body).isNotNull
+
+      val expectedRequest = getRequestedFor(urlPathEqualTo("/subject-access-request"))
+        .withQueryParam("prn", equalTo(NOMIS_ID))
+        .withQueryParam("crn", equalTo(NDELIUS_ID))
+        .withQueryParam("fromDate", equalTo(DATE_FROM.sarFormat()))
+        .withQueryParam("toDate", equalTo(DATE_TO.sarFormat()))
+
+      if (expectOmicFilter) {
+        expectedRequest.withQueryParam("filter", equalTo("omic"))
+      } else {
+        expectedRequest.withoutQueryParam("filter")
+      }
+
+      sarDataSourceApi.verify(1, expectedRequest)
+    }
+
     @Test
     fun `should not send Nomis ID when value is null`() {
       val request = createRenderRequest(nomisId = null)
@@ -498,6 +536,8 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
     ndeliusId: String? = NDELIUS_ID,
     dateFrom: LocalDate? = DATE_FROM,
     dateTo: LocalDate? = DATE_TO,
+    serviceName: String = "A-Service",
+    serviceLabel: String = "service-a",
   ) = RenderRequest(
     id = UUID.randomUUID(),
     nomisId = nomisId,
@@ -505,9 +545,9 @@ class DynamicServicesClientIntTest : BaseClientIntTest() {
     dateFrom = dateFrom,
     dateTo = dateTo,
     serviceConfiguration = serviceConfiguration(
-      serviceName = "A-Service",
+      serviceName = serviceName,
       url = "http://localhost:8092",
-      serviceLabel = "service-a",
+      serviceLabel = serviceLabel,
     ),
   )
 }
