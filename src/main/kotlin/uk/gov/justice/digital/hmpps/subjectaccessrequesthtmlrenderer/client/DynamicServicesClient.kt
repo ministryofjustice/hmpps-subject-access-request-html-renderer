@@ -43,6 +43,10 @@ class DynamicServicesClient(
 ) {
 
   private companion object {
+    private const val OMIC_SERVICE_NAME = "offender-case-notes-omic"
+    private const val OMIC_SERVICE_LABEL = "Case notes - OMIC"
+    private const val FILTER_QUERY_PARAM = "filter"
+    private const val OMIC_FILTER = "omic"
     private val log = LoggerFactory.getLogger(DynamicServicesClient::class.java)
   }
 
@@ -62,6 +66,14 @@ class DynamicServicesClient(
         .queryParamIfPresent("crn", Optional.ofNullable(renderRequest.ndeliusId))
         .queryParamIfPresent("fromDate", Optional.ofNullable(renderRequest.dateFrom))
         .queryParamIfPresent("toDate", Optional.ofNullable(renderRequest.dateTo))
+        .apply {
+          if (
+            renderRequest.serviceConfiguration.serviceName.trim().equals(OMIC_SERVICE_NAME, ignoreCase = true) &&
+            renderRequest.serviceConfiguration.label.trim().equals(OMIC_SERVICE_LABEL, ignoreCase = true)
+          ) {
+            queryParam(FILTER_QUERY_PARAM, OMIC_FILTER)
+          }
+        }
         .build()
     }
     .exchangeToMono(processGetDataResponse(renderRequest.id, renderRequest.serviceConfiguration.serviceName))
