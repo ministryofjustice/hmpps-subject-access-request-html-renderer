@@ -21,14 +21,14 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.4")
   implementation("org.springframework.boot:spring-boot-starter-mustache")
   implementation("org.springframework.boot:spring-boot-jackson2")
-  implementation("com.github.jknack:handlebars:4.5.7")
+  implementation("com.github.jknack:handlebars:4.5.8")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("aws.sdk.kotlin:s3:1.9.25")
+  implementation("aws.sdk.kotlin:s3:1.9.27")
 
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.67.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.5")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.6")
   implementation("com.github.ben-manes.caffeine:caffeine:3.3.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
