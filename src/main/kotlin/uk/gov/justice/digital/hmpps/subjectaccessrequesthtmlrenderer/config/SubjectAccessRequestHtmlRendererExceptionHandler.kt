@@ -33,8 +33,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
         developerMessage = e.message,
       ),
     ).also {
+      log.error("Validation exception: {}", e.message)
       telemetryClient.trackRenderException(e, BAD_REQUEST)
-      log.info("Validation exception: {}", e.message)
     }
 
   @ExceptionHandler(NoResourceFoundException::class)
@@ -47,8 +47,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
         developerMessage = e.message,
       ),
     ).also {
+      log.error("No resource found exception: {}", e.message)
       telemetryClient.trackRenderException(e, NOT_FOUND)
-      log.info("No resource found exception: {}", e.message)
     }
 
   @ExceptionHandler(AccessDeniedException::class)
@@ -61,8 +61,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
         developerMessage = e.message,
       ),
     ).also {
+      log.error("Forbidden (403) returned: {}", e.message)
       telemetryClient.trackRenderException(e, FORBIDDEN)
-      log.debug("Forbidden (403) returned: {}", e.message)
     }
 
   @ExceptionHandler(Exception::class)
@@ -75,8 +75,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
         developerMessage = e.message,
       ),
     ).also {
-      telemetryClient.trackRenderException(e, INTERNAL_SERVER_ERROR)
       log.error("Unexpected exception", e)
+      telemetryClient.trackRenderException(e, INTERNAL_SERVER_ERROR)
     }
 
   @ExceptionHandler(SubjectAccessRequestException::class)
@@ -93,8 +93,8 @@ class SubjectAccessRequestHtmlRendererExceptionHandler(
           errorCode = e.errorCode.codeString(),
         ),
       ).also {
-        telemetryClient.trackRenderException(e, status)
         log.error("Unexpected exception", e)
+        telemetryClient.trackRenderException(e, status)
       }
   }
 

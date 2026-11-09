@@ -4,6 +4,7 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
@@ -30,20 +31,29 @@ class TemplateRenderingService(
     )
 
     val renderParameters = templateService.getRenderParameters(renderRequest, data)
-    val outputStream =
-      templateRenderService.renderServiceTemplate(renderParameters, renderRequest.toRenderRequestInfo()).also {
-        telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
-        log.info(
-          "completed html render for id={}, service={}",
-          renderRequest.serviceNameMap(),
-          renderRequest.serviceConfiguration.serviceName,
-        )
-      }
 
-    return RenderedHtml(
-      data = outputStream,
-      templateVersion = renderParameters.templateVersion,
-    )
+    try {
+      val outputStream = templateRenderService.renderServiceTemplate(
+        params = renderParameters,
+        renderRequestInfo = renderRequest.toRenderRequestInfo(),
+      )
+
+      telemetryClient.renderEvent(RENDER_TEMPLATE_COMPLETED, renderRequest)
+      log.info(
+        "completed html render for id={}, service={}",
+        renderRequest.serviceNameMap(),
+        renderRequest.serviceConfiguration.serviceName,
+      )
+
+      return RenderedHtml(
+        data = outputStream,
+        templateVersion = renderParameters.templateVersion,
+      )
+    } catch (e: Exception) {
+      log.error("failed to render template for subject access request {}", renderRequest.id, e)
+      telemetryClient.renderEvent(RenderEvent.RENDER_TEMPLATE_ERROR, renderRequest)
+      throw e
+    }
   }
 
   fun RenderRequest.serviceNameMap() = mapOf("serviceLabel" to this.serviceConfiguration.label)
