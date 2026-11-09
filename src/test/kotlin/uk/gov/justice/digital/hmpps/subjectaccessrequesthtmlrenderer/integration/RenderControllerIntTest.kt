@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.Rend
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.GET_SERVICE_DATA_RETRY
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_ERROR
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_COMPLETE
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.REQUEST_ERRORED
@@ -800,6 +801,7 @@ class RenderControllerIntTest : IntegrationTestBase() {
         ExpectedTelemetryEvent(RENDER_TEMPLATE_STARTED, eventProperties(renderRequest)),
         ExpectedTelemetryEvent(GET_ATTACHMENT_RETRY, getAttachmentRetryEventProperties(renderRequest, "small.jpg", 0)),
         ExpectedTelemetryEvent(GET_ATTACHMENT_RETRY, getAttachmentRetryEventProperties(renderRequest, "small.jpg", 1)),
+        ExpectedTelemetryEvent(RENDER_TEMPLATE_ERROR, eventProperties(renderRequest)),
         ExpectedTelemetryEvent(REQUEST_ERRORED, mapOf("id" to renderRequest.id.toString())),
       )
 
