@@ -4,8 +4,8 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_COMPLETED
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_ERROR
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.RenderEvent.RENDER_TEMPLATE_STARTED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.renderEvent
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -51,7 +51,7 @@ class TemplateRenderingService(
       )
     } catch (e: Exception) {
       log.error("failed to render template for subject access request {}", renderRequest.id, e)
-      telemetryClient.renderEvent(RenderEvent.RENDER_TEMPLATE_ERROR, renderRequest)
+      telemetryClient.renderEvent(RENDER_TEMPLATE_ERROR, renderRequest, e)
       throw e
     }
   }

@@ -53,6 +53,25 @@ fun TelemetryClient.renderEvent(
   )
 }
 
+fun TelemetryClient.renderEvent(
+  event: RenderEvent,
+  request: RenderRequest? = null,
+  ex: Exception,
+  vararg kvPairs: Pair<String, String> = emptyArray(),
+) {
+  this.trackEvent(
+    event.name,
+    mapOf(
+      "id" to request?.id.toString(),
+      "serviceName" to request?.serviceConfiguration?.serviceName,
+      "errorMessage" to ex.message,
+      "stackTrace" to ex.stackTraceToString(),
+      *kvPairs,
+    ),
+    null,
+  )
+}
+
 enum class RenderEvent {
   REQUEST_RECEIVED,
   REQUEST_COMPLETE,
