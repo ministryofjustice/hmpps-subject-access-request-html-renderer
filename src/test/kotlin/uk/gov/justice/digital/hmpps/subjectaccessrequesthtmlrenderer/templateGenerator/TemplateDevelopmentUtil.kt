@@ -6,9 +6,10 @@ import com.microsoft.applicationinsights.TelemetryClient
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.FileBasedTemplateRenderService
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
-import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
@@ -16,7 +17,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.Te
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionHealthService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
-import java.io.ByteArrayOutputStream
 import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,7 +48,7 @@ class TemplateGeneratorUtil {
 
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade, jacksonObjectMapper())
 
-  private val templateRenderService: TemplateRenderService = TemplateRenderService(templateHelpers)
+  private val templateRenderService: FileBasedTemplateRenderService = FileBasedTemplateRenderService(templateHelpers)
 
   private val templateRenderingService: TemplateRenderingService =
     TemplateRenderingService(templateRenderService, templateService, telemetryClient)
@@ -75,31 +75,33 @@ class TemplateGeneratorUtil {
         category = ServiceCategory.PRISON,
       )
       val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceConfiguration = serviceConfiguration)
-      val output = renderHtml(renderRequest, isNullData).use { os -> writeToFile(serviceName, os) }
+      TempFile(Files.createTempFile("report", ".html")).use { tempFile ->
+        renderHtml(renderRequest, isNullData, tempFile)
+        val output = getOutputFile(serviceName)
+        Files.copy(tempFile.path, output)
 
-      println()
-      log("Successfully generated HTML for service $serviceName:")
-      log("file:///$output\n")
+        println()
+        log("Successfully generated HTML for service $serviceName:")
+        log("file:///$output\n")
+      }
     } catch (e: Exception) {
       log("failed to render template for service $serviceName, ${e.message}")
       throw e
     }
   }
 
-  private fun writeToFile(serviceName: String, os: ByteArrayOutputStream): Path {
-    val output = getOutputFile(serviceName)
-    Files.write(output, os.toByteArray())
-    return output
-  }
-
-  private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean): ByteArrayOutputStream {
+  private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean, tempFile: TempFile) {
     val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
 
-    return templateRenderingService.renderServiceDataHtml(
+    templateRenderingService.renderServiceDataHtml(
       renderRequest = renderRequest,
       data = data,
-    ).data
-      ?: throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
+      renderOutputFile = tempFile,
+    )
+
+    tempFile.getContentAsString().ifEmpty {
+      throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
+    }
   }
 
   private fun getServiceResponseStubData(serviceName: String): Any? {

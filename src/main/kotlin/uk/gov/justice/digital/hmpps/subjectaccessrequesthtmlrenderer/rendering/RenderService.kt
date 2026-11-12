@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
@@ -26,8 +27,9 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.documentsto
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.ServiceCallFailureNotificationService
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.TempFileService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionInfo
 import java.util.UUID
 
 @Service
@@ -37,6 +39,7 @@ class RenderService(
   private val templateRenderingService: TemplateRenderingService,
   private val telemetryClient: TelemetryClient,
   private val serviceCallFailureNotificationService: ServiceCallFailureNotificationService,
+  private val tempFileService: TempFileService,
 ) {
 
   companion object {
@@ -52,11 +55,20 @@ class RenderService(
     )
 
     val (content, attachments) = getContentAndAttachmentsFromJsonData(renderRequest)
-    val renderedHtml = renderServiceDataHtml(renderRequest, content)
-    storeRenderedHtml(renderRequest, renderedHtml)
+
+    val templateVersion = tempFileService.createTempFile(renderRequest).use { renderOutputFile ->
+      val templateVersionInfo = templateRenderingService.renderServiceDataHtml(
+        renderRequest = renderRequest,
+        renderOutputFile = renderOutputFile,
+        data = content,
+      )
+
+      storeRenderedHtml(renderRequest, renderOutputFile, templateVersionInfo)
+      templateVersionInfo
+    }
 
     attachments?.forEach { attachment -> getAndStoreAttachment(renderRequest, attachment) }
-    return renderedHtml.templateVersion
+    return templateVersion.version
   }
 
   suspend fun getRenderedHtml(documentKey: String): ByteArray? = documentStore.getByDocumentKey(documentKey)
@@ -105,11 +117,6 @@ class RenderService(
       )
     }
   }
-
-  private fun renderServiceDataHtml(
-    renderRequest: RenderRequest,
-    content: Any?,
-  ): RenderedHtml = templateRenderingService.renderServiceDataHtml(renderRequest, content)
 
   private suspend fun getAndStoreAttachment(renderRequest: RenderRequest, attachment: Attachment) {
     val documentAttachmentKey = renderRequest.documentAttachmentKey(attachment.attachmentNumber, attachment.filename)
@@ -181,16 +188,17 @@ class RenderService(
 
   private suspend fun storeRenderedHtml(
     renderRequest: RenderRequest,
-    renderedHtml: RenderedHtml,
+    renderedHtml: TempFile,
+    templateVersionInfo: TemplateVersionInfo,
   ) {
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_STARTED, renderRequest)
     log.info(
-      "stored rendered html document for id={}, service={}",
+      "storing rendered html document for id={}, service={}",
       renderRequest.id,
       renderRequest.serviceConfiguration.serviceName,
     )
 
-    documentStore.addHtml(renderRequest, renderedHtml)
+    documentStore.addHtml(renderRequest, renderedHtml, templateVersionInfo)
 
     telemetryClient.renderEvent(RenderEvent.STORE_RENDERED_HTML_COMPLETED, renderRequest)
     log.info(
