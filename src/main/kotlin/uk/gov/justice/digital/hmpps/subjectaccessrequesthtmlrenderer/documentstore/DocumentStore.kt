@@ -8,7 +8,7 @@ import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
-import aws.smithy.kotlin.runtime.content.fromInputStream
+import aws.smithy.kotlin.runtime.content.fromFile
 import aws.smithy.kotlin.runtime.content.toByteArray
 import aws.smithy.kotlin.runtime.time.toJvmInstant
 import org.apache.commons.lang3.StringUtils
@@ -59,13 +59,11 @@ class DocumentStore(
     templateVersionInfo: TemplateVersionInfo,
   ) {
     try {
-      renderedHtml.getInputStream().use { stream ->
-        s3.putObject {
-          bucket = s3Properties.bucketName
-          key = renderRequest.documentHtmlKey()
-          body = ByteStream.fromInputStream(stream)
-          metadata = mapOf("template_version" to templateVersionInfo.formattedVersion())
-        }
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = renderRequest.documentHtmlKey()
+        body = ByteStream.fromFile(renderedHtml.path.toFile())
+        metadata = mapOf("template_version" to templateVersionInfo.formattedVersion())
       }
       log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
     } catch (ex: Exception) {

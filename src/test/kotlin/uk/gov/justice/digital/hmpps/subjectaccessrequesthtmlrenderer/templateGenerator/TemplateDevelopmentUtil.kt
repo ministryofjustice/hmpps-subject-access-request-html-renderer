@@ -7,12 +7,12 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.FileBasedTemplateRenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceCategory
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderWorkspace
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateRenderingService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionHealthService
@@ -22,7 +22,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.UUID
+import kotlin.io.deleteRecursively
 import kotlin.io.path.notExists
+import kotlin.io.println
+import kotlin.use
 
 /**
  * Developer util class to aid template development/testing.
@@ -32,7 +35,12 @@ fun main(args: Array<String>?) {
     throw IllegalArgumentException("serviceName argument required")
   }
 
-  TemplateGeneratorUtil().generateServiceHtml(args[0], args[1].toBoolean())
+  val workspaceDir = Files.createTempDirectory("render-workspace-")
+  try {
+    TemplateGeneratorUtil().generateServiceHtml(workspaceDir, args[0], args[1].toBoolean())
+  } finally {
+    workspaceDir.toFile().deleteRecursively()
+  }
 }
 
 class TemplateGeneratorUtil {
@@ -60,7 +68,7 @@ class TemplateGeneratorUtil {
     whenever(templateDataFetcherFacade.findLocationNameByDpsId(any())).thenReturn("Hogwarts")
   }
 
-  fun generateServiceHtml(serviceName: String, isNullData: Boolean) {
+  fun generateServiceHtml(workspaceRoot: Path, serviceName: String, isNullData: Boolean) {
     println()
     log("Rendering templates for $serviceName")
 
@@ -75,10 +83,10 @@ class TemplateGeneratorUtil {
         category = ServiceCategory.PRISON,
       )
       val renderRequest = RenderRequest(id = UUID.randomUUID(), serviceConfiguration = serviceConfiguration)
-      TempFile(Files.createTempFile("report", ".html")).use { tempFile ->
-        renderHtml(renderRequest, isNullData, tempFile)
+      RenderWorkspace(workspaceRoot, renderRequest).use { workspace ->
+        renderHtml(renderRequest, isNullData, workspace)
         val output = getOutputFile(serviceName)
-        Files.copy(tempFile.path, output)
+        Files.copy(workspace.outputFile.path, output)
 
         println()
         log("Successfully generated HTML for service $serviceName:")
@@ -90,16 +98,15 @@ class TemplateGeneratorUtil {
     }
   }
 
-  private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean, tempFile: TempFile) {
+  private fun renderHtml(renderRequest: RenderRequest, isNullData: Boolean, workspace: RenderWorkspace) {
     val data = if (isNullData) null else getServiceResponseStubData(renderRequest.serviceConfiguration.serviceName)
-
     templateRenderingService.renderServiceDataHtml(
       renderRequest = renderRequest,
       data = data,
-      renderOutputFile = tempFile,
+      workspace,
     )
 
-    tempFile.getContentAsString().ifEmpty {
+    workspace.outputFile.getContentAsString().ifEmpty {
       throw renderedTemplateNullException(renderRequest.serviceConfiguration.serviceName)
     }
   }

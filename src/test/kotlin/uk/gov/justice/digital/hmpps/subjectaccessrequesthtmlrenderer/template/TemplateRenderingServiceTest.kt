@@ -12,7 +12,6 @@ import org.junit.jupiter.params.provider.MethodSource
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.FileBasedTemplateRenderService
-import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
@@ -27,7 +26,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.LocationDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
-import java.nio.file.Files
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.RenderWorkspace
 import java.nio.file.Path
 
 class TemplateRenderingServiceTest {
@@ -54,6 +53,16 @@ class TemplateRenderingServiceTest {
     nomisMappingApiClient,
     dynamicServicesClient,
   )
+  private val renderRequest = RenderRequest(
+    serviceConfiguration = ServiceConfiguration(
+      serviceName = "hmpps-test-service",
+      label = "Test Service",
+      url = "",
+      enabled = true,
+      templateMigrated = false,
+      category = ServiceCategory.PRISON,
+    ),
+  )
   private val templateHelpers = TemplateHelpers(templateDataFetcherFacade, jacksonObjectMapper())
   private val templateRenderService = FileBasedTemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
@@ -66,9 +75,15 @@ class TemplateRenderingServiceTest {
     telemetryClient,
   )
 
-  private fun getTempFile(): TempFile = TempFile(Files.createTempFile(baseDir, "report", ".html"))
+  private fun createRenderWorkspace(
+    renderRequest: RenderRequest,
+  ): RenderWorkspace = RenderWorkspace(baseDir, renderRequest)
 
-  private fun renderServiceDataHtml(serviceName: String, data: Any?, renderOutputFile: TempFile): TemplateVersionInfo {
+  private fun renderServiceDataHtml(
+    serviceName: String,
+    data: Any?,
+    renderWorkspace: RenderWorkspace,
+  ): TemplateVersionInfo {
     val actual = templateRenderingService.renderServiceDataHtml(
       RenderRequest(
         serviceConfiguration = ServiceConfiguration(
@@ -81,7 +96,7 @@ class TemplateRenderingServiceTest {
         ),
       ),
       data,
-      renderOutputFile,
+      renderWorkspace,
     )
     assertThat(actual).isNotNull()
     return actual
@@ -89,14 +104,13 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a style template given a service template`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { renderOutputFile ->
       val actual = renderServiceDataHtml("test-service", testServiceTemplateData, renderOutputFile)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
 
-      renderOutputFile.getContentAsString()
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = renderOutputFile.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).isNotEmpty()
       assertThat(renderedTemplate).contains("<style>")
@@ -112,12 +126,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a keyworker template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("keyworker-api", testKeyworkerServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { renderWorkspace ->
+      val actual = renderServiceDataHtml("keyworker-api", testKeyworkerServiceData, renderWorkspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = renderWorkspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -128,13 +142,13 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given an activities template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-activities-management-api", testActivitiesServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-activities-management-api", testActivitiesServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
 
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -155,11 +169,11 @@ class TemplateRenderingServiceTest {
       ),
     )
 
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-incentives-api", testIncentivesServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-incentives-api", testIncentivesServiceData, workspace)
 
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -170,12 +184,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given an adjudications template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-manage-adjudications-api", testAdjudicationsServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-manage-adjudications-api", testAdjudicationsServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -198,12 +212,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a home detentions curfew template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-hdc-api", testHDCServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-hdc-api", testHDCServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -229,10 +243,10 @@ class TemplateRenderingServiceTest {
       ),
     )
 
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-uof-data-api", testUseOfForceServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-uof-data-api", testUseOfForceServiceData, workspace)
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).isNotNull()
       assertThat(renderedTemplate).contains("<style>")
@@ -246,16 +260,16 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a prepare someone for release template`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = renderServiceDataHtml(
         "hmpps-resettlement-passport-api",
         testResettlementPassportServiceData,
-        renderOutputFile,
+        workspace,
       )
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -272,12 +286,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a court case service template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("court-case-service", testCourtCaseServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("court-case-service", testCourtCaseServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -292,16 +306,16 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a accredited programme service template`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = renderServiceDataHtml(
         "hmpps-accredited-programmes-api",
         testAccreditedProgrammesServiceData,
-        renderOutputFile,
+        workspace,
       )
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -315,12 +329,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a Non-associations template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-non-associations-api", testNonAssociationsServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-non-associations-api", testNonAssociationsServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -332,12 +346,12 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a Interventions Service template`() {
-    getTempFile().use { renderOutputFile ->
-      val actual = renderServiceDataHtml("hmpps-interventions-service", testInterventionsServiceData, renderOutputFile)
+    createRenderWorkspace(renderRequest).use { workspace ->
+      val actual = renderServiceDataHtml("hmpps-interventions-service", testInterventionsServiceData, workspace)
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -351,16 +365,16 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a Categorisation Service template`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = renderServiceDataHtml(
         "hmpps-offender-categorisation-api",
         testCategorisationServiceData,
-        renderOutputFile,
+        workspace,
       )
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -373,16 +387,16 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate renders a template given a complexity of need template`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = renderServiceDataHtml(
         "hmpps-complexity-of-need",
         loadServiceFixture("hmpps-complexity-of-need"),
-        renderOutputFile,
+        workspace,
       )
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -404,16 +418,16 @@ class TemplateRenderingServiceTest {
       ),
     )
 
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = renderServiceDataHtml(
         "offender-management-allocation-manager",
         loadServiceFixture("offender-management-allocation-manager"),
-        renderOutputFile,
+        workspace,
       )
 
       assertThat(actual).isNotNull()
       assertThat(actual.version).isEqualTo(expectedTemplateVersion)
-      val renderedTemplate = renderOutputFile.getContentAsString()
+      val renderedTemplate = workspace.outputFile.getContentAsString()
 
       assertThat(renderedTemplate).contains("<style>")
       assertThat(renderedTemplate).contains("</style>")
@@ -435,7 +449,7 @@ class TemplateRenderingServiceTest {
 
   @Test
   fun `renderTemplate throws exception when the specified service template does not exist`() {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = assertThrows<SubjectAccessRequestException> {
         templateRenderingService.renderServiceDataHtml(
           RenderRequest(
@@ -449,7 +463,7 @@ class TemplateRenderingServiceTest {
             ),
           ),
           testServiceTemplateData,
-          renderOutputFile,
+          workspace,
         )
       }
 
@@ -461,9 +475,9 @@ class TemplateRenderingServiceTest {
   @ParameterizedTest
   @MethodSource("serviceWithMandatoryTemplates")
   fun `renderTemplate throws expected exception when service template is mandated but not template is found`(serviceName: String) {
-    getTempFile().use { renderOutputFile ->
+    createRenderWorkspace(renderRequest).use { workspace ->
       val actual = assertThrows<SubjectAccessRequestException> {
-        renderServiceDataHtml(serviceName, testServiceTemplateData, renderOutputFile)
+        renderServiceDataHtml(serviceName, testServiceTemplateData, workspace)
       }
       assertThat(actual.errorCode).isEqualTo(ErrorCode.TEMPLATE_RESOURCE_NOT_FOUND)
     }
