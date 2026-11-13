@@ -8,11 +8,13 @@ import aws.sdk.kotlin.services.s3.model.NoSuchKey
 import aws.sdk.kotlin.services.s3.model.NotFound
 import aws.sdk.kotlin.services.s3.putObject
 import aws.smithy.kotlin.runtime.content.ByteStream
+import aws.smithy.kotlin.runtime.content.fromFile
 import aws.smithy.kotlin.runtime.content.toByteArray
 import aws.smithy.kotlin.runtime.time.toJvmInstant
 import org.apache.commons.lang3.StringUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.Attachment
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.AttachmentData
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.config.S3Properties
@@ -22,7 +24,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.E
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.ErrorCode.DOCUMENT_STORE_HTML_UPLOAD_FAILED
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
-import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.RenderedHtml
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionInfo
 import java.util.UUID
 
 @Service
@@ -51,24 +53,28 @@ class DocumentStore(
     }
   }
 
-  suspend fun addHtml(renderRequest: RenderRequest, renderedHtml: RenderedHtml) {
+  suspend fun addHtml(
+    renderRequest: RenderRequest,
+    renderedHtml: TempFile,
+    templateVersionInfo: TemplateVersionInfo,
+  ) {
     try {
       s3.putObject {
         bucket = s3Properties.bucketName
         key = renderRequest.documentHtmlKey()
-        body = ByteStream.fromBytes(renderedHtml.data?.toByteArray() ?: byteArrayOf()) // default to empty if null TODO check if this is right
-        metadata = mapOf("template_version" to "v${renderedHtml.templateVersion}")
+        body = ByteStream.fromFile(renderedHtml.path.toFile())
+        metadata = mapOf("template_version" to templateVersionInfo.formattedVersion())
       }
-
       log.info("adding html document to document store.... ${renderRequest.documentHtmlKey()}")
     } catch (ex: Exception) {
       throw SubjectAccessRequestException(
         message = "failed to upload html document",
         errorCode = DOCUMENT_STORE_HTML_UPLOAD_FAILED,
+        cause = ex,
         subjectAccessRequestId = renderRequest.id,
         params = mapOf(
           "documentKey" to renderRequest.documentHtmlKey(),
-          "template_version" to "v${renderedHtml.templateVersion}",
+          "template_version" to templateVersionInfo.formattedVersion(),
         ),
       )
     }

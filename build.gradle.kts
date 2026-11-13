@@ -32,7 +32,7 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.68.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.8.6")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.9.0")
   implementation("com.github.ben-manes.caffeine:caffeine:3.3.1")
 
   runtimeOnly("org.flywaydb:flyway-core")
