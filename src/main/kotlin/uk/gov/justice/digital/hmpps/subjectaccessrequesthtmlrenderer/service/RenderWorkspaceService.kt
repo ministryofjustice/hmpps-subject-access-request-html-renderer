@@ -9,9 +9,8 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 @Service
-class RenderWorkspaceService(
-  private val renderWorkspaceRootDir: Path = Files.createTempDirectory("sar_render_workspaces"),
-) {
+class RenderWorkspaceService(private val renderWorkspaceRootDir: Path) {
+  constructor() : this(renderWorkspaceRootDir = Files.createTempDirectory("sar_render_workspaces"))
 
   private companion object {
     private val log = LoggerFactory.getLogger(RenderWorkspaceService::class.java)
