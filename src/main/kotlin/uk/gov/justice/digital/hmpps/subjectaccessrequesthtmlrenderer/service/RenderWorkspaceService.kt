@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service
 
 import jakarta.annotation.PreDestroy
+import org.jetbrains.annotations.VisibleForTesting
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TempFile
@@ -9,8 +10,18 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 @Service
-class RenderWorkspaceService(private val renderWorkspaceRootDir: Path) {
-  constructor() : this(renderWorkspaceRootDir = Files.createTempDirectory("sar_render_workspaces"))
+class RenderWorkspaceService {
+
+  private val renderWorkspaceRootDir: Path
+
+  constructor() {
+    renderWorkspaceRootDir = Files.createTempDirectory("sar_render_workspaces")
+  }
+
+  @VisibleForTesting
+  constructor(renderWorkspaceRootDir: Path) {
+    this.renderWorkspaceRootDir = renderWorkspaceRootDir
+  }
 
   private companion object {
     private val log = LoggerFactory.getLogger(RenderWorkspaceService::class.java)
