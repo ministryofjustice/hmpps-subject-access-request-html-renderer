@@ -7,6 +7,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.http.HttpStatus
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.RendererServiceFailureType
@@ -22,8 +23,12 @@ import java.util.UUID
 class ServiceCallFailureNotificationServiceTest {
 
   private val subjectAccessRequestApiClient: SubjectAccessRequestApiClient = mock()
+  private val internalServiceSlackAlertService: InternalServiceSlackAlertService = mock()
 
-  private val serviceCallFailureNotificationService = ServiceCallFailureNotificationService(subjectAccessRequestApiClient)
+  private val serviceCallFailureNotificationService = ServiceCallFailureNotificationService(
+    subjectAccessRequestApiClient,
+    internalServiceSlackAlertService,
+  )
 
   private val renderRequest = RenderRequest(
     id = UUID.randomUUID(),
@@ -63,6 +68,7 @@ class ServiceCallFailureNotificationServiceTest {
         ),
       ),
     )
+    verifyNoInteractions(internalServiceSlackAlertService)
   }
 
   @Test
@@ -94,7 +100,7 @@ class ServiceCallFailureNotificationServiceTest {
   }
 
   @Test
-  fun `should swallow callback client failures`() {
+  fun `should alert HAAR when callback client fails without interrupting rendering`() {
     val exception = FatalSubjectAccessRequestException(
       message = "response status: 400 not retryable",
       subjectAccessRequestId = renderRequest.id,
@@ -111,5 +117,11 @@ class ServiceCallFailureNotificationServiceTest {
         exception,
       )
     }
+    verify(internalServiceSlackAlertService).sendServiceCallFailedAlert(
+      "SAR API",
+      "POST /api/subjectAccessRequests/{id}/service-errors",
+      renderRequest.id,
+      renderRequest.serviceConfiguration.serviceName,
+    )
   }
 }

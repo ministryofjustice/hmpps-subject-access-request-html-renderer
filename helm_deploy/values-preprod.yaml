@@ -12,6 +12,7 @@ generic-service:
       nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
 
   env:
+    SENTRY_ENV: preprod
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
     HMPPS_AUTH_URL: "https://sign-in-preprod.hmpps.service.justice.gov.uk/auth"
     LOCATIONS_API_URL: "https://locations-inside-prison-api-preprod.hmpps.service.justice.gov.uk"
