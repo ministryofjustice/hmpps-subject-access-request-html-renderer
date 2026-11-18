@@ -32,8 +32,9 @@ dependencies {
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
   implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.68.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.9.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-subject-access-request-lib:2.11.0-snapshot")
   implementation("com.github.ben-manes.caffeine:caffeine:3.3.1")
+  implementation("org.apache.tika:tika-core:3.2.3")
 
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("com.h2database:h2:2.5.252")
@@ -48,6 +49,8 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.48") {
     exclude(group = "io.swagger.core.v3")
   }
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+  testImplementation("org.jsoup:jsoup:1.24.1")
 }
 
 kotlin {
