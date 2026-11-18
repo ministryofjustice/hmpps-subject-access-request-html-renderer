@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.FileBasedTemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateDataFetcherFacade
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.attachments.InlineAttachmentRenderer
 import java.util.concurrent.TimeUnit
 
 @Configuration
@@ -21,9 +22,17 @@ class TemplateRenderConfig(
   fun templateHelper(
     @Qualifier("CachedTemplateDataFetcherFacadeImpl") templateDataFetcherFacade: TemplateDataFetcherFacade,
     objectMapper: ObjectMapper,
-  ) = TemplateHelpers(templateDataFetcherFacade, objectMapper)
+    @Qualifier("s3InlineAttachmentRenderer") s3InlineAttachmentRenderer: InlineAttachmentRenderer,
+  ) = TemplateHelpers(
+    templateDataFetcherFacade = templateDataFetcherFacade,
+    objectMapper = objectMapper,
+    inlineAttachmentRenderer = s3InlineAttachmentRenderer,
+  )
 
-  @Bean fun fileBasedTemplateRenderService(templateHelpers: TemplateHelpers) = FileBasedTemplateRenderService(templateHelpers)
+  @Bean
+  fun fileBasedTemplateRenderService(
+    templateHelpers: TemplateHelpers,
+  ) = FileBasedTemplateRenderService(templateHelpers)
 
   @Bean("templateDataFetcherFacadeCacheBuilder")
   fun templateDataFetcherFacadeCacheBuilder(): Caffeine<Any, Any> = Caffeine

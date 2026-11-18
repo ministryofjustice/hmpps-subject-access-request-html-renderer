@@ -13,6 +13,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.FileBasedTemplateRenderService
 import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.TemplateHelpers
+import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.attachments.InlineAttachmentRenderer
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.DynamicServicesClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.LocationsApiClient
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.client.NomisMappingApiClient
@@ -43,6 +44,7 @@ class TemplateRenderingServiceTest {
   private val telemetryClient: TelemetryClient = mock()
   private val templateVersionService: TemplateVersionService = mock()
   private val templateVersionHealthService: TemplateVersionHealthService = mock()
+  private val inlineAttachmentRenderer: InlineAttachmentRenderer = mock()
   private val expectedTemplateVersion = "legacy"
 
   private val templateDataFetcherFacade = TemplateDataFetcherFacadeImpl(
@@ -63,7 +65,11 @@ class TemplateRenderingServiceTest {
       category = ServiceCategory.PRISON,
     ),
   )
-  private val templateHelpers = TemplateHelpers(templateDataFetcherFacade, jacksonObjectMapper())
+  private val templateHelpers = TemplateHelpers(
+    templateDataFetcherFacade = templateDataFetcherFacade,
+    objectMapper = jacksonObjectMapper(),
+    inlineAttachmentRenderer = inlineAttachmentRenderer,
+  )
   private val templateRenderService = FileBasedTemplateRenderService(templateHelpers)
   private val templateRenderingService = TemplateRenderingService(
     templateRenderService,

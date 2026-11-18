@@ -51,16 +51,27 @@ class S3InlineAttachmentRendererTest {
   )
     .combine("render-request-info", renderRequestInfo)
     .build()
-
+  private val expectedAttachmentData = "image 1234 data here".toByteArray()
+  private val expectedInlineAttachmentFile = InlineAttachmentFile(
+    requestId = renderRequestInfo.id,
+    serviceName = "service-one",
+    filename = "test-file.png",
+    contentType = "image/png",
+    filesize = 99,
+    data = expectedAttachmentData,
+  )
+  private val expectedImgSrcUrl = "https://sar-inline-attachments/${renderRequestInfo.id}/${renderRequestInfo.serviceName}/inline-attachments/${expectedInlineAttachmentFile.filename}"
   private val templateDataFetcherFacade: TemplateDataFetcherFacade = mock()
   private val documentStore: DocumentStore = mock()
   private val handlebars: Handlebars = mock()
+  private val inlineAttachmentFileService: InlineAttachmentFileService = mock()
   private val options: Options = stubOptions(context)
 
   private val inlineAttachmentRenderer = S3InlineAttachmentRenderer(
     templateDataFetcherFacade,
     objectMapper,
     documentStore,
+    inlineAttachmentFileService,
   )
 
   @Nested
@@ -149,6 +160,41 @@ class S3InlineAttachmentRendererTest {
     }
 
     @Test
+    fun `should propagate exception from inlineAttachmentFileService`() {
+      val input: Any = mapOf(
+        "contentType" to "image/jpeg",
+        "url" to "http://url",
+        "filesize" to 100,
+      )
+
+      val inlineAttachment = InlineAttachment(
+        contentType = "image/jpeg",
+        url = "http://url",
+        filesize = 100,
+      )
+
+      whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
+        .thenReturn(expectedAttachmentData)
+
+      val expectedException = SubjectAccessRequestTemplatingException("unknown file extension for contentType: x")
+      whenever(inlineAttachmentFileService.createInlineAttachmentFile(
+        renderRequestInfo, inlineAttachment, expectedAttachmentData)
+      ).thenThrow(expectedException)
+
+      val actual = assertThrows<SubjectAccessRequestException> {
+        inlineAttachmentRenderer.inlineAttachmentContent(input, options)
+      }
+
+      assertThat(actual).isEqualTo(expectedException)
+
+      verify(templateDataFetcherFacade, times(1))
+        .getRenderableAttachment(inlineAttachment, renderRequestInfo)
+
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
+    }
+
+    @Test
     fun `should throw exception when store document is unsuccessful`() = runTest {
       val input: Any = mapOf(
         "contentType" to "image/png",
@@ -162,13 +208,18 @@ class S3InlineAttachmentRendererTest {
         filesize = 100,
       )
 
-      val expectedAttachmentData = "image 1234 data here".toByteArray()
       whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
         .thenReturn(expectedAttachmentData)
 
       val expectedCause = SubjectAccessRequestException("store document error")
       whenever(documentStore.addInlineAttachment(any()))
         .thenThrow(expectedCause)
+
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+        ),
+      ).thenReturn(expectedInlineAttachmentFile)
 
       val actual = assertThrows<SubjectAccessRequestException> {
         inlineAttachmentRenderer.inlineAttachmentContent(input, options)
@@ -179,16 +230,14 @@ class S3InlineAttachmentRendererTest {
       verify(templateDataFetcherFacade, times(1))
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
 
       assertThat(inlineAttachmentFileCaptor.allValues).hasSize(1)
-      val storedAttachmentFile = inlineAttachmentFileCaptor.allValues[0]
-      assertThat(storedAttachmentFile.contentType).isEqualTo("image/png")
-      assertThat(storedAttachmentFile.requestId).isEqualTo(renderRequestInfo.id)
-      assertThat(storedAttachmentFile.serviceName).isEqualTo(renderRequestInfo.serviceName)
-      assertThat(storedAttachmentFile.filename).endsWith(".png")
-      assertThat(storedAttachmentFile.data).isEqualTo(expectedAttachmentData)
+      assertThat(inlineAttachmentFileCaptor.allValues[0]).isEqualTo(expectedInlineAttachmentFile)
     }
 
     @Test
@@ -205,26 +254,29 @@ class S3InlineAttachmentRendererTest {
         filesize = 100,
       )
 
-      val expectedAttachmentData = "image 1234 data here".toByteArray()
       whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
         .thenReturn(expectedAttachmentData)
+
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+        ),
+      ).thenReturn(expectedInlineAttachmentFile)
 
       val actual = inlineAttachmentRenderer.inlineAttachmentContent(input, options)
 
       verify(templateDataFetcherFacade, times(1))
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
 
       assertThat(inlineAttachmentFileCaptor.allValues).hasSize(1)
-      val storedAttachmentFile = inlineAttachmentFileCaptor.allValues[0]
-      assertThat(storedAttachmentFile.contentType).isEqualTo("image/png")
-      assertThat(storedAttachmentFile.requestId).isEqualTo(renderRequestInfo.id)
-      assertThat(storedAttachmentFile.serviceName).isEqualTo(renderRequestInfo.serviceName)
-      assertThat(storedAttachmentFile.filename).endsWith(".png")
-      assertThat(storedAttachmentFile.data).isEqualTo(expectedAttachmentData)
-      assertThat(actual).matches("^https://sar-inline-attachments/${renderRequestInfo.id}/${renderRequestInfo.serviceName}/inline-attachments/[0-9a-zA-Z-]+\\.png$")
+      assertThat(inlineAttachmentFileCaptor.allValues[0]).isEqualTo(expectedInlineAttachmentFile)
+      assertThat(actual).isEqualTo(expectedImgSrcUrl)
     }
   }
 
@@ -318,6 +370,41 @@ class S3InlineAttachmentRendererTest {
     }
 
     @Test
+    fun `should propagate exception from inlineAttachmentFileService`() {
+      val input: Any = mapOf(
+        "contentType" to "image/jpeg",
+        "url" to "http://url",
+        "filesize" to 100,
+      )
+
+      val inlineAttachment = InlineAttachment(
+        contentType = "image/jpeg",
+        url = "http://url",
+        filesize = 100,
+      )
+
+      whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
+        .thenReturn(expectedAttachmentData)
+
+      val expectedException = SubjectAccessRequestTemplatingException("unknown file extension for contentType: x")
+      whenever(inlineAttachmentFileService.createInlineAttachmentFile(
+        renderRequestInfo, inlineAttachment, expectedAttachmentData)
+      ).thenThrow(expectedException)
+
+      val actual = assertThrows<SubjectAccessRequestException> {
+        inlineAttachmentRenderer.inlineAttachment(input, null, null, options)
+      }
+
+      assertThat(actual).isEqualTo(expectedException)
+
+      verify(templateDataFetcherFacade, times(1))
+        .getRenderableAttachment(inlineAttachment, renderRequestInfo)
+
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
+    }
+
+    @Test
     fun `should throw exception when store document is unsuccessful`() = runTest {
       val input: Any = mapOf(
         "contentType" to "image/png",
@@ -331,9 +418,14 @@ class S3InlineAttachmentRendererTest {
         filesize = 100,
       )
 
-      val expectedAttachmentData = "image 1234 data here".toByteArray()
       whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
         .thenReturn(expectedAttachmentData)
+
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+        ),
+      ).thenReturn(expectedInlineAttachmentFile)
 
       val expectedCause = SubjectAccessRequestException("store document error")
       whenever(documentStore.addInlineAttachment(any()))
@@ -347,6 +439,9 @@ class S3InlineAttachmentRendererTest {
 
       verify(templateDataFetcherFacade, times(1))
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
+
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
 
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
@@ -374,34 +469,30 @@ class S3InlineAttachmentRendererTest {
         filesize = 100,
       )
 
-      val expectedAttachmentData = "image 1234 data here".toByteArray()
       whenever(templateDataFetcherFacade.getRenderableAttachment(inlineAttachment, renderRequestInfo))
         .thenReturn(expectedAttachmentData)
+
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+        ),
+      ).thenReturn(expectedInlineAttachmentFile)
 
       val actual = inlineAttachmentRenderer.inlineAttachment(input, 101, 393, options)
 
       verify(templateDataFetcherFacade, times(1))
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
+      verify(inlineAttachmentFileService, times(1))
+        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
 
       assertThat(inlineAttachmentFileCaptor.allValues).hasSize(1)
       val storedAttachmentFile = inlineAttachmentFileCaptor.allValues[0]
-      assertThat(storedAttachmentFile.contentType).isEqualTo("image/png")
-      assertThat(storedAttachmentFile.requestId).isEqualTo(renderRequestInfo.id)
-      assertThat(storedAttachmentFile.serviceName).isEqualTo(renderRequestInfo.serviceName)
-      assertThat(storedAttachmentFile.filename).endsWith(".png")
-      assertThat(storedAttachmentFile.data).isEqualTo(expectedAttachmentData)
-
-      val htmlFragment = Jsoup.parseBodyFragment(actual)
-      val imgElement = htmlFragment.selectFirst("img")
-
-      assertThat(imgElement).isNotNull
-      assertThat(imgElement!!.attr("src")).matches("^https://sar-inline-attachments/${renderRequestInfo.id}/${renderRequestInfo.serviceName}/inline-attachments/[0-9a-zA-Z-]+\\.png$")
-      assertThat(imgElement.attr("alt")).isEqualTo("Inline attachment")
-      assertThat(imgElement.attr("height")).isEqualTo("101")
-      assertThat(imgElement.attr("width")).isEqualTo("393")
+      assertThat(storedAttachmentFile).isEqualTo(expectedInlineAttachmentFile)
+      assertThat(actual).isEqualTo("""<img src="$expectedImgSrcUrl" alt="Inline attachment" height="101" width="393"/>""")
     }
   }
 
