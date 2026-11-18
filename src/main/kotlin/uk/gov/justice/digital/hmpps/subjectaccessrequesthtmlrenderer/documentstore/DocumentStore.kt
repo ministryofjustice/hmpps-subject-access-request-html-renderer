@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.E
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.exception.SubjectAccessRequestException
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionInfo
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.attachments.InlineAttachmentFile
 import java.util.UUID
 
 @Service
@@ -102,6 +103,29 @@ class DocumentStore(
         errorCode = DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED,
         subjectAccessRequestId = renderRequest.id,
         params = mapOf("documentKey" to renderRequest.documentHtmlKey(), "filename" to attachment.filename),
+      )
+    }
+  }
+
+  suspend fun addInlineAttachment(attachment: InlineAttachmentFile) {
+    try {
+      s3.putObject {
+        bucket = s3Properties.bucketName
+        key = attachment.documentKey
+        contentType = attachment.contentType
+        contentLength = attachment.filesize
+        metadata = mapOf("x-amz-meta-filename" to attachment.filename)
+        body = ByteStream.fromBytes(attachment.data)
+      }
+
+      log.info("adding inline-attachment to document store.... ${attachment.documentKey}")
+    } catch (ex: Exception) {
+      throw SubjectAccessRequestException(
+        message = "failed to upload inline-attachment",
+        cause = ex,
+        errorCode = DOCUMENT_STORE_ATTACHMENT_UPLOAD_FAILED,
+        subjectAccessRequestId = attachment.requestId,
+        params = mapOf("documentKey" to attachment.documentKey, "filename" to attachment.filename),
       )
     }
   }
