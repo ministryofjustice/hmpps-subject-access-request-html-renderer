@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integration
 
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -12,6 +13,8 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -53,6 +56,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.PrisonDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.InternalServiceSlackAlertService
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.CachedTemplateDataFetcherFacadeImpl
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
 import java.time.Instant
@@ -64,7 +68,9 @@ const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stub
 const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
 
 @ExtendWith(SarDataSourceApiExtension::class)
-class RenderControllerIntTest : IntegrationTestBase() {
+class RenderControllerIntTest(
+  @Autowired private val internalServiceSlackAlertService: InternalServiceSlackAlertService,
+) : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var userDetailsRepository: UserDetailsRepository
@@ -668,6 +674,43 @@ class RenderControllerIntTest : IntegrationTestBase() {
         failureType = RendererServiceFailureType.SAR_DATA,
         statusCode = 500,
         message = retryExhaustedErrorMessage(renderRequest, 500),
+      )
+      verifyNoInteractions(internalServiceSlackAlertService)
+    }
+
+    @Test
+    fun `should alert when reporting a service failure to the SAR API fails`() {
+      val serviceConfiguration = getServiceConfiguration("keyworker-api")
+      val renderRequestEntity = newRenderRequestFor(serviceConfiguration)
+      val renderRequest = RenderRequest(renderRequestEntity, serviceConfiguration)
+
+      hmppsAuthReturnsValidAuthToken()
+      hmppsServiceReturnsErrorForRequest(renderRequest, HttpStatus.INTERNAL_SERVER_ERROR)
+      subjectAccessRequestApi.stubReportServiceError(aResponse().withStatus(500))
+
+      sendRenderTemplateRequest(renderRequestEntity = renderRequestEntity)
+        .expectStatus().isEqualTo(500)
+
+      sarDataSourceApi.verifyGetSubjectAccessRequestDataCalled(3)
+      subjectAccessRequestApi.verifyReportServiceErrorCalled(
+        subjectAccessRequestId = renderRequest.id!!,
+        serviceName = serviceConfiguration.serviceName,
+        failureType = RendererServiceFailureType.SAR_DATA,
+        statusCode = 500,
+        message = retryExhaustedErrorMessage(renderRequest, 500),
+      )
+      verify(internalServiceSlackAlertService).sendServiceCallFailedAlert(
+        "SAR API",
+        "POST /api/subjectAccessRequests/{id}/service-errors",
+        renderRequest.id,
+        serviceConfiguration.serviceName,
+      )
+      assertTelemetryEvents(
+        ExpectedTelemetryEvent(REQUEST_RECEIVED, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA, eventProperties(renderRequest)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 0, 500)),
+        ExpectedTelemetryEvent(GET_SERVICE_DATA_RETRY, getDataRetryEventProperties(renderRequest, 1, 500)),
+        ExpectedTelemetryEvent(REQUEST_ERRORED, dataRequestErroredEventProperties(renderRequest, 500)),
       )
     }
 

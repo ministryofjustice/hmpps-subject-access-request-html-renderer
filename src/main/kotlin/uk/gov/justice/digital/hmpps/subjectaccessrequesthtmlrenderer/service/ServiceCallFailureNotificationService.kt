@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.R
 @Service
 class ServiceCallFailureNotificationService(
   private val subjectAccessRequestApiClient: SubjectAccessRequestApiClient,
+  private val internalServiceSlackAlertService: InternalServiceSlackAlertService,
 ) {
 
   companion object {
@@ -44,6 +45,12 @@ class ServiceCallFailureNotificationService(
         renderRequest.serviceConfiguration.serviceName,
         failureType,
         notificationEx,
+      )
+      internalServiceSlackAlertService.sendServiceCallFailedAlert(
+        destination = "SAR API",
+        operation = "POST /api/subjectAccessRequests/{id}/service-errors",
+        requestId = subjectAccessRequestId,
+        serviceName = renderRequest.serviceConfiguration.serviceName,
       )
     }
   }

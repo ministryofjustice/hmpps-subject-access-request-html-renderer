@@ -36,6 +36,8 @@ generic-service:
     hmpps-subject-access-request-html-renderer:
       SYSTEM_CLIENT_ID: "SYSTEM_CLIENT_ID"
       SYSTEM_CLIENT_SECRET: "SYSTEM_CLIENT_SECRET"
+      SAR_SLACK_BOT_AUTH_TOKEN: "SAR_SLACK_BOT_AUTH_TOKEN"
+      DEV_HELP_SLACK_CHANNEL_ID: "DEV_HELP_SLACK_CHANNEL_ID"
 
     hmpps-subject-access-request-html-renderer-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"

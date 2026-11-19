@@ -42,6 +42,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.ServiceConfiguration
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.service.InternalServiceSlackAlertService
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
 import java.time.LocalDate
 import java.util.UUID
@@ -58,6 +59,7 @@ import java.util.UUID
 @ActiveProfiles("test")
 @Import(S3TestUtil::class)
 @AutoConfigureWebTestClient
+@MockitoBean(types = [InternalServiceSlackAlertService::class])
 abstract class IntegrationTestBase {
 
   @Autowired
