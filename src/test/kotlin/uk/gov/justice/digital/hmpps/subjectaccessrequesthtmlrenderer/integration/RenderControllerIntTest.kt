@@ -55,10 +55,11 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.UserDetailsRepository
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.CachedTemplateDataFetcherFacadeImpl
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.TemplateVersionService
+import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.template.attachments.InlineAttachmentFileService
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.UUID
+import java.util.*
 
 const val SERVICE_RESPONSE_STUBS_DIR = "/integration-tests.service-response-stubs"
 const val REFERENCE_HTML_DIR = "/integration-tests/reference-html-stubs"
@@ -74,6 +75,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
 
   @MockitoBean
   private lateinit var locationDetailsRepository: LocationDetailsRepository
+
+  @MockitoBean
+  private lateinit var inlineAttachmentFileService: InlineAttachmentFileService
 
   @Autowired
   private lateinit var templateVersionService: TemplateVersionService
@@ -147,7 +151,6 @@ class RenderControllerIntTest : IntegrationTestBase() {
         "G1",
         "G2",
         "G3",
-        "wiremock-test-service-api",
       ],
       delimiterString = "|",
     )
@@ -1022,18 +1025,9 @@ class RenderControllerIntTest : IntegrationTestBase() {
     }
   }
 
-  private fun assertStoredTemplateVersionMatchesExpected(renderRequest: RenderRequest, expected: String?) {
-    assertThat(s3TestUtil.getTemplateVersion(renderRequest.documentHtmlKey())).isEqualTo(expected)
-  }
-
   private fun assertBucketContentMatchesExpected(key: String, expectedContent: String?) {
     val s3Content = s3TestUtil.getFile(key)
     assertThat(s3Content).isNotNull().isNotEmpty().isEqualTo(expectedContent)
-  }
-
-  private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
-    val uploadedFile = s3TestUtil.getFile(renderRequest.documentHtmlKey())
-    assertThat(uploadedFile).isNotNull().isNotEmpty().isEqualTo(expectedHtml)
   }
 
   private fun assertUploadedAttachmentMatchesExpected(
@@ -1056,19 +1050,6 @@ class RenderControllerIntTest : IntegrationTestBase() {
     assertThat(uploadedFile).isNotNull().isNotEmpty().isEqualTo(expectedAttachmentBytes)
     assertThat(metadata).isEqualTo(expectedMetadata)
   }
-
-  private fun assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(request: RenderRequest) {
-    assertDocumentDoesNotExists("${request.id}/${request.serviceConfiguration.serviceName}.json")
-  }
-
-  private fun hmppsServiceReturnsDataForRequest(request: RenderRequest, serviceName: String) = sarDataSourceApi
-    .stubGetSubjectAccessRequestData(
-      params = request.toGetSubjectAccessRequestDataParams(),
-      responseDefinition = ResponseDefinitionBuilder()
-        .withStatus(200)
-        .withHeader("Content-Type", "application/json")
-        .withBody(getServiceResponseBody(serviceName)),
-    )
 
   private fun hmppsServiceReturnsNoDataForRequest(request: RenderRequest) = sarDataSourceApi
     .stubGetSubjectAccessRequestData(

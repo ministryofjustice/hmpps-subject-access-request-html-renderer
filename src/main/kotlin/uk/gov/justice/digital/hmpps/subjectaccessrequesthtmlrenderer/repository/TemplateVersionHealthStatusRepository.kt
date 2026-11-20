@@ -27,4 +27,8 @@ interface TemplateVersionHealthStatusRepository : JpaRepository<TemplateVersionH
     @Param("lastModified") lastModified: Instant = Instant.now(),
     @Param("serviceConfigurationId") serviceConfigurationId: UUID,
   ): Int
+
+  @Modifying
+  @Query("DELETE FROM TemplateVersionHealthStatus t WHERE t.serviceConfiguration.id = :id")
+  fun deleteByServiceConfigurationId(@Param("id") id: UUID)
 }

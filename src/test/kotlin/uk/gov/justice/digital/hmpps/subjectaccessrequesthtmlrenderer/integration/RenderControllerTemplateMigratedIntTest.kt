@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(SarDataSourceApiExtension::class)
 class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
@@ -522,17 +522,8 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(s3TestUtil.documentExists(key = "${renderRequest.id}/${renderRequest.serviceConfiguration.serviceName}.json")).isFalse()
   }
 
-  private fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
-    val uploadedFile = s3TestUtil.getFile(renderRequest.documentHtmlKey())
-    assertThat(uploadedFile).isNotNull().isNotEmpty().isEqualTo(expectedHtml)
-  }
-
   private fun assertUploadedHtmlDoesNotExist(renderRequest: RenderRequest) {
     assertThat(s3TestUtil.documentExists(renderRequest.documentHtmlKey())).isFalse()
-  }
-
-  private fun assertStoredTemplateVersionMatchesExpected(renderRequest: RenderRequest, expected: String?) {
-    assertThat(s3TestUtil.getTemplateVersion(renderRequest.documentHtmlKey())).isEqualTo(expected)
   }
 
   private fun assertRenderTemplateSuccessResponse(
@@ -621,10 +612,6 @@ class RenderControllerTemplateMigratedIntTest : IntegrationTestBase() {
     assertThat(actual).isNotNull
     assertThat(actual!!.status).isEqualTo(expected.status)
     assertThat(actual.lastModified).isEqualTo(expected.lastModified)
-  }
-
-  private fun assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(request: RenderRequest) {
-    assertDocumentDoesNotExists("${request.id}/${request.serviceConfiguration.serviceName}.json")
   }
 
   private fun Instant.truncateToMicros(): Instant = this.truncatedTo(ChronoUnit.MICROS)

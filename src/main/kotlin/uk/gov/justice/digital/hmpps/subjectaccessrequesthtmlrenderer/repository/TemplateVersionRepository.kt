@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository
 import jakarta.persistence.LockModeType
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Lock
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.stereotype.Repository
@@ -60,4 +61,8 @@ interface TemplateVersionRepository : JpaRepository<TemplateVersion, UUID> {
   ): TemplateVersion?
 
   fun findTemplateVersionByServiceConfigurationId(serviceConfigurationId: UUID): List<TemplateVersion>
+
+  @Modifying
+  @Query("DELETE FROM TemplateVersion v WHERE v.serviceConfiguration.id = :id")
+  fun deleteByServiceConfigurationId(@Param("id") id: UUID)
 }

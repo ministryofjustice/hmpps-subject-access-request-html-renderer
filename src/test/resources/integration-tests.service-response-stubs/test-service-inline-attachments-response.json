@@ -1,0 +1,51 @@
+{
+  "content": {
+    "uploads": [
+      {
+        "attachmentRef": "Attachment 1",
+        "filename": "map.jpg",
+        "fileType": "image/jpeg",
+        "fileSize": 683919,
+        "description": "Map image",
+        "attachment": {
+          "contentType": "image/jpeg",
+          "url": "http://localhost:8092/attachments/map.jpg",
+          "filesize": 683919
+        }
+      },
+      {
+        "attachmentRef": "Attachment 2",
+        "filename": "small.jpg",
+        "fileType": "image/jpeg",
+        "fileSize": 82643,
+        "description": "Small image",
+        "attachment": {
+          "contentType": "image/jpeg",
+          "url": "http://localhost:8092/attachments/small.jpg",
+          "filesize": 82643
+        }
+      },
+      {
+        "attachmentRef": "Attachment 3",
+        "filename": "doc1.pdf",
+        "fileType": "application/pdf",
+        "fileSize": 27566,
+        "description": "A document"
+      },
+      {
+        "attachmentRef": "Attachment 4",
+        "filename": "test.mp4",
+        "fileType": "video/mp4",
+        "fileSize": 27566,
+        "description": "A video"
+      },
+      {
+        "attachmentRef": "Attachment 5",
+        "filename": "doc1.docx",
+        "fileType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "fileSize": 27566,
+        "description": "Word document"
+      }
+    ]
+  }
+}

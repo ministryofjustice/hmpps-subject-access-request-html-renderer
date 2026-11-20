@@ -52,4 +52,9 @@ class TemplateVersionHealthService(
       serviceConfigurationId = serviceConfiguration.id,
     )
   }
+
+  @Transactional
+  internal fun deleteTemplateVersionHealthByServiceConfiguration(serviceConfiguration: ServiceConfiguration) {
+    templateVersionHealthStatusRepository.deleteByServiceConfigurationId(serviceConfiguration.id)
+  }
 }

@@ -117,6 +117,11 @@ G3-api:
 developer-endpoint:
   enabled: false
 
+## 'default' - embed inline attachments as Base64 encoded data
+## 's3-renderer' - get and store the attachments in s3 and output url in html
+inline-attachment-renderer:
+  use: default
+
 springdoc:
   api-docs:
     enabled: false

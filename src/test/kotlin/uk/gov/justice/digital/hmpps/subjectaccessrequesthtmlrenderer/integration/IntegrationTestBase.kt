@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.integratio
 
 import aws.sdk.kotlin.services.s3.S3Client
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder
 import com.microsoft.applicationinsights.TelemetryClient
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
@@ -43,6 +44,7 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.models.Serv
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.rendering.RenderRequest
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.repository.ServiceConfigurationRepository
 import uk.gov.justice.hmpps.test.kotlin.auth.JwtAuthorisationHelper
+import java.security.MessageDigest
 import java.time.LocalDate
 import java.util.UUID
 
@@ -302,6 +304,40 @@ abstract class IntegrationTestBase {
       content = content,
       filename = filename,
     )
+
+  protected fun assertUploadedHtmlMatchesExpected(renderRequest: RenderRequest, expectedHtml: String) {
+    val uploadedFile = s3TestUtil.getFile(renderRequest.documentHtmlKey())
+    assertThat(uploadedFile).isNotNull().isNotEmpty().isEqualTo(expectedHtml)
+  }
+
+  protected fun assertStoredTemplateVersionMatchesExpected(renderRequest: RenderRequest, expected: String?) {
+    assertThat(s3TestUtil.getTemplateVersion(renderRequest.documentHtmlKey())).isEqualTo(expected)
+  }
+
+  protected fun assertLegacyFunctionalityServiceDataJsonFileDoesNotExistsInBucket(request: RenderRequest) {
+    assertDocumentDoesNotExists("${request.id}/${request.serviceConfiguration.serviceName}.json")
+  }
+
+  protected fun generateFileHash(bytes: ByteArray): String {
+    val hash = MessageDigest.getInstance("SHA-256").digest(bytes)
+    return hash.joinToString("") { "%02x".format(it) }
+  }
+
+  protected fun hmppsServiceReturnsDataForRequest(request: RenderRequest, serviceName: String) = sarDataSourceApi
+    .stubGetSubjectAccessRequestData(
+      params = request.toGetSubjectAccessRequestDataParams(),
+      responseDefinition = ResponseDefinitionBuilder()
+        .withStatus(200)
+        .withHeader("Content-Type", "application/json")
+        .withBody(getServiceResponseBody(serviceName)),
+    )
+
+  protected fun hmppsServiceReturnsServiceTemplate(filename: String) = sarDataSourceApi.stubGetTemplate(
+    ResponseDefinitionBuilder()
+      .withStatus(200)
+      .withHeader("Content-Type", "plain/text")
+      .withBody(getResourceAsString("/templates/$filename.mustache")),
+  )
 
   data class S3File(val key: String, val content: String = fileContent)
 

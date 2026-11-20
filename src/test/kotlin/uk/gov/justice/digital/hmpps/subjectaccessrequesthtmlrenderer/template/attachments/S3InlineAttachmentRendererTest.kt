@@ -7,7 +7,6 @@ import com.github.jknack.handlebars.Handlebars
 import com.github.jknack.handlebars.Options
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.jsoup.Jsoup
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -60,7 +59,8 @@ class S3InlineAttachmentRendererTest {
     filesize = 99,
     data = expectedAttachmentData,
   )
-  private val expectedImgSrcUrl = "https://sar-inline-attachments/${renderRequestInfo.id}/${renderRequestInfo.serviceName}/inline-attachments/${expectedInlineAttachmentFile.filename}"
+  private val expectedImgSrcUrl =
+    "https://sar-inline-attachments/${renderRequestInfo.id}/${renderRequestInfo.serviceName}/inline-attachments/${expectedInlineAttachmentFile.filename}"
   private val templateDataFetcherFacade: TemplateDataFetcherFacade = mock()
   private val documentStore: DocumentStore = mock()
   private val handlebars: Handlebars = mock()
@@ -177,8 +177,12 @@ class S3InlineAttachmentRendererTest {
         .thenReturn(expectedAttachmentData)
 
       val expectedException = SubjectAccessRequestTemplatingException("unknown file extension for contentType: x")
-      whenever(inlineAttachmentFileService.createInlineAttachmentFile(
-        renderRequestInfo, inlineAttachment, expectedAttachmentData)
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
+        ),
       ).thenThrow(expectedException)
 
       val actual = assertThrows<SubjectAccessRequestException> {
@@ -217,7 +221,9 @@ class S3InlineAttachmentRendererTest {
 
       whenever(
         inlineAttachmentFileService.createInlineAttachmentFile(
-          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
         ),
       ).thenReturn(expectedInlineAttachmentFile)
 
@@ -231,7 +237,7 @@ class S3InlineAttachmentRendererTest {
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
       verify(inlineAttachmentFileService, times(1))
-        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
 
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
@@ -259,7 +265,9 @@ class S3InlineAttachmentRendererTest {
 
       whenever(
         inlineAttachmentFileService.createInlineAttachmentFile(
-          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
         ),
       ).thenReturn(expectedInlineAttachmentFile)
 
@@ -269,7 +277,7 @@ class S3InlineAttachmentRendererTest {
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
       verify(inlineAttachmentFileService, times(1))
-        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
 
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
@@ -387,8 +395,12 @@ class S3InlineAttachmentRendererTest {
         .thenReturn(expectedAttachmentData)
 
       val expectedException = SubjectAccessRequestTemplatingException("unknown file extension for contentType: x")
-      whenever(inlineAttachmentFileService.createInlineAttachmentFile(
-        renderRequestInfo, inlineAttachment, expectedAttachmentData)
+      whenever(
+        inlineAttachmentFileService.createInlineAttachmentFile(
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
+        ),
       ).thenThrow(expectedException)
 
       val actual = assertThrows<SubjectAccessRequestException> {
@@ -423,7 +435,9 @@ class S3InlineAttachmentRendererTest {
 
       whenever(
         inlineAttachmentFileService.createInlineAttachmentFile(
-          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
         ),
       ).thenReturn(expectedInlineAttachmentFile)
 
@@ -441,7 +455,7 @@ class S3InlineAttachmentRendererTest {
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
       verify(inlineAttachmentFileService, times(1))
-        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
 
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))
@@ -474,7 +488,9 @@ class S3InlineAttachmentRendererTest {
 
       whenever(
         inlineAttachmentFileService.createInlineAttachmentFile(
-          renderRequestInfo, inlineAttachment, expectedAttachmentData,
+          renderRequestInfo,
+          inlineAttachment,
+          expectedAttachmentData,
         ),
       ).thenReturn(expectedInlineAttachmentFile)
 
@@ -484,7 +500,7 @@ class S3InlineAttachmentRendererTest {
         .getRenderableAttachment(inlineAttachment, renderRequestInfo)
 
       verify(inlineAttachmentFileService, times(1))
-        .createInlineAttachmentFile( renderRequestInfo, inlineAttachment, expectedAttachmentData)
+        .createInlineAttachmentFile(renderRequestInfo, inlineAttachment, expectedAttachmentData)
 
       verify(documentStore, times(1))
         .addInlineAttachment(capture(inlineAttachmentFileCaptor))

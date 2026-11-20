@@ -17,7 +17,6 @@ import uk.gov.justice.digital.hmpps.subjectaccessrequest.templates.attachments.I
 import uk.gov.justice.digital.hmpps.subjectaccessrequesthtmlrenderer.documentstore.DocumentStore
 import java.util.UUID
 
-@Service("s3InlineAttachmentRenderer")
 class S3InlineAttachmentRenderer(
   @Qualifier("CachedTemplateDataFetcherFacadeImpl") private val templateDataFetcherFacade: TemplateDataFetcherFacade,
   private val objectMapper: ObjectMapper,
@@ -68,7 +67,9 @@ class S3InlineAttachmentRenderer(
     throw SubjectAccessRequestTemplatingException("Could not convert object to inline attachment: ${e.message}")
   }
 
-  private fun storeInlineAttachment(inlineAttachmentFile: InlineAttachmentFile) = runBlocking {
+  private fun storeInlineAttachment(
+    inlineAttachmentFile: InlineAttachmentFile,
+  ) = runBlocking {
     // runBlocking is a workaround as we cannot make interface method suspended as it will break backwards compatability
     documentStore.addInlineAttachment(inlineAttachmentFile)
   }
@@ -87,14 +88,14 @@ class S3InlineAttachmentRenderer(
         input,
         options,
       )
-    }" alt="Inline attachment" height="$height" width="$width"/>"""
+    }" alt="Inline attachment" height="$height" width="$width"/>""".trimIndent()
   }
 
   internal fun Options.getRenderRequestInfo(): RenderRequestInfo = this.context.get("render-request-info") as RenderRequestInfo
 }
 
 @Service
-class InlineAttachmentFileService() {
+class InlineAttachmentFileService {
 
   fun createInlineAttachmentFile(
     renderRequestInfo: RenderRequestInfo,

@@ -173,6 +173,12 @@ class TemplateVersionService(
     serviceConfiguration.id,
   )
 
+  @Transactional
+  internal fun deleteTemplateVersionByServiceConfiguration(serviceConfiguration: ServiceConfiguration) {
+    templateVersionHealthService.deleteTemplateVersionHealthByServiceConfiguration(serviceConfiguration)
+    templateVersionRepository.deleteByServiceConfigurationId(serviceConfiguration.id)
+  }
+
   private fun getServiceConfiguration(
     renderRequest: RenderRequest,
   ): ServiceConfiguration = serviceConfigurationService.findByIdAndEnabledAndTemplateMigrated(
